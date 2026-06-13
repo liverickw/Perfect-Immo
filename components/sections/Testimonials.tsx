@@ -1,69 +1,57 @@
+const testimonials = [
+  {
+    initials: "JE",
+    name: "Jean-Marc Essomba",
+    role: "PDG, Groupe Essomba",
+    text: "Perfect Immo a livré notre immeuble de bureaux dans les délais et au budget convenu. Une équipe rigoureuse et professionnelle.",
+  },
+  {
+    initials: "MN",
+    name: "Marie Ngo Biyong",
+    role: "Promotrice, SCI Palmier",
+    text: "Leur expertise en VRD a transformé notre lotissement. Qualité irréprochable et suivi de chantier exemplaire tout au long du projet.",
+  },
+];
+
 export default function Testimonials() {
-  const testimonials = [
-    {
-      name: "Jean-Pierre M.",
-      role: "Investisseur immobilier",
-      text: "Perfect Immo & Engineering nous a accompagnés de l'acquisition du terrain jusqu'à la livraison finale. Une équipe sérieuse et professionnelle.",
-    },
-    {
-      name: "Sophie N.",
-      role: "Directrice d'entreprise",
-      text: "Nous avions besoin d'un bâtiment commercial moderne. Le projet a été livré dans les délais avec un excellent niveau de qualité.",
-    },
-    {
-      name: "Eric T.",
-      role: "Propriétaire",
-      text: "Leur expertise technique et leur transparence nous ont permis de mener notre projet en toute confiance.",
-    },
-  ];
-
   return (
-    <section className="bg-white py-24">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="site-shell bg-[#fbfbf8] py-[52px]">
+      <div className="inner">
+        <p className="eyebrow">Ils nous font confiance</p>
+        <h2 className="section-title">Témoignages clients</h2>
 
-        <div className="text-center mb-16">
-          <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold">
-            Témoignages
-          </p>
-
-          <h2 className="mt-4 text-4xl lg:text-5xl font-bold text-[#0B1F3A]">
-            Ce que disent nos clients
-          </h2>
-
-          <p className="mt-5 text-gray-600 max-w-2xl mx-auto">
-            La satisfaction de nos clients est au cœur de notre engagement.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-
+        <div className="mt-[37px] grid gap-4 md:grid-cols-2">
           {testimonials.map((item) => (
-            <div
+            <article
               key={item.name}
-              className="bg-[#F8F8F5] rounded-2xl p-8 border border-gray-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+              className="border border-[#dfddd6] bg-white px-[25px] py-[24px]"
             >
-              <div className="text-yellow-500 text-xl mb-4">
-                ★★★★★
-              </div>
-
-              <p className="text-gray-700 leading-8 italic min-h-[160px]">
-                "{item.text}"
+              <p className="serif -mt-4 text-[45px] leading-none text-[#f1e9cf]">
+                &ldquo;
               </p>
-    
-              <div className="mt-8 border-t border-gray-200 pt-5">
-                <h4 className="font-bold text-[#0B1F3A]">
-                  {item.name}
-                </h4>
-
-                <p className="text-gray-500 text-sm">
-                  {item.role}
-                </p>
+              <p className="-mt-3 text-[13px] tracking-[3px] text-[#d2ad3d]">
+                ★★★★★
+              </p>
+              <p className="mt-3 min-h-[67px] border-b border-[#dfddd6] pb-4 text-[13px] font-medium italic leading-[1.8] text-[#514b46]">
+                {item.text}
+              </p>
+              <div className="mt-3 flex items-center gap-3">
+                <span className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-[#071d36] text-[13px] font-black text-[#d2ad3d]">
+                  {item.initials}
+                </span>
+                <span>
+                  <strong className="block text-[13px] text-[#061b35]">
+                    {item.name}
+                  </strong>
+                  <span className="text-[12px] font-medium text-[#8a8178]">
+                    {item.role}
+                  </span>
+                </span>
               </div>
-            </div>
+            </article>
           ))}
-
         </div>
       </div>
     </section>
   );
-    }
+}

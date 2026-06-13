@@ -1,43 +1,34 @@
-export default function Process() {
-  const steps = [
-    "Consultation gratuite",
-    "Étude & faisabilité",
-    "Planification du projet",
-    "Exécution & suivi",
-    "Livraison & garantie",
-  ];
-    
-  return (
-    <section className="bg-[#F4F3EF] py-24">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold">
-            Notre méthode
-          </p>
+const steps = [
+  "Consultation\ngratuite",
+  "Étude &\nfaisabilité",
+  "Planification\ndu projet",
+  "Exécution\n& suivi",
+  "Livraison &\ngarantie",
+];
 
-          <h2 className="mt-4 text-3xl lg:text-4xl font-bold text-[#0B1F3A]">
-            Comment nous travaillons
-          </h2>
-        </div>
-    
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+export default function Process() {
+  return (
+    <section className="w-full bg-[#f6f5f0] pb-[70px] pt-[50px]">
+      <div className="inner">
+        <p className="eyebrow">Notre méthode</p>
+        <h2 className="section-title">Comment nous travaillons</h2>
+
+        <div className="mt-[48px] grid grid-cols-2 gap-y-8 md:grid-cols-5">
           {steps.map((step, index) => (
             <div key={step} className="relative text-center">
-              {index !== 0 && (
-                <div className="hidden md:block absolute top-6 -left-1/2 w-full h-[1px] bg-yellow-500/40" />
+              {index < steps.length - 1 && (
+                <span className="absolute left-[70%] top-[22px] hidden h-px w-[78px] bg-[#d2ad3d]/35 md:block" />
               )}
-    
-              <div className="relative z-10 mx-auto w-16 h-16 rounded-full border-2 border-yellow-500 bg-white flex items-center justify-center text-yellow-600 font-bold text-xl">
+              <span className="mx-auto flex h-[45px] w-[45px] items-center justify-center border border-[#d2ad3d] bg-white serif text-[14px] text-[#d2ad3d]">
                 {index + 1}
-              </div>
-
-              <h3 className="mt-5 text-[#0B1F3A] font-semibold text-lg leading-snug">
+              </span>
+              <p className="mt-3 whitespace-pre-line text-[12px] font-black leading-[1.35] text-[#061b35]">
                 {step}
-              </h3>
+              </p>
             </div>
           ))}
         </div>
       </div>
     </section>
   );
-    }
+}

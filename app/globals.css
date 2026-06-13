@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --navy: #0b1f3a;
-  --gold: #c9a84c;
-  --cream: #fafaf6;
+  --navy: #0a2039;
+  --navy-2: #172f51;
+  --ink: #061b35;
+  --gold: #d2ad3d;
+  --muted: #8290a3;
+  --cream: #f6f5f0;
+  --line: rgba(10, 32, 57, 0.14);
 }
 
 * {
@@ -16,6 +20,115 @@ html,
 body {
   background: var(--cream);
   color: var(--navy);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.site-shell {
+  max-width: 850px;
+  margin: 0 auto;
+  background: var(--cream);
+  box-shadow: 0 0 0 1px rgba(10, 32, 57, 0.08);
+}
+
+.inner {
+  width: min(100% - 60px, 790px);
+  margin: 0 auto;
+}
+
+.serif {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.section-title {
+  margin-top: 18px;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 31px;
+  line-height: 1.17;
+  font-weight: 500;
+}
+
+.gold {
+  color: var(--gold);
+  font-style: italic;
+  font-weight: 700;
+}
+
+.btn {
+  display: inline-flex;
+  min-height: 45px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 27px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #dce5f0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #03152a;
+}
+
+.pattern-dark {
+  background-color: var(--navy);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 53px 53px;
+}
+
+.diamond-dark {
+  background-color: var(--navy);
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.018) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.018) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.018) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.018) 75%);
+  background-position: 0 0, 0 13px, 13px -13px, -13px 0;
+  background-size: 26px 26px;
+}
+
+@media (max-width: 700px) {
+  .inner {
+    width: min(100% - 34px, 790px);
   }
+
+  .section-title {
+    font-size: 28px;
+  }
+}

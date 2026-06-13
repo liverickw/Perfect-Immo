@@ -1,99 +1,79 @@
+const navigation = [
+  "Accueil",
+  "À propos",
+  "Services",
+  "Réalisations",
+  "Projets",
+  "Blog",
+  "Contact",
+];
+
+const services = [
+  "Vente immobilière",
+  "Location",
+  "Maîtrise d'oeuvre",
+  "Études VRD",
+  "Gestion locative",
+  "Conseil & audit",
+];
+
 export default function Footer() {
   return (
-    <footer className="bg-[#07162C] text-white">
-      <div className="max-w-7xl mx-auto px-6 py-24">
-    
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-14">
-        
-          {/* Logo */}
+    <footer className="w-full bg-[#061120] text-white h-[400px]">
+      <div className="inner py-[40px]">
+        <div className="grid gap-10 md:grid-cols-[1.6fr_0.8fr_1fr]">
           <div>
-            <h3 className="text-2xl font-bold">
-              Perfect Immo{" "}
-              <span className="text-yellow-500">& Engineering</span>
-            </h3>
-
-            <p className="mt-5 text-gray-400 leading-7">
-              Votre partenaire de confiance pour l'immobilier,
-              l'ingénierie et la gestion de projets à Douala
-              et partout au Cameroun.
+            <h3 className="serif text-[20px]">Perfect Immo & Engineering</h3>
+            <p className="mt-3 max-w-[360px] text-[13px] font-semibold leading-[1.7] text-[#65748a]">
+              Votre partenaire immobilier et d&apos;ingénierie de confiance à
+              Douala, Cameroun. Excellence, rigueur et innovation.
+            </p>
+            <p className="mt-5 text-[13px] font-bold text-[#8392a8]">
+              Bonanjo, Douala, Cameroun
+            </p>
+            <p className="mt-3 text-[13px] font-black text-[#d2ad3d]">
+              +237 6XX XXX XXX
+            </p>
+            <p className="mt-2 text-[13px] font-black text-[#d2ad3d]">
+              contact@perfectimmo.cm
             </p>
           </div>
 
-          {/* Navigation */}
           <div>
-            <h4 className="font-semibold text-lg mb-5">
+            <h4 className="text-[12px] font-black uppercase tracking-[3px] text-[#d2ad3d]">
               Navigation
             </h4>
-
-            <ul className="space-y-3 text-gray-400">
-              <li>
-                <a href="#" className="hover:text-yellow-500 transition">
-                  Accueil
-                </a>
-              </li>
-
-              <li>
-                <a href="#" className="hover:text-yellow-500 transition">
-                  Services
-                </a>
-              </li>
-
-              <li>
-                <a href="#" className="hover:text-yellow-500 transition">
-                  Réalisations
-                </a>
-              </li>
-
-              <li>
-                <a href="#" className="hover:text-yellow-500 transition">
-                  Contact
-                </a>
-              </li>
+            <ul className="mt-5 space-y-3 text-[13px] font-semibold text-[#6f7f97]">
+              {navigation.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
 
-          {/* Services */}
           <div>
-            <h4 className="font-semibold text-lg mb-5">
-              Nos services
+            <h4 className="text-[12px] font-black uppercase tracking-[3px] text-[#d2ad3d]">
+              Services
             </h4>
-
-            <ul className="space-y-3 text-gray-400">
-              <li>Immobilier résidentiel</li>
-              <li>Immobilier commercial</li>
-              <li>Gestion locative</li>
-              <li>Maîtrise d'œuvre</li>
+            <ul className="mt-5 space-y-3 text-[13px] font-semibold text-[#6f7f97]">
+              {services.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold text-lg mb-5">
-              Contact
-            </h4>
-
-            <ul className="space-y-3 text-gray-400">
-              <li>Douala, Cameroun</li>
-              <li>+237 6XX XX XX XX</li>
-              <li>contact@perfectimmo.cm</li>
-            </ul>
-          </div>
-
         </div>
 
-        <div className="border-t border-white/10 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
-
-          <p className="text-gray-500 text-sm">
-            © 2025 Perfect Immo & Engineering. Tous droits réservés.
-          </p>
-
-          <p className="text-gray-500 text-sm mt-4 md:mt-0">
-            Conçu avec excellence au Cameroun 🇨🇲
-          </p>
-
+        <div className="mt-[38px] flex flex-col gap-5 border-t border-white/10 pt-5 text-[12px] font-semibold text-[#4c5d73] md:flex-row md:items-center md:justify-between">
+          <p>© 2025 Perfect Immo & Engineering · Tous droits réservés · Mentions légales</p>
+          <div className="flex gap-[10px]">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <span
+                key={index}
+                className="block h-[35px] w-[35px] border border-white/15"
+              />
+            ))}
+          </div>
         </div>
-
       </div>
     </footer>
   );
-    }
+}
