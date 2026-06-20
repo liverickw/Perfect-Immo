@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Container from "@/components/layout/Container";
   
 function BuildingPlaceholder() {
   return (
@@ -25,9 +26,10 @@ function BuildingPlaceholder() {
 
 export default function Hero() {
   return (
-    <main className="w-full pattern-dark">
-      <section className="grid min-h-[500px] grid-cols-2 border-t border-white/5 bg-[#071D36] md:grid-cols-[55%_45%]">
-        <div className="px-[30px] pb-10 pt-[50px]">
+    <main className="w-full bg-[#071D36] pattern-dark">
+      <Container>
+        <section className="grid min-h-[500px] grid-cols-1 border-t border-white/5 md:grid-cols-[55%_45%]">
+        <div className="py-14 md:pr-10 lg:py-20">
           <div className="inline-flex items-center gap-2 border border-[#d2ad3d]/35 px-4 py-[6px] text-[11px] font-bold uppercase tracking-[2.5px] text-[#d2ad3d]">
             <span className="h-[6px] w-[6px] rounded-full bg-[#d2ad3d]/50" />
             Nouveau programme - Bonanjo 2025
@@ -86,10 +88,11 @@ export default function Hero() {
           </div>
         </div>
   
-        <div className="flex items-center justify-center border-l border-white/10 bg-[#172f51] px-8">
+        <div className="flex items-center justify-center border-t border-white/10 bg-[#172f51] px-8 md:border-l md:border-t-0">
           <BuildingPlaceholder />
         </div>
       </section>
+      </Container>
     </main>
   );
 }

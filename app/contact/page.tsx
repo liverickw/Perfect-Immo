@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import Container from "@/components/layout/Container";
 import {
   Phone,
   Mail,
@@ -23,8 +24,8 @@ export default function ContactPage() {
       <Navbar />
 
       <main>
-        <section className="bg-[#0B1F3A] text-white py-20 border-b border-yellow-500/20">
-          <div className="max-w-6xl mx-auto px-6">
+        <section className="border-b border-yellow-500/20 bg-[#0B1F3A] py-16 text-white lg:py-24">
+          <Container>
             <div className="text-sm text-gray-400 mb-8">
               Accueil <span className="text-yellow-500 mx-2">›</span>
               <span className="text-yellow-500">Contact</span>
@@ -43,19 +44,19 @@ export default function ContactPage() {
               Notre équipe vous répond sous 24h ouvrées. Consultation initiale
               gratuite et sans engagement.
             </p>
-          </div>
+          </Container>
         </section>
 
         <section className="bg-[#152B4E] border-b border-yellow-500/20">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-3">
+          <Container className="grid md:grid-cols-3">
             <QuickItem icon={<Phone />} label="Téléphone" value="+237 6XX XXX XXX" />
             <QuickItem icon={<Mail />} label="Email" value="contact@perfectimmo.cm" />
             <QuickItem icon={<MapPin />} label="Adresse" value="Bonanjo, Douala" />
-          </div>
+          </Container>
         </section>
 
         <section className="bg-[#F8F8F5] border-b border-yellow-500/20">
-          <div className="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center text-sm">
+          <Container className="flex items-center justify-between py-3 text-sm">
             <p className="text-yellow-700">
               ● 3 consultations gratuites disponibles cette semaine
             </p>
@@ -63,18 +64,18 @@ export default function ContactPage() {
             <span className="hidden md:block border border-yellow-500/30 px-4 py-1 text-yellow-700">
               Délai de réponse : 24h
             </span>
-          </div>
+          </Container>
         </section>
 
-        <section className="bg-[#F8F8F5]">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.7fr_1fr] border-x border-gray-200">
+        <section className="bg-[#F8F8F5] py-16 lg:py-24">
+          <Container className="grid lg:grid-cols-[1.7fr_1fr]">
             <div className="p-8 lg:p-12 border-r border-gray-200">
               <h2 className="text-3xl font-bold text-[#0B1F3A]">
                 Envoyez-nous un message
               </h2>
 
               <p className="mt-2 text-gray-500">
-                Tous les champs marqués d'un{" "}
+                Tous les champs marqués d&apos;un{" "}
                 <span className="text-yellow-600">*</span> sont obligatoires
               </p>
 
@@ -174,7 +175,7 @@ export default function ContactPage() {
                     Objet de votre demande
                   </label>
                   <select className="mt-2 w-full border border-gray-200 bg-white px-4 py-4 outline-none">
-                    <option>Choisir l'objet...</option>
+                    <option>Choisir l&apos;objet...</option>
                     <option>Demande de devis</option>
                     <option>Demande de visite</option>
                     <option>Consultation technique</option>
@@ -208,7 +209,7 @@ export default function ContactPage() {
                 <div className="flex gap-4 bg-white border-l-4 border-yellow-500 p-5 text-sm text-gray-600">
                   <input type="checkbox" className="mt-1" />
                   <p>
-                    J'accepte que mes données soient traitées par Perfect Immo &
+                    J&apos;accepte que mes données soient traitées par Perfect Immo &
                     Engineering pour traiter ma demande, conformément à la
                     politique de confidentialité.{" "}
                     <span className="text-yellow-600">*</span>
@@ -246,7 +247,7 @@ export default function ContactPage() {
 
               <div className="mt-10">
                 <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold mb-5">
-                  Horaires d'ouverture
+                  Horaires d&apos;ouverture
                 </p>
 
                 <Hour day="Lun — Ven" time="08h00 – 18h00" />
@@ -290,16 +291,16 @@ export default function ContactPage() {
 
                 <p className="mt-4 text-gray-600">
                   Premier rendez-vous offert pour tout nouveau projet de
-                  construction ou d'acquisition immobilière.
+                  construction ou d&apos;acquisition immobilière.
                 </p>
 
                 <p className="mt-4 font-semibold text-[#0B1F3A] flex items-center gap-2">
                   <Calendar size={16} className="text-yellow-600" />
-                  Prenez RDV dès aujourd'hui
+                  Prenez RDV dès aujourd&apos;hui
                 </p>
               </div>
             </aside>
-          </div>
+          </Container>
         </section>
       </main>
 

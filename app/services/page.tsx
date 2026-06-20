@@ -1,42 +1,87 @@
 "use client";
 
-import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
-  Home,
-  Ruler,
-  KeyRound,
-  FileCheck,
   Building2,
+  Check,
+  FileCheck,
   Hammer,
+  Home,
+  KeyRound,
   MapPin,
-  Star,
   Plus,
+  Ruler,
+  Star,
 } from "lucide-react";
+import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/layout/Navbar";
+import Container from "@/components/layout/Container";
+
+type Service = [string, string, LucideIcon];
 
 const tabs = [
   { id: "immo", label: "Immobilier", icon: Home },
   { id: "ingenierie", label: "Ingénierie", icon: Ruler },
   { id: "gestion", label: "Gestion locative", icon: KeyRound },
-  { id: "conseil", label: "Conseil & Études", icon: FileCheck },
+  { id: "conseil", label: "Conseil & études", icon: FileCheck },
   { id: "tarifs", label: "Tarifs", icon: Star },
 ];
 
-const immoServices = [
-  ["Résidentiel — Vente", "Villas, appartements, duplex et terrains viabilisés.", Home],
-  ["Résidentiel — Location", "Location longue durée, location meublée et contrats sécurisés.", KeyRound],
-  ["Commercial — Vente", "Bureaux, commerces, entrepôts et espaces industriels.", Building2],
-  ["Commercial — Location", "Location de bureaux, espaces professionnels et locaux commerciaux.", Building2],
-  ["Estimation immobilière", "Évaluation de la valeur de votre bien selon le marché local.", MapPin],
-  ["Programmes neufs", "Vente sur plans et accompagnement dans les programmes immobiliers.", Star],
+const immoServices: Service[] = [
+  [
+    "Résidentiel - Vente",
+    "Villas, appartements, duplex et terrains viabilisés.",
+    Home,
+  ],
+  [
+    "Résidentiel - Location",
+    "Location longue durée, location meublée et contrats sécurisés.",
+    KeyRound,
+  ],
+  [
+    "Commercial - Vente",
+    "Bureaux, commerces, entrepôts et espaces industriels.",
+    Building2,
+  ],
+  [
+    "Commercial - Location",
+    "Location de bureaux, espaces professionnels et locaux commerciaux.",
+    Building2,
+  ],
+  [
+    "Estimation immobilière",
+    "Évaluation de la valeur de votre bien selon le marché local.",
+    MapPin,
+  ],
+  [
+    "Programmes neufs",
+    "Vente sur plans et accompagnement dans les programmes immobiliers.",
+    Star,
+  ],
 ];
 
-const engineeringServices = [
-  ["Maîtrise d'œuvre", "Coordination complète du chantier, budget, qualité et délais.", Hammer],
-  ["Études structurelles", "Calculs béton armé, fondations, charpente et plans techniques.", Ruler],
-  ["VRD & Réseaux", "Voirie, assainissement, eau potable, électricité et réseaux.", Building2],
-  ["Architecture & Plans", "Conception, plans d’exécution et permis de construire.", FileCheck],
+const engineeringServices: Service[] = [
+  [
+    "Maîtrise d'oeuvre",
+    "Coordination complète du chantier, budget, qualité et délais.",
+    Hammer,
+  ],
+  [
+    "Études structurelles",
+    "Calculs béton armé, fondations, charpente et plans techniques.",
+    Ruler,
+  ],
+  [
+    "VRD & Réseaux",
+    "Voirie, assainissement, eau potable, électricité et réseaux.",
+    Building2,
+  ],
+  [
+    "Architecture & Plans",
+    "Conception, plans d'exécution et permis de construire.",
+    FileCheck,
+  ],
 ];
 
 export default function ServicesPage() {
@@ -46,74 +91,93 @@ export default function ServicesPage() {
   return (
     <>
       <Navbar />
-    
-      <main>
-        <section className="bg-[#0B1F3A] text-white py-20 lg:py-24">
-          <div className="max-w-6xl mx-auto px-6">
-            <p className="uppercase tracking-[4px] text-yellow-500 text-sm font-semibold">
+
+      <main className="bg-[#F6F5F0]">
+        <section className="bg-[#071D36] text-white">
+          <Container className="py-16 sm:py-20 lg:py-24">
+            <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-[#D2AD3D]">
+              <span className="h-px w-7 bg-[#D2AD3D]" />
               Notre expertise
             </p>
-    
-            <h1 className="mt-4 text-3xl lg:text-7xl font-bold leading-tight">
-              Des services <span className="text-yellow-500 italic">complets</span>
+
+            <h1 className="mt-6 max-w-3xl font-serif text-4xl font-medium leading-[1.12] sm:text-5xl lg:text-[58px]">
+              Des services{" "}
+              <span className="italic text-[#D2AD3D]">complets</span>
               <br />
               de A à Z
             </h1>
 
-            <p className="mt-6 text-gray-300 max-w-3xl text-lg leading-8">
-              Immobilier résidentiel, commercial, maîtrise d'œuvre, études
-              d'ingénierie — une seule adresse pour tous vos projets à Douala
-              et au Cameroun.
+            <p className="mt-6 max-w-3xl text-base leading-7 text-white/65 sm:text-lg sm:leading-8">
+              Immobilier résidentiel, commercial, maîtrise d&apos;oeuvre,
+              études d&apos;ingénierie - une seule adresse pour tous vos projets
+              à Douala et au Cameroun.
             </p>
-          </div>
-        </section>
-    
-        <section className="bg-[#152B4E] text-white py-10">
-          <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              ["200+", "Projets livrés"],
-              ["15 ans", "Expérience"],
-              ["6", "Pôles d'expertise"],
-              ["48h", "Délai devis"],
-            ].map(([number, label]) => (
-              <div key={label}>
-                <h3 className="text-yellow-500 text-4xl font-bold">{number}</h3>
-                <p className="text-gray-300 text-sm uppercase tracking-wide">{label}</p>
-              </div>
-            ))}
-          </div>
+
+            <div className="mt-12 grid grid-cols-2 border-y border-white/10 sm:grid-cols-4">
+              {[
+                ["200+", "Projets livrés"],
+                ["15 ans", "Expérience"],
+                ["6", "Pôles d'expertise"],
+                ["48h", "Délai devis"],
+              ].map(([number, label], index) => (
+                <div
+                  key={label}
+                  className={`py-6 text-center ${
+                    index % 2 !== 0 ? "border-l border-white/10" : ""
+                  } ${index > 1 ? "border-t border-white/10 sm:border-t-0" : ""} ${
+                    index > 0 ? "sm:border-l" : ""
+                  }`}
+                >
+                  <p className="font-serif text-2xl font-semibold text-[#D2AD3D] sm:text-3xl">
+                    {number}
+                  </p>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/45 sm:text-xs">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Container>
         </section>
 
-        <section className="bg-white sticky top-0 z-20 border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-6 flex overflow-x-auto">
+        <nav
+          aria-label="Catégories de services"
+          className="sticky top-0 z-20 border-b border-[#071D36]/10 bg-white"
+        >
+          <Container className="flex justify-start overflow-x-auto md:justify-center">
             {tabs.map((tab) => {
               const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
 
               return (
                 <button
                   key={tab.id}
+                  type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-6 py-5 text-sm font-semibold uppercase tracking-wide border-b-2 whitespace-nowrap transition ${
-                    activeTab === tab.id
-                      ? "border-yellow-500 text-[#0B1F3A]"
-                      : "border-transparent text-gray-500 hover:text-[#0B1F3A]"
+                  className={`flex min-h-16 shrink-0 items-center gap-2.5 border-b-2 px-5 text-xs font-bold uppercase tracking-[0.1em] transition sm:px-6 ${
+                    isActive
+                      ? "border-[#D2AD3D] text-[#071D36]"
+                      : "border-transparent text-[#071D36]/45 hover:text-[#071D36]"
                   }`}
                 >
-                  <Icon size={18} />
+                  <Icon
+                    size={17}
+                    className={isActive ? "text-[#B28C20]" : ""}
+                  />
                   {tab.label}
                 </button>
               );
             })}
-          </div>
-        </section>
-    
-        <section className="bg-[#F8F8F5] py-20">
-          <div className="max-w-6xl mx-auto px-6">
+          </Container>
+        </nav>
+
+        <section className="bg-[#F6F5F0] py-16 lg:py-24">
+          <Container>
             {activeTab === "immo" && (
               <ServicePanel
-                eyebrow="Pôle Immobilier"
+                eyebrow="Pôle immobilier"
                 title="Vente & Location de biens immobiliers"
-                description="Résidentiel, commercial ou industriel — nous vous accompagnons à chaque étape, de la recherche à la signature."
+                description="Résidentiel, commercial ou industriel - nous vous accompagnons à chaque étape, de la recherche à la signature."
                 services={immoServices}
                 featuredTitle="Vente clé en main résidentielle"
                 featuredText="Villas, appartements, duplex et programmes neufs à Douala, Yaoundé et Kribi. Accompagnement notarial inclus."
@@ -122,45 +186,73 @@ export default function ServicesPage() {
 
             {activeTab === "ingenierie" && (
               <ServicePanel
-                eyebrow="Pôle Ingénierie"
-                title="Maîtrise d'œuvre & Ingénierie technique"
+                eyebrow="Pôle ingénierie"
+                title="Maîtrise d'oeuvre & Ingénierie technique"
                 description="De la conception à la livraison, nos ingénieurs pilotent vos chantiers avec rigueur, respect du budget et des délais."
                 services={engineeringServices}
-                featuredTitle="Maîtrise d'œuvre complète"
+                featuredTitle="Maîtrise d'oeuvre complète"
                 featuredText="Pilotage intégral : conception, coordination des corps de métier, suivi de chantier et réception des travaux."
               />
             )}
 
             {activeTab === "gestion" && <PricingPanel />}
-
             {activeTab === "conseil" && <ConseilPanel />}
-
             {activeTab === "tarifs" && <TarifsPanel />}
 
             <FAQ openFaq={openFaq} setOpenFaq={setOpenFaq} />
-          </div>
+          </Container>
         </section>
 
-        <section className="bg-yellow-500 py-14">
-          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+        <section className="bg-[#D2AD3D]">
+          <Container className="flex flex-col items-start justify-between gap-6 py-10 sm:py-12 md:flex-row md:items-center">
             <div>
-              <h2 className="text-3xl font-bold text-[#0B1F3A]">
+              <h2 className="font-serif text-2xl font-semibold text-[#071D36] sm:text-3xl">
                 Consultation gratuite sans engagement
               </h2>
-              <p className="text-[#0B1F3A]/70 mt-2">
+              <p className="mt-2 text-sm font-medium text-[#071D36]/65">
                 Réponse sous 24h · Devis sous 48h
               </p>
             </div>
 
-            <button className="bg-[#0B1F3A] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152B4E] transition">
+            <a
+              href="/contact"
+              className="inline-flex min-h-12 items-center justify-center bg-[#071D36] px-7 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:bg-[#172F51]"
+            >
               Demander un devis
-            </button>
-          </div>
+            </a>
+          </Container>
         </section>
       </main>
 
       <Footer />
     </>
+  );
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+  description,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+}) {
+  return (
+    <header className="max-w-3xl">
+      <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.26em] text-[#B28C20]">
+        <span className="h-px w-7 bg-[#D2AD3D]" />
+        {eyebrow}
+      </p>
+      <h2 className="mt-5 font-serif text-3xl font-medium leading-tight text-[#071D36] sm:text-4xl">
+        {title}
+      </h2>
+      {description && (
+        <p className="mt-4 text-sm leading-7 text-[#071D36]/60 sm:text-base">
+          {description}
+        </p>
+      )}
+    </header>
   );
 }
 
@@ -175,59 +267,73 @@ function ServicePanel({
   eyebrow: string;
   title: string;
   description: string;
-  services: [string, string, any][];
+  services: Service[];
   featuredTitle: string;
   featuredText: string;
 }) {
   return (
     <>
-      <div className="mb-12">
-        <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold">
-          {eyebrow}
-        </p>
-        <h2 className="mt-4 text-4xl font-bold text-[#0B1F3A]">{title}</h2>
-        <p className="mt-5 text-gray-600 max-w-3xl leading-8">{description}</p>
-      </div>
+      <SectionHeading
+        eyebrow={eyebrow}
+        title={title}
+        description={description}
+      />
 
-      <div className="bg-[#0B1F3A] text-white rounded-3xl p-10 grid lg:grid-cols-2 gap-10 mb-12">
+      <article className="mt-10 grid gap-8 rounded-lg bg-[#071D36] p-6 text-white sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-12 lg:p-10">
         <div>
-          <p className="uppercase tracking-[3px] text-yellow-500 text-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#D2AD3D]">
             Service phare
           </p>
-          <h3 className="mt-4 text-3xl font-bold">{featuredTitle}</h3>
-          <p className="mt-5 text-gray-300 leading-8">{featuredText}</p>
-          <button className="mt-6 bg-yellow-500 text-black px-6 py-3 rounded-xl font-semibold">
+          <h3 className="mt-4 font-serif text-2xl font-medium leading-tight sm:text-3xl">
+            {featuredTitle}
+          </h3>
+          <p className="mt-4 max-w-xl text-sm leading-7 text-white/60 sm:text-base">
+            {featuredText}
+          </p>
+          <a
+            href="/contact"
+            className="mt-6 inline-flex min-h-12 items-center justify-center bg-[#D2AD3D] px-6 text-sm font-black uppercase tracking-[0.1em] text-[#071D36] transition hover:bg-[#E0BC4D]"
+          >
             Demander un devis
-          </button>
+          </a>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid content-center gap-3 sm:grid-cols-2 lg:grid-cols-1">
           {[
             "Accompagnement complet",
             "Suivi personnalisé",
             "Rapport détaillé",
             "Respect des délais",
           ].map((item) => (
-            <div key={item} className="border border-yellow-500/20 p-4 rounded-xl">
-              <span className="text-yellow-500">●</span>{" "}
-              <span className="text-gray-200">{item}</span>
+            <div
+              key={item}
+              className="flex min-h-12 items-center gap-3 border border-white/12 px-4 text-sm font-medium text-white/75"
+            >
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-[#D2AD3D]/50 text-[#D2AD3D]">
+                <Check size={12} strokeWidth={3} />
+              </span>
+              {item}
             </div>
           ))}
         </div>
-      </div>
+      </article>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {services.map(([title, desc, Icon]) => (
-          <div
-            key={title}
-            className="bg-white rounded-2xl p-8 border border-gray-100 hover:-translate-y-2 hover:shadow-xl transition-all"
+      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {services.map(([serviceTitle, descriptionText, Icon]) => (
+          <article
+            key={serviceTitle}
+            className="border border-[#071D36]/10 bg-white p-6 shadow-[0_12px_30px_rgba(7,29,54,0.04)] transition hover:-translate-y-1 hover:border-[#D2AD3D]/50 hover:shadow-[0_16px_35px_rgba(7,29,54,0.08)] sm:p-7"
           >
-            <div className="w-14 h-14 border border-yellow-500/30 rounded-xl flex items-center justify-center mb-6">
-              <Icon className="text-yellow-600" size={30} />
+            <div className="flex h-12 w-12 items-center justify-center border border-[#D2AD3D]/60 text-[#B28C20]">
+              <Icon size={23} />
             </div>
-            <h3 className="text-xl font-bold text-[#0B1F3A]">{title}</h3>
-            <p className="mt-4 text-gray-600 leading-7">{desc}</p>
-          </div>
+            <h3 className="mt-5 text-lg font-bold text-[#071D36]">
+              {serviceTitle}
+            </h3>
+            <p className="mt-3 text-sm leading-6 text-[#071D36]/55">
+              {descriptionText}
+            </p>
+          </article>
         ))}
       </div>
     </>
@@ -237,56 +343,81 @@ function ServicePanel({
 function PricingPanel() {
   return (
     <div>
-      <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold">
-        Gestion locative
-      </p>
-      <h2 className="mt-4 text-4xl font-bold text-[#0B1F3A]">
-        Gestion locative sans tracas
-      </h2>
-      <p className="mt-5 text-gray-600 max-w-3xl leading-8">
-        Confiez-nous votre patrimoine immobilier. Nous gérons les locataires,
-        les loyers, l’entretien et les aspects juridiques.
-      </p>
+      <SectionHeading
+        eyebrow="Gestion locative"
+        title="Gestion locative sans tracas"
+        description="Confiez-nous votre patrimoine immobilier. Nous gérons les locataires, les loyers, l'entretien et les aspects juridiques."
+      />
 
-      <div className="grid md:grid-cols-3 gap-8 mt-12">
+      <div className="mt-10 grid gap-5 md:grid-cols-3">
         {[
           ["Essentiel", "6%", "Recherche locataire, bail, loyers"],
           ["Premium", "9%", "Entretien, juridique, rapport trimestriel"],
           ["Patrimoine", "Sur devis", "Gestionnaire dédié et optimisation"],
-        ].map(([name, price, desc]) => (
-          <div
-            key={name}
-            className={`rounded-2xl p-8 border ${
-              name === "Premium"
-                ? "bg-[#0B1F3A] text-white border-yellow-500"
-                : "bg-white border-gray-100"
-            }`}
-          >
-            <h3 className="text-xl font-bold">{name}</h3>
-            <p className="text-yellow-500 text-5xl font-bold mt-4">{price}</p>
-            <p className="mt-4 text-gray-400">{desc}</p>
-            <button className="mt-8 bg-yellow-500 text-black px-6 py-3 rounded-xl font-semibold">
-              Choisir
-            </button>
-          </div>
-        ))}
+        ].map(([name, price, description]) => {
+          const featured = name === "Premium";
+
+          return (
+            <article
+              key={name}
+              className={`border p-7 ${
+                featured
+                  ? "border-[#D2AD3D] bg-[#071D36] text-white"
+                  : "border-[#071D36]/10 bg-white text-[#071D36]"
+              }`}
+            >
+              <h3 className="text-lg font-bold">{name}</h3>
+              <p className="mt-4 font-serif text-4xl font-semibold text-[#D2AD3D]">
+                {price}
+              </p>
+              <p
+                className={`mt-4 min-h-12 text-sm leading-6 ${
+                  featured ? "text-white/55" : "text-[#071D36]/55"
+                }`}
+              >
+                {description}
+              </p>
+              <button className="mt-7 min-h-11 bg-[#D2AD3D] px-5 text-sm font-bold text-[#071D36]">
+                Choisir
+              </button>
+            </article>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 function ConseilPanel() {
+  const conseilServices: Service[] = [
+    [
+      "Audit technique",
+      "Diagnostic complet d'un bâtiment existant.",
+      FileCheck,
+    ],
+    [
+      "Étude de faisabilité",
+      "Analyse technique, financière et réglementaire.",
+      Ruler,
+    ],
+    [
+      "Permis de construire",
+      "Constitution et dépôt du dossier administratif.",
+      FileCheck,
+    ],
+    [
+      "Conseil en investissement",
+      "Analyse du marché et recommandations d'acquisition.",
+      Star,
+    ],
+  ];
+
   return (
     <ServicePanel
-      eyebrow="Pôle Conseil"
+      eyebrow="Pôle conseil"
       title="Études, conseil & accompagnement"
-      description="Expertise technique et juridique pour sécuriser vos décisions d’investissement immobilier et de construction."
-      services={[
-        ["Audit technique", "Diagnostic complet d’un bâtiment existant.", FileCheck],
-        ["Étude de faisabilité", "Analyse technique, financière et réglementaire.", Ruler],
-        ["Permis de construire", "Constitution et dépôt du dossier administratif.", FileCheck],
-        ["Conseil en investissement", "Analyse du marché et recommandations d’acquisition.", Star],
-      ]}
+      description="Expertise technique et juridique pour sécuriser vos décisions d'investissement immobilier et de construction."
+      services={conseilServices}
       featuredTitle="Conseil immobilier & technique"
       featuredText="Une expertise professionnelle pour sécuriser vos projets avant tout engagement financier."
     />
@@ -295,36 +426,36 @@ function ConseilPanel() {
 
 function TarifsPanel() {
   const rows = [
-    ["Transaction immobilière", "3 à 5 %", "4–8 semaines"],
-    ["Location immobilière", "1 mois loyer", "1–3 semaines"],
-    ["Maîtrise d'œuvre", "8 à 12 %", "Selon projet"],
-    ["Études structurelles", "Sur devis", "2–4 semaines"],
+    ["Transaction immobilière", "3 à 5 %", "4-8 semaines"],
+    ["Location immobilière", "1 mois loyer", "1-3 semaines"],
+    ["Maîtrise d'oeuvre", "8 à 12 %", "Selon projet"],
+    ["Études structurelles", "Sur devis", "2-4 semaines"],
     ["Gestion locative", "6 à 9 % / mois", "Continu"],
     ["Consultation initiale", "Gratuite", "Sous 24h"],
   ];
 
   return (
     <div>
-      <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold">
-        Nos honoraires
-      </p>
-      <h2 className="mt-4 text-4xl font-bold text-[#0B1F3A]">
-        Tarifs clairs & transparents
-      </h2>
+      <SectionHeading
+        eyebrow="Nos honoraires"
+        title="Tarifs clairs & transparents"
+      />
 
-      <div className="mt-10 bg-white rounded-2xl overflow-hidden border border-gray-100">
-        {rows.map(([service, price, delay], index) => (
-          <div
-            key={service}
-            className={`grid grid-cols-3 p-5 ${
-              index % 2 === 0 ? "bg-white" : "bg-gray-50"
-            }`}
-          >
-            <p className="font-semibold text-[#0B1F3A]">{service}</p>
-            <p className="text-center text-yellow-600 font-bold">{price}</p>
-            <p className="text-center text-gray-500">{delay}</p>
-          </div>
-        ))}
+      <div className="mt-10 overflow-x-auto border border-[#071D36]/10 bg-white">
+        <div className="min-w-[620px]">
+          {rows.map(([service, price, delay], index) => (
+            <div
+              key={service}
+              className={`grid grid-cols-3 gap-4 px-5 py-4 text-sm ${
+                index % 2 === 0 ? "bg-white" : "bg-[#F6F5F0]"
+              }`}
+            >
+              <p className="font-semibold text-[#071D36]">{service}</p>
+              <p className="text-center font-bold text-[#B28C20]">{price}</p>
+              <p className="text-center text-[#071D36]/50">{delay}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -335,48 +466,62 @@ function FAQ({
   setOpenFaq,
 }: {
   openFaq: number | null;
-  setOpenFaq: (value: number | null) => void;
+  setOpenFaq: Dispatch<SetStateAction<number | null>>;
 }) {
   const faqs = [
     [
       "Quels documents faut-il pour acheter un bien ?",
-      "Une pièce d’identité valide, les justificatifs nécessaires et les documents liés au financement. L’équipe vous accompagne dans la constitution du dossier.",
+      "Une pièce d'identité valide, les justificatifs nécessaires et les documents liés au financement. L'équipe vous accompagne dans la constitution du dossier.",
     ],
     [
       "Intervenez-vous uniquement à Douala ?",
-      "Non. L’entreprise peut accompagner des projets à Douala et dans d’autres villes du Cameroun selon la nature du projet.",
+      "Non. L'entreprise peut accompagner des projets à Douala et dans d'autres villes du Cameroun selon la nature du projet.",
     ],
     [
       "Combien de temps faut-il pour obtenir un devis ?",
       "Un premier retour peut être donné sous 24h et un devis détaillé sous 48h après analyse du besoin.",
     ],
   ];
-    
-  return (
-    <div className="mt-16">
-      <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold mb-6">
-        Questions fréquentes
-      </p>
-    
-      <div className="space-y-4">
-        {faqs.map(([q, a], index) => (
-          <div key={q} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => setOpenFaq(openFaq === index ? null : index)}
-              className="w-full flex justify-between items-center text-left p-5 font-semibold text-[#0B1F3A]"
-            >
-              {q}
-              <Plus
-                className={`transition ${openFaq === index ? "rotate-45" : ""}`}
-              />
-            </button>
 
-            {openFaq === index && (
-              <p className="px-5 pb-5 text-gray-600 leading-7">{a}</p>
-            )}
-          </div>
-        ))}
+  return (
+    <section className="mt-16 border-t border-[#071D36]/10 pt-14 sm:mt-20 sm:pt-16">
+      <SectionHeading
+        eyebrow="Questions fréquentes"
+        title="Tout savoir avant de démarrer"
+      />
+
+      <div className="mt-8 border-t border-[#071D36]/10">
+        {faqs.map(([question, answer], index) => {
+          const isOpen = openFaq === index;
+
+          return (
+            <article key={question} className="border-b border-[#071D36]/10">
+              <button
+                type="button"
+                onClick={() => setOpenFaq(isOpen ? null : index)}
+                aria-expanded={isOpen}
+                className="flex min-h-16 w-full items-center justify-between gap-6 py-4 text-left text-sm font-bold text-[#071D36] sm:text-base"
+              >
+                <span>{question}</span>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-[#071D36]/15 text-[#B28C20]">
+                  <Plus
+                    size={17}
+                    className={`transition-transform ${
+                      isOpen ? "rotate-45" : ""
+                    }`}
+                  />
+                </span>
+              </button>
+
+              {isOpen && (
+                <p className="max-w-3xl pb-6 pr-12 text-sm leading-7 text-[#071D36]/55">
+                  {answer}
+                </p>
+              )}
+            </article>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
-    }
+}

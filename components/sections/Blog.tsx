@@ -1,3 +1,5 @@
+import Container from "@/components/layout/Container";
+
 const posts = [
   ["Marché", "Immobilier à Douala : tendances 2025", "14 mai 2025"],
   ["Ingénierie", "Construire durable au Cameroun", "2 avril 2025"],
@@ -6,12 +8,12 @@ const posts = [
   
 export default function Blog() {
   return (
-    <section className="w-full bg-[#f6f5f0] py-[52px]">
-      <div className="inner">
+    <section className="w-full bg-[#f6f5f0] py-16 lg:py-24">
+      <Container>
         <p className="eyebrow">Actualités & conseil</p>
         <h2 className="section-title">Notre blog</h2>
 
-        <div className="mt-[36px] grid gap-4 md:grid-cols-2">
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
           {posts.map(([category, title, date]) => (
             <article key={title} className="border border-[#dfddd6] bg-white">
               <div className="h-[89px] bg-[#172f51]" />
@@ -27,7 +29,7 @@ export default function Blog() {
             </article>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
