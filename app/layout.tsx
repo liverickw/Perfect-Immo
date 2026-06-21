@@ -13,9 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Perfect Immo & Engineering",
+  title:
+    "Perfect Immo & Engineering | Immobilier & Ingénierie à Douala, Cameroun",
   description:
-    "Partenaire immobilier et d'ingénierie à Douala, Cameroun.",
+    "Perfect Immo & Engineering - Votre partenaire de confiance à Douala pour la vente, la location et la maîtrise d'oeuvre de vos projets immobiliers et d'ingénierie.",
 };
 
 export default function RootLayout({

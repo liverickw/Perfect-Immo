@@ -1,231 +1,632 @@
 "use client";
 
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
+  BadgeCheck,
+  Banknote,
+  BarChart3,
   Building2,
+  CalendarDays,
   Check,
+  Eye,
   FileCheck,
+  FileText,
   Hammer,
   Home,
   KeyRound,
   MapPin,
+  Menu,
+  Plane,
+  Plug,
   Plus,
+  ReceiptText,
   Ruler,
+  Scale,
+  Send,
+  ShieldCheck,
   Star,
+  Store,
+  Users,
+  Wrench,
 } from "lucide-react";
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
-import Container from "@/components/layout/Container";
+import { Cormorant_Garamond, Outfit } from "next/font/google";
+import styles from "./services.module.css";
 
-type Service = [string, string, LucideIcon];
+const serif = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--services-serif",
+  display: "swap",
+});
 
-const tabs = [
+const sans = Outfit({
+  subsets: ["latin"],
+  variable: "--services-sans",
+  display: "swap",
+});
+
+type TabId = "immo" | "ingenierie" | "gestion" | "conseil" | "tarifs";
+
+type ServiceItem = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  tags: string[];
+};
+
+type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+const tabs: { id: TabId; label: string; icon: LucideIcon }[] = [
   { id: "immo", label: "Immobilier", icon: Home },
   { id: "ingenierie", label: "Ingénierie", icon: Ruler },
   { id: "gestion", label: "Gestion locative", icon: KeyRound },
-  { id: "conseil", label: "Conseil & études", icon: FileCheck },
-  { id: "tarifs", label: "Tarifs", icon: Star },
+  { id: "conseil", label: "Conseil & Études", icon: BadgeCheck },
+  { id: "tarifs", label: "Tarifs", icon: ReceiptText },
 ];
 
-const immoServices: Service[] = [
-  [
-    "Résidentiel - Vente",
-    "Villas, appartements, duplex et terrains viabilisés.",
-    Home,
-  ],
-  [
-    "Résidentiel - Location",
-    "Location longue durée, location meublée et contrats sécurisés.",
-    KeyRound,
-  ],
-  [
-    "Commercial - Vente",
-    "Bureaux, commerces, entrepôts et espaces industriels.",
-    Building2,
-  ],
-  [
-    "Commercial - Location",
-    "Location de bureaux, espaces professionnels et locaux commerciaux.",
-    Building2,
-  ],
-  [
-    "Estimation immobilière",
-    "Évaluation de la valeur de votre bien selon le marché local.",
-    MapPin,
-  ],
-  [
-    "Programmes neufs",
-    "Vente sur plans et accompagnement dans les programmes immobiliers.",
-    Star,
-  ],
+const immobilierServices: ServiceItem[] = [
+  {
+    icon: Home,
+    title: "Résidentiel - Vente",
+    description:
+      "Villas, appartements F2 à F6, duplex, terrains viabilisés. Zones : Bonapriso, Bastos, Akwa, Kotto, Makepe.",
+    tags: ["Villa", "Appartement", "Terrain"],
+  },
+  {
+    icon: KeyRound,
+    title: "Résidentiel - Location",
+    description:
+      "Location longue durée, location meublée, colocation sécurisée. Contrats de bail conformes au droit camerounais.",
+    tags: ["Longue durée", "Meublé", "Bail"],
+  },
+  {
+    icon: Store,
+    title: "Commercial - Vente",
+    description:
+      "Immeubles de bureaux, locaux commerciaux, entrepôts et espaces industriels. Évaluation gratuite incluse.",
+    tags: ["Bureaux", "Commerce", "Entrepôt"],
+  },
+  {
+    icon: Building2,
+    title: "Commercial - Location",
+    description:
+      "Location de bureaux équipés, espaces de coworking, surfaces commerciales en pied d'immeuble.",
+    tags: ["Coworking", "Pied immeuble"],
+  },
+  {
+    icon: MapPin,
+    title: "Estimation immobilière",
+    description:
+      "Expertise et estimation de la valeur vénale de votre bien selon les prix du marché doualaien. Rapport certifié.",
+    tags: ["Expertise", "Rapport", "Certifié"],
+  },
+  {
+    icon: Star,
+    title: "Programmes neufs",
+    description:
+      "Vente sur plans (VEFA) de nos programmes résidentiels. Paiement échelonné disponible selon conditions.",
+    tags: ["VEFA", "Échelonné", "Neuf"],
+  },
 ];
 
-const engineeringServices: Service[] = [
-  [
-    "Maîtrise d'oeuvre",
-    "Coordination complète du chantier, budget, qualité et délais.",
-    Hammer,
-  ],
-  [
-    "Études structurelles",
-    "Calculs béton armé, fondations, charpente et plans techniques.",
-    Ruler,
-  ],
-  [
-    "VRD & Réseaux",
-    "Voirie, assainissement, eau potable, électricité et réseaux.",
-    Building2,
-  ],
-  [
-    "Architecture & Plans",
-    "Conception, plans d'exécution et permis de construire.",
-    FileCheck,
-  ],
+const engineeringServices: ServiceItem[] = [
+  {
+    icon: Hammer,
+    title: "Maîtrise d'oeuvre",
+    description:
+      "Direction et coordination complète du chantier, de l'appel d'offres à la livraison. Suivi budgétaire en temps réel.",
+    tags: ["Coordination", "Planning"],
+  },
+  {
+    icon: Ruler,
+    title: "Études structurelles",
+    description:
+      "Calculs béton armé, charpente métallique, fondations profondes et spéciales. Logiciels ETABS, ROBOT, AutoCAD.",
+    tags: ["Béton armé", "Charpente"],
+  },
+  {
+    icon: Building2,
+    title: "VRD & Réseaux",
+    description:
+      "Voirie, réseaux divers : assainissement, eau potable, électricité BT/MT, télécom. Levés topographiques.",
+    tags: ["VRD", "Assainissement", "AEP"],
+  },
+  {
+    icon: Building2,
+    title: "Architecture & Plans",
+    description:
+      "Conception architecturale, plans d'exécution, permis de construire, dépouillement des offres des entreprises.",
+    tags: ["Plans", "3D", "Permis"],
+  },
+  {
+    icon: Eye,
+    title: "Contrôle technique",
+    description:
+      "Inspection béton, contrôle qualité matériaux, essais de charge et rapports certifiés pour maîtres d'ouvrage.",
+    tags: ["Inspection", "Qualité"],
+  },
+  {
+    icon: Plug,
+    title: "Fluides & Électricité",
+    description:
+      "Climatisation CVC, plomberie sanitaire, électricité courants forts/faibles, groupes électrogènes et solaire.",
+    tags: ["CVC", "Électricité", "Solaire"],
+  },
+];
+
+const managementServices: ServiceItem[] = [
+  {
+    icon: Users,
+    title: "Recherche de locataires",
+    description:
+      "Sélection rigoureuse des candidats : vérification solvabilité, référencement et état des lieux d'entrée.",
+    tags: ["Sélection", "Solvabilité"],
+  },
+  {
+    icon: Banknote,
+    title: "Perception des loyers",
+    description:
+      "Encaissement mensuel, relances impayés, reversement propriétaire avec relevé de compte détaillé.",
+    tags: ["Loyers", "Relevé"],
+  },
+  {
+    icon: Wrench,
+    title: "Entretien & réparations",
+    description:
+      "Réseau d'artisans certifiés pour interventions rapides. Devis validé avant tout engagement de dépense.",
+    tags: ["Maintenance", "Artisans"],
+  },
+  {
+    icon: FileText,
+    title: "Suivi juridique & baux",
+    description:
+      "Rédaction des baux, renouvellements et gestion des contentieux locatifs avec notre service juridique.",
+    tags: ["Baux", "Juridique"],
+  },
+  {
+    icon: BarChart3,
+    title: "Rapports trimestriels",
+    description:
+      "Reporting complet : taux d'occupation, revenus, dépenses et rentabilité nette de votre patrimoine.",
+    tags: ["Reporting", "Rentabilité"],
+  },
+  {
+    icon: ShieldCheck,
+    title: "Assurance vacance",
+    description:
+      "Garantie loyers impayés et protection juridique propriétaire incluses dans nos formules Premium.",
+    tags: ["GLI", "Protection"],
+  },
+];
+
+const consultingServices: ServiceItem[] = [
+  {
+    icon: FileCheck,
+    title: "Audit technique",
+    description:
+      "Diagnostic complet d'un bâtiment existant : structure, toiture, fluides, humidité. Rapport certifié.",
+    tags: ["Diagnostic", "Rapport"],
+  },
+  {
+    icon: BarChart3,
+    title: "Étude de faisabilité",
+    description:
+      "Analyse technique, financière et réglementaire de votre projet avant tout engagement.",
+    tags: ["Faisabilité", "Rentabilité"],
+  },
+  {
+    icon: BadgeCheck,
+    title: "Permis de construire",
+    description:
+      "Constitution et dépôt du dossier de permis auprès des services de l'urbanisme de Douala.",
+    tags: ["Urbanisme", "Dossier"],
+  },
+  {
+    icon: Banknote,
+    title: "Conseil en investissement",
+    description:
+      "Analyse du marché immobilier local, recommandations d'acquisition et optimisation du rendement.",
+    tags: ["Marché", "Rendement"],
+  },
+  {
+    icon: Scale,
+    title: "Assistance juridique",
+    description:
+      "Vérification des titres fonciers, sécurisation des transactions et conseils OHADA.",
+    tags: ["Titre foncier", "OHADA"],
+  },
+  {
+    icon: Plane,
+    title: "Service diaspora",
+    description:
+      "Investissement à distance, visites virtuelles, mandats de représentation et remises de clés.",
+    tags: ["Diaspora", "À distance"],
+  },
+];
+
+const immobilierFaqs: FaqItem[] = [
+  {
+    question: "Quels documents faut-il pour acheter un bien à Douala ?",
+    answer:
+      "Pour l'achat : CNI ou passeport valide, justificatif de domicile, preuves de revenus et apport initial si financement bancaire. Nous vous guidons dans la constitution du dossier notarial complet.",
+  },
+  {
+    question: "Quel est le délai moyen pour finaliser une vente immobilière ?",
+    answer:
+      "En moyenne 4 à 8 semaines entre la signature du compromis et l'acte définitif chez le notaire, selon la disponibilité des documents et le financement.",
+  },
+  {
+    question: "Proposez-vous des visites en dehors de Douala ?",
+    answer:
+      "Oui. Nous intervenons à Yaoundé, Kribi, Bafoussam et Limbé. Pour la diaspora, nous proposons des visites virtuelles en vidéo HD et des mandats de représentation.",
+  },
+];
+
+const engineeringFaqs: FaqItem[] = [
+  {
+    question: "Quel est le coût d'une mission de maîtrise d'oeuvre ?",
+    answer:
+      "Les honoraires varient généralement entre 8% et 12% du montant HT des travaux, selon la complexité du projet. Un devis détaillé est établi après étude du programme.",
+  },
+  {
+    question: "Intervenez-vous en dehors de Douala sur des chantiers ?",
+    answer:
+      "Oui, nos équipes interviennent sur l'ensemble du territoire camerounais. Des frais de déplacement peuvent s'appliquer au-delà de 100 km de Douala.",
+  },
+  {
+    question:
+      "Travaillez-vous avec les entreprises de construction existantes du client ?",
+    answer:
+      "Oui. Nous pouvons assurer le contrôle et la supervision même si vous avez déjà sélectionné votre entreprise, en qualité d'assistant à maîtrise d'ouvrage.",
+  },
+];
+
+const consultingFaqs: FaqItem[] = [
+  {
+    question: "Comment vérifier la fiabilité d'un titre foncier au Cameroun ?",
+    answer:
+      "Nous vérifions l'authenticité du titre, l'absence d'hypothèque, les limites cadastrales et l'identité du propriétaire auprès de la Conservation Foncière compétente.",
+  },
+  {
+    question: "Pouvez-vous m'aider à investir depuis la France ou les USA ?",
+    answer:
+      "Oui. Notre service diaspora inclut visites virtuelles HD, mandat de représentation notarié, coordination bancaire et remise des clés en votre absence.",
+  },
+];
+
+const pricingPlans = [
+  {
+    name: "Essentiel",
+    price: "6%",
+    note: "des loyers encaissés / mois",
+    features: [
+      "Recherche locataire",
+      "État des lieux",
+      "Rédaction bail",
+      "Encaissement loyers",
+      "Relevé mensuel",
+    ],
+  },
+  {
+    name: "Premium",
+    price: "9%",
+    note: "des loyers encaissés / mois",
+    featured: true,
+    features: [
+      "Tout Essentiel inclus",
+      "Entretien courant",
+      "Suivi juridique",
+      "Rapport trimestriel",
+      "GLI incluse",
+    ],
+  },
+  {
+    name: "Patrimoine",
+    price: "Sur devis",
+    note: "pour 5 biens et plus",
+    features: [
+      "Tout Premium inclus",
+      "Gestionnaire dédié",
+      "Optimisation fiscale",
+      "Bilan annuel certifié",
+      "Tarif préférentiel",
+    ],
+  },
+];
+
+const priceRows = [
+  ["Transaction immobilière (vente)", "3 à 5 %", "4-8 semaines"],
+  ["Transaction immobilière (location)", "1 mois loyer", "1-3 semaines"],
+  ["Maîtrise d'oeuvre", "8 à 12 %", "Selon projet"],
+  ["Études structurelles", "Sur devis", "2-4 semaines"],
+  ["Gestion locative Essentiel", "6 % / mois", "Continu"],
+  ["Gestion locative Premium", "9 % / mois", "Continu"],
+  ["Audit technique bâtiment", "Sur devis", "5-10 jours"],
+  ["Consultation initiale", "GRATUITE", "Sous 24h"],
 ];
 
 export default function ServicesPage() {
-  const [activeTab, setActiveTab] = useState("immo");
+  const [activeTab, setActiveTab] = useState<TabId>("immo");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  function selectTab(id: TabId) {
+    setActiveTab(id);
+    setOpenFaq(0);
+  }
+
   return (
-    <>
-      <Navbar />
+    <main className={`${styles.pageCenter} ${serif.variable} ${sans.variable}`}>
+      <div className={styles.site}>
+        <ServicesNav />
 
-      <main className="bg-[#F6F5F0]">
-        <section className="bg-[#071D36] text-white">
-          <Container className="py-16 sm:py-20 lg:py-24">
-            <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-[#D2AD3D]">
-              <span className="h-px w-7 bg-[#D2AD3D]" />
-              Notre expertise
-            </p>
-
-            <h1 className="mt-6 max-w-3xl font-serif text-4xl font-medium leading-[1.12] sm:text-5xl lg:text-[58px]">
-              Des services{" "}
-              <span className="italic text-[#D2AD3D]">complets</span>
+        <section className={styles.hero}>
+          <div className={styles.heroInner}>
+            <div className={styles.breadcrumb}>
+              <Link href="/">Accueil</Link>
+              <span>›</span>
+              <strong>Services</strong>
+            </div>
+            <p className={styles.eyebrow}>Notre expertise</p>
+            <h1>
+              Des services <em>complets</em>
               <br />
               de A à Z
             </h1>
-
-            <p className="mt-6 max-w-3xl text-base leading-7 text-white/65 sm:text-lg sm:leading-8">
-              Immobilier résidentiel, commercial, maîtrise d&apos;oeuvre,
-              études d&apos;ingénierie - une seule adresse pour tous vos projets
-              à Douala et au Cameroun.
+            <p className={styles.heroDescription}>
+              Immobilier résidentiel, commercial, maîtrise d&apos;oeuvre, études
+              d&apos;ingénierie - une seule adresse pour tous vos projets à
+              Douala et au Cameroun.
             </p>
-
-            <div className="mt-12 grid grid-cols-2 border-y border-white/10 sm:grid-cols-4">
-              {[
-                ["200+", "Projets livrés"],
-                ["15 ans", "Expérience"],
-                ["6", "Pôles d'expertise"],
-                ["48h", "Délai devis"],
-              ].map(([number, label], index) => (
-                <div
-                  key={label}
-                  className={`py-6 text-center ${
-                    index % 2 !== 0 ? "border-l border-white/10" : ""
-                  } ${index > 1 ? "border-t border-white/10 sm:border-t-0" : ""} ${
-                    index > 0 ? "sm:border-l" : ""
-                  }`}
-                >
-                  <p className="font-serif text-2xl font-semibold text-[#D2AD3D] sm:text-3xl">
-                    {number}
-                  </p>
-                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/45 sm:text-xs">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Container>
+          </div>
         </section>
 
-        <nav
-          aria-label="Catégories de services"
-          className="sticky top-0 z-20 border-b border-[#071D36]/10 bg-white"
-        >
-          <Container className="flex justify-start overflow-x-auto md:justify-center">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
+        <section className={styles.stats}>
+          <div className={styles.statsInner}>
+            {[
+              ["120+", "Projets livrés"],
+              ["15 ans", "Expérience"],
+              ["6", "Pôles d'expertise"],
+              ["48h", "Délai devis"],
+            ].map(([number, label]) => (
+              <div key={label} className={styles.stat}>
+                <strong>{number}</strong>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex min-h-16 shrink-0 items-center gap-2.5 border-b-2 px-5 text-xs font-bold uppercase tracking-[0.1em] transition sm:px-6 ${
-                    isActive
-                      ? "border-[#D2AD3D] text-[#071D36]"
-                      : "border-transparent text-[#071D36]/45 hover:text-[#071D36]"
-                  }`}
-                >
-                  <Icon
-                    size={17}
-                    className={isActive ? "text-[#B28C20]" : ""}
-                  />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </Container>
+        <nav className={styles.tabsBar} aria-label="Catégories de services">
+          <div className={styles.tabsNav}>
+            {tabs.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => selectTab(id)}
+                className={`${styles.tabButton} ${
+                  activeTab === id ? styles.activeTab : ""
+                }`}
+              >
+                <Icon size={18} />
+                {label}
+              </button>
+            ))}
+          </div>
         </nav>
 
-        <section className="bg-[#F6F5F0] py-16 lg:py-24">
-          <Container>
-            {activeTab === "immo" && (
-              <ServicePanel
-                eyebrow="Pôle immobilier"
-                title="Vente & Location de biens immobiliers"
-                description="Résidentiel, commercial ou industriel - nous vous accompagnons à chaque étape, de la recherche à la signature."
-                services={immoServices}
-                featuredTitle="Vente clé en main résidentielle"
-                featuredText="Villas, appartements, duplex et programmes neufs à Douala, Yaoundé et Kribi. Accompagnement notarial inclus."
-              />
-            )}
-
-            {activeTab === "ingenierie" && (
-              <ServicePanel
-                eyebrow="Pôle ingénierie"
-                title="Maîtrise d'oeuvre & Ingénierie technique"
-                description="De la conception à la livraison, nos ingénieurs pilotent vos chantiers avec rigueur, respect du budget et des délais."
-                services={engineeringServices}
-                featuredTitle="Maîtrise d'oeuvre complète"
-                featuredText="Pilotage intégral : conception, coordination des corps de métier, suivi de chantier et réception des travaux."
-              />
-            )}
-
-            {activeTab === "gestion" && <PricingPanel />}
-            {activeTab === "conseil" && <ConseilPanel />}
-            {activeTab === "tarifs" && <TarifsPanel />}
-
-            <FAQ openFaq={openFaq} setOpenFaq={setOpenFaq} />
-          </Container>
-        </section>
-
-        <section className="bg-[#D2AD3D]">
-          <Container className="flex flex-col items-start justify-between gap-6 py-10 sm:py-12 md:flex-row md:items-center">
-            <div>
-              <h2 className="font-serif text-2xl font-semibold text-[#071D36] sm:text-3xl">
-                Consultation gratuite sans engagement
-              </h2>
-              <p className="mt-2 text-sm font-medium text-[#071D36]/65">
-                Réponse sous 24h · Devis sous 48h
-              </p>
-            </div>
-
-            <a
-              href="/contact"
-              className="inline-flex min-h-12 items-center justify-center bg-[#071D36] px-7 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:bg-[#172F51]"
+        <section className={styles.panel}>
+          {activeTab === "immo" && (
+            <StandardPanel
+              eyebrow="Pôle Immobilier"
+              title={
+                <>
+                  Vente & Location
+                  <br />
+                  de biens immobiliers
+                </>
+              }
+              description="Résidentiel, commercial ou industriel - nous vous accompagnons à chaque étape, de la recherche à la signature de l'acte."
+              featuredTitle={
+                <>
+                  Vente clé en main
+                  <br />
+                  résidentielle
+                </>
+              }
+              featuredDescription="Villas, appartements, duplex et programmes neufs à Douala, Yaoundé et Kribi. Accompagnement notarial inclus."
+              featuredPoints={[
+                "Portefeuille de 80+ biens actifs à Douala",
+                "Visites organisées sous 48h",
+                "Accompagnement complet jusqu'à l'acte notarié",
+                "Financement bancaire facilité",
+                "Garantie juridique sur tous les titres fonciers",
+              ]}
+              services={immobilierServices}
+              processTitle="Notre processus d'acquisition"
+              steps={[
+                ["1", "Analyse", "de besoins"],
+                ["2", "Sélection", "de biens"],
+                ["3", "Visite", "guidée"],
+                ["4", "Offre &", "négociation"],
+                ["5", "Acte", "notarié"],
+              ]}
+              faqTitle="Questions fréquentes - Immobilier"
+              faqs={immobilierFaqs}
+              openFaq={openFaq}
+              setOpenFaq={setOpenFaq}
             >
-              Demander un devis
-            </a>
-          </Container>
-        </section>
-      </main>
+              <Testimonials />
+            </StandardPanel>
+          )}
 
-      <Footer />
-    </>
+          {activeTab === "ingenierie" && (
+            <StandardPanel
+              eyebrow="Pôle Ingénierie"
+              title={
+                <>
+                  Maîtrise d&apos;oeuvre &
+                  <br />
+                  Ingénierie technique
+                </>
+              }
+              description="De la conception à la livraison, nos ingénieurs certifiés pilotent vos chantiers avec rigueur, respect du budget et des délais."
+              featuredTitle={
+                <>
+                  Maîtrise d&apos;oeuvre
+                  <br />
+                  complète
+                </>
+              }
+              featuredDescription="Pilotage intégral de votre projet : conception, coordination des corps de métier, suivi de chantier et réception des travaux."
+              featuredPoints={[
+                "12 ingénieurs certifiés (génie civil, structure, VRD)",
+                "Respect du budget ± 5% garanti contractuellement",
+                "Rapports de chantier hebdomadaires digitaux",
+                "Assurance décennale et responsabilité civile",
+                "Conformité normes camerounaises & OHADA",
+              ]}
+              services={engineeringServices}
+              processTitle="Notre processus d'ingénierie"
+              steps={[
+                ["1", "Consultation", "technique"],
+                ["2", "Études &", "conception"],
+                ["3", "Appel", "d'offres"],
+                ["4", "Exécution", "chantier"],
+                ["5", "Réception &", "garantie"],
+              ]}
+              faqTitle="Questions fréquentes - Ingénierie"
+              faqs={engineeringFaqs}
+              openFaq={openFaq}
+              setOpenFaq={setOpenFaq}
+            >
+              <Engagements />
+            </StandardPanel>
+          )}
+
+          {activeTab === "gestion" && (
+            <>
+              <SectionHeading
+                eyebrow="Pôle Gestion"
+                title={
+                  <>
+                    Gestion locative
+                    <br />
+                    <em>sans tracas</em>
+                  </>
+                }
+                description="Confiez-nous votre patrimoine immobilier. Nous gérons tout : locataires, loyers, entretien et aspects juridiques."
+              />
+              <ServiceGrid services={managementServices} />
+              <PricingCards />
+            </>
+          )}
+
+          {activeTab === "conseil" && (
+            <>
+              <SectionHeading
+                eyebrow="Pôle Conseil"
+                title={
+                  <>
+                    Études, conseil &
+                    <br />
+                    <em>accompagnement</em>
+                  </>
+                }
+                description="Expertise technique et juridique pour sécuriser vos décisions d'investissement immobilier et de construction au Cameroun."
+              />
+              <ServiceGrid services={consultingServices} />
+              <ProcessBlock
+                title="Processus d'étude & conseil"
+                steps={[
+                  ["1", "Briefing", "initial"],
+                  ["2", "Collecte", "données"],
+                  ["3", "Analyse", "technique"],
+                  ["4", "Rapport &", "recommandations"],
+                  ["5", "Suivi &", "mise en oeuvre"],
+                ]}
+              />
+              <FaqBlock
+                title="Questions fréquentes - Conseil"
+                faqs={consultingFaqs}
+                openFaq={openFaq}
+                setOpenFaq={setOpenFaq}
+              />
+            </>
+          )}
+
+          {activeTab === "tarifs" && <PricingTable />}
+        </section>
+
+        <section className={styles.ctaBand}>
+          <div>
+            <h2>
+              Consultation gratuite
+              <br />
+              sans engagement
+            </h2>
+            <p>Réponse sous 24h · Devis sous 48h</p>
+          </div>
+          <Link href="/contact" className={styles.navyButton}>
+            <Send size={16} /> Demander un devis
+          </Link>
+        </section>
+
+        <footer className={styles.footer}>
+          <p>© 2025 Perfect Immo & Engineering · Douala, Cameroun</p>
+          <div>
+            <a href="#">Mentions légales</a>
+            <a href="#">Confidentialité</a>
+            <a href="#">Sitemap</a>
+          </div>
+        </footer>
+      </div>
+    </main>
+  );
+}
+
+function ServicesNav() {
+  return (
+    <header className={styles.navbar}>
+      <Link href="/" className={styles.logo}>
+        <span className={styles.logoMark}>PI</span>
+        <span>
+          <span className={styles.logoText}>
+            Perfect Immo <em>&</em> Engineering
+          </span>
+          <span className={styles.logoSub}>Douala, Cameroun</span>
+        </span>
+      </Link>
+      <nav className={styles.navLinks} aria-label="Navigation principale">
+        <Link href="/" className={styles.navLink}>
+          Accueil
+        </Link>
+        <Link
+          href="/services"
+          className={`${styles.navLink} ${styles.activeNavLink}`}
+        >
+          Services
+        </Link>
+        <Link href="/realisations" className={styles.navLink}>
+          Réalisations
+        </Link>
+        <Link href="/projets" className={styles.navLink}>
+          Projets
+        </Link>
+        <Link href="/contact" className={styles.navLink}>
+          Contact
+        </Link>
+      </nav>
+      <Link href="/contact" className={styles.navCta}>
+        Devis gratuit
+      </Link>
+      <button className={styles.mobileToggle} aria-label="Menu">
+        <Menu size={24} />
+      </button>
+    </header>
   );
 }
 
@@ -235,41 +636,48 @@ function SectionHeading({
   description,
 }: {
   eyebrow: string;
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  description: string;
 }) {
   return (
-    <header className="max-w-3xl">
-      <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.26em] text-[#B28C20]">
-        <span className="h-px w-7 bg-[#D2AD3D]" />
-        {eyebrow}
-      </p>
-      <h2 className="mt-5 font-serif text-3xl font-medium leading-tight text-[#071D36] sm:text-4xl">
-        {title}
-      </h2>
-      {description && (
-        <p className="mt-4 text-sm leading-7 text-[#071D36]/60 sm:text-base">
-          {description}
-        </p>
-      )}
+    <header className={styles.sectionHeading}>
+      <p>{eyebrow}</p>
+      <h2>{title}</h2>
+      <div>{description}</div>
     </header>
   );
 }
 
-function ServicePanel({
+function StandardPanel({
   eyebrow,
   title,
   description,
-  services,
   featuredTitle,
-  featuredText,
+  featuredDescription,
+  featuredPoints,
+  services,
+  processTitle,
+  steps,
+  faqTitle,
+  faqs,
+  openFaq,
+  setOpenFaq,
+  children,
 }: {
   eyebrow: string;
-  title: string;
+  title: React.ReactNode;
   description: string;
-  services: Service[];
-  featuredTitle: string;
-  featuredText: string;
+  featuredTitle: React.ReactNode;
+  featuredDescription: string;
+  featuredPoints: string[];
+  services: ServiceItem[];
+  processTitle: string;
+  steps: [string, string, string][];
+  faqTitle: string;
+  faqs: FaqItem[];
+  openFaq: number | null;
+  setOpenFaq: (index: number | null) => void;
+  children?: React.ReactNode;
 }) {
   return (
     <>
@@ -278,250 +686,258 @@ function ServicePanel({
         title={title}
         description={description}
       />
-
-      <article className="mt-10 grid gap-8 rounded-lg bg-[#071D36] p-6 text-white sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-12 lg:p-10">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#D2AD3D]">
-            Service phare
-          </p>
-          <h3 className="mt-4 font-serif text-2xl font-medium leading-tight sm:text-3xl">
-            {featuredTitle}
-          </h3>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-white/60 sm:text-base">
-            {featuredText}
-          </p>
-          <a
-            href="/contact"
-            className="mt-6 inline-flex min-h-12 items-center justify-center bg-[#D2AD3D] px-6 text-sm font-black uppercase tracking-[0.1em] text-[#071D36] transition hover:bg-[#E0BC4D]"
-          >
-            Demander un devis
-          </a>
-        </div>
-
-        <div className="grid content-center gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          {[
-            "Accompagnement complet",
-            "Suivi personnalisé",
-            "Rapport détaillé",
-            "Respect des délais",
-          ].map((item) => (
-            <div
-              key={item}
-              className="flex min-h-12 items-center gap-3 border border-white/12 px-4 text-sm font-medium text-white/75"
-            >
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-[#D2AD3D]/50 text-[#D2AD3D]">
-                <Check size={12} strokeWidth={3} />
-              </span>
-              {item}
-            </div>
-          ))}
-        </div>
-      </article>
-
-      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {services.map(([serviceTitle, descriptionText, Icon]) => (
-          <article
-            key={serviceTitle}
-            className="border border-[#071D36]/10 bg-white p-6 shadow-[0_12px_30px_rgba(7,29,54,0.04)] transition hover:-translate-y-1 hover:border-[#D2AD3D]/50 hover:shadow-[0_16px_35px_rgba(7,29,54,0.08)] sm:p-7"
-          >
-            <div className="flex h-12 w-12 items-center justify-center border border-[#D2AD3D]/60 text-[#B28C20]">
-              <Icon size={23} />
-            </div>
-            <h3 className="mt-5 text-lg font-bold text-[#071D36]">
-              {serviceTitle}
-            </h3>
-            <p className="mt-3 text-sm leading-6 text-[#071D36]/55">
-              {descriptionText}
-            </p>
-          </article>
-        ))}
-      </div>
+      <FeaturedService
+        title={featuredTitle}
+        description={featuredDescription}
+        points={featuredPoints}
+      />
+      <ServiceGrid services={services} />
+      <ProcessBlock title={processTitle} steps={steps} />
+      {children}
+      <FaqBlock
+        title={faqTitle}
+        faqs={faqs}
+        openFaq={openFaq}
+        setOpenFaq={setOpenFaq}
+      />
     </>
   );
 }
 
-function PricingPanel() {
+function FeaturedService({
+  title,
+  description,
+  points,
+}: {
+  title: React.ReactNode;
+  description: string;
+  points: string[];
+}) {
   return (
-    <div>
-      <SectionHeading
-        eyebrow="Gestion locative"
-        title="Gestion locative sans tracas"
-        description="Confiez-nous votre patrimoine immobilier. Nous gérons les locataires, les loyers, l'entretien et les aspects juridiques."
-      />
-
-      <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {[
-          ["Essentiel", "6%", "Recherche locataire, bail, loyers"],
-          ["Premium", "9%", "Entretien, juridique, rapport trimestriel"],
-          ["Patrimoine", "Sur devis", "Gestionnaire dédié et optimisation"],
-        ].map(([name, price, description]) => {
-          const featured = name === "Premium";
-
-          return (
-            <article
-              key={name}
-              className={`border p-7 ${
-                featured
-                  ? "border-[#D2AD3D] bg-[#071D36] text-white"
-                  : "border-[#071D36]/10 bg-white text-[#071D36]"
-              }`}
-            >
-              <h3 className="text-lg font-bold">{name}</h3>
-              <p className="mt-4 font-serif text-4xl font-semibold text-[#D2AD3D]">
-                {price}
-              </p>
-              <p
-                className={`mt-4 min-h-12 text-sm leading-6 ${
-                  featured ? "text-white/55" : "text-[#071D36]/55"
-                }`}
-              >
-                {description}
-              </p>
-              <button className="mt-7 min-h-11 bg-[#D2AD3D] px-5 text-sm font-bold text-[#071D36]">
-                Choisir
-              </button>
-            </article>
-          );
-        })}
+    <article className={styles.featuredService}>
+      <div>
+        <p className={styles.featuredLabel}>Service phare</p>
+        <h3>{title}</h3>
+        <div className={styles.featuredDescription}>{description}</div>
+        <Link href="/contact" className={styles.goldButton}>
+          <Hammer size={16} /> Demander un devis
+        </Link>
       </div>
+      <div className={styles.featuredPoints}>
+        {points.map((point) => (
+          <div key={point}>
+            <span />
+            <p>{point}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function ServiceGrid({ services }: { services: ServiceItem[] }) {
+  return (
+    <div className={styles.serviceGrid}>
+      {services.map(({ icon: Icon, title, description, tags }) => (
+        <article key={title} className={styles.serviceCard}>
+          <span className={styles.serviceIcon}>
+            <Icon size={22} />
+          </span>
+          <h3>{title}</h3>
+          <p>{description}</p>
+          <div className={styles.tags}>
+            {tags.map((tag) => (
+              <span key={tag}>{tag}</span>
+            ))}
+          </div>
+        </article>
+      ))}
     </div>
   );
 }
 
-function ConseilPanel() {
-  const conseilServices: Service[] = [
-    [
-      "Audit technique",
-      "Diagnostic complet d'un bâtiment existant.",
-      FileCheck,
-    ],
-    [
-      "Étude de faisabilité",
-      "Analyse technique, financière et réglementaire.",
-      Ruler,
-    ],
-    [
-      "Permis de construire",
-      "Constitution et dépôt du dossier administratif.",
-      FileCheck,
-    ],
-    [
-      "Conseil en investissement",
-      "Analyse du marché et recommandations d'acquisition.",
-      Star,
-    ],
-  ];
-
+function ProcessBlock({
+  title,
+  steps,
+}: {
+  title: string;
+  steps: [string, string, string][];
+}) {
   return (
-    <ServicePanel
-      eyebrow="Pôle conseil"
-      title="Études, conseil & accompagnement"
-      description="Expertise technique et juridique pour sécuriser vos décisions d'investissement immobilier et de construction."
-      services={conseilServices}
-      featuredTitle="Conseil immobilier & technique"
-      featuredText="Une expertise professionnelle pour sécuriser vos projets avant tout engagement financier."
-    />
-  );
-}
-
-function TarifsPanel() {
-  const rows = [
-    ["Transaction immobilière", "3 à 5 %", "4-8 semaines"],
-    ["Location immobilière", "1 mois loyer", "1-3 semaines"],
-    ["Maîtrise d'oeuvre", "8 à 12 %", "Selon projet"],
-    ["Études structurelles", "Sur devis", "2-4 semaines"],
-    ["Gestion locative", "6 à 9 % / mois", "Continu"],
-    ["Consultation initiale", "Gratuite", "Sous 24h"],
-  ];
-
-  return (
-    <div>
-      <SectionHeading
-        eyebrow="Nos honoraires"
-        title="Tarifs clairs & transparents"
-      />
-
-      <div className="mt-10 overflow-x-auto border border-[#071D36]/10 bg-white">
-        <div className="min-w-[620px]">
-          {rows.map(([service, price, delay], index) => (
-            <div
-              key={service}
-              className={`grid grid-cols-3 gap-4 px-5 py-4 text-sm ${
-                index % 2 === 0 ? "bg-white" : "bg-[#F6F5F0]"
-              }`}
-            >
-              <p className="font-semibold text-[#071D36]">{service}</p>
-              <p className="text-center font-bold text-[#B28C20]">{price}</p>
-              <p className="text-center text-[#071D36]/50">{delay}</p>
-            </div>
-          ))}
-        </div>
+    <section className={styles.processBlock}>
+      <h3>{title}</h3>
+      <div className={styles.steps}>
+        {steps.map(([number, first, second]) => (
+          <div key={number} className={styles.step}>
+            <strong>{number}</strong>
+            <p>
+              {first}
+              <br />
+              {second}
+            </p>
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
 
-function FAQ({
+function FaqBlock({
+  title,
+  faqs,
   openFaq,
   setOpenFaq,
 }: {
+  title: string;
+  faqs: FaqItem[];
   openFaq: number | null;
-  setOpenFaq: Dispatch<SetStateAction<number | null>>;
+  setOpenFaq: (index: number | null) => void;
 }) {
-  const faqs = [
-    [
-      "Quels documents faut-il pour acheter un bien ?",
-      "Une pièce d'identité valide, les justificatifs nécessaires et les documents liés au financement. L'équipe vous accompagne dans la constitution du dossier.",
-    ],
-    [
-      "Intervenez-vous uniquement à Douala ?",
-      "Non. L'entreprise peut accompagner des projets à Douala et dans d'autres villes du Cameroun selon la nature du projet.",
-    ],
-    [
-      "Combien de temps faut-il pour obtenir un devis ?",
-      "Un premier retour peut être donné sous 24h et un devis détaillé sous 48h après analyse du besoin.",
-    ],
-  ];
+  return (
+    <section className={styles.faqBlock}>
+      <h3>{title}</h3>
+      {faqs.map((faq, index) => {
+        const isOpen = openFaq === index;
+        return (
+          <article
+            key={faq.question}
+            className={`${styles.faqItem} ${isOpen ? styles.openFaq : ""}`}
+          >
+            <button
+              type="button"
+              onClick={() => setOpenFaq(isOpen ? null : index)}
+              aria-expanded={isOpen}
+            >
+              <span>{faq.question}</span>
+              <strong>
+                <Plus size={15} />
+              </strong>
+            </button>
+            {isOpen && <p>{faq.answer}</p>}
+          </article>
+        );
+      })}
+    </section>
+  );
+}
+
+function Testimonials() {
+  return (
+    <div className={styles.testimonials}>
+      {[
+        [
+          "J'ai trouvé ma villa à Kotto en 3 semaines. L'équipe est très professionnelle et rassurante dans les démarches.",
+          "Christelle Mbarga",
+          "Acheteuse - Résidentiel",
+        ],
+        [
+          "Nos locaux commerciaux à Akwa ont été loués en 10 jours. Service rapide et suivi impeccable du bail.",
+          "Robert Tagne",
+          "Investisseur - Commercial",
+        ],
+      ].map(([quote, name, role]) => (
+        <article key={name}>
+          <div>★★★★★</div>
+          <p>{quote}</p>
+          <strong>{name}</strong>
+          <span>{role}</span>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function Engagements() {
+  const items = [
+    [ShieldCheck, "Assurance décennale", "Couverture complète 10 ans sur tous nos ouvrages livrés"],
+    [CalendarDays, "Respect des délais", "Pénalités contractuelles en cas de retard imputable à PI&E"],
+    [BarChart3, "Reporting digital", "Rapport de chantier chaque vendredi avec photos et avancement"],
+    [Check, "Normes & conformité", "Respect strict des normes camerounaises, DTU et EUROCODE"],
+  ] as const;
 
   return (
-    <section className="mt-16 border-t border-[#071D36]/10 pt-14 sm:mt-20 sm:pt-16">
+    <div className={styles.engagements}>
+      {items.map(([Icon, title, description]) => (
+        <article key={title}>
+          <Icon size={26} />
+          <div>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function PricingCards() {
+  return (
+    <div className={styles.pricingGrid}>
+      {pricingPlans.map((plan) => (
+        <article
+          key={plan.name}
+          className={`${styles.priceCard} ${
+            plan.featured ? styles.featuredPrice : ""
+          }`}
+        >
+          {plan.featured && <span className={styles.priceBadge}>Recommandé</span>}
+          <h3>{plan.name}</h3>
+          <strong className={plan.price === "Sur devis" ? styles.smallPrice : ""}>
+            {plan.price}
+          </strong>
+          <p>{plan.note}</p>
+          <ul>
+            {plan.features.map((feature) => (
+              <li key={feature}>
+                <Check size={12} /> {feature}
+              </li>
+            ))}
+          </ul>
+          <Link href="/contact">Choisir</Link>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function PricingTable() {
+  return (
+    <>
       <SectionHeading
-        eyebrow="Questions fréquentes"
-        title="Tout savoir avant de démarrer"
+        eyebrow="Nos honoraires"
+        title={
+          <>
+            Tarifs clairs &
+            <br />
+            <em>transparents</em>
+          </>
+        }
+        description="Pas de frais cachés. Tous nos tarifs sont annoncés dès la première consultation et formalisés dans un contrat de mission signé."
       />
-
-      <div className="mt-8 border-t border-[#071D36]/10">
-        {faqs.map(([question, answer], index) => {
-          const isOpen = openFaq === index;
-
-          return (
-            <article key={question} className="border-b border-[#071D36]/10">
-              <button
-                type="button"
-                onClick={() => setOpenFaq(isOpen ? null : index)}
-                aria-expanded={isOpen}
-                className="flex min-h-16 w-full items-center justify-between gap-6 py-4 text-left text-sm font-bold text-[#071D36] sm:text-base"
-              >
-                <span>{question}</span>
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-[#071D36]/15 text-[#B28C20]">
-                  <Plus
-                    size={17}
-                    className={`transition-transform ${
-                      isOpen ? "rotate-45" : ""
-                    }`}
-                  />
-                </span>
-              </button>
-
-              {isOpen && (
-                <p className="max-w-3xl pb-6 pr-12 text-sm leading-7 text-[#071D36]/55">
-                  {answer}
-                </p>
-              )}
-            </article>
-          );
-        })}
+      <div className={styles.priceTable}>
+        <div className={`${styles.priceRow} ${styles.priceHead}`}>
+          <span>Service</span>
+          <span>Tarif</span>
+          <span>Délai</span>
+        </div>
+        {priceRows.map(([service, price, delay], index) => (
+          <div
+            key={service}
+            className={`${styles.priceRow} ${
+              index === priceRows.length - 1 ? styles.highlightRow : ""
+            }`}
+          >
+            <span>{service}</span>
+            <span>{price}</span>
+            <span>{delay}</span>
+          </div>
+        ))}
       </div>
-    </section>
+      <div className={styles.priceNote}>
+        <strong>Note :</strong> Tous les tarifs sont exprimés hors TVA. Le taux
+        applicable au Cameroun est de 19,25 %. Un devis détaillé et un contrat
+        de mission sont établis avant toute prestation.
+      </div>
+    </>
   );
 }

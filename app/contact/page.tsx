@@ -1,168 +1,242 @@
 "use client";
 
-import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import Container from "@/components/layout/Container";
+import { FormEvent, useState } from "react";
+import Link from "next/link";
 import {
-  Phone,
+  Calendar,
+  CheckCircle2,
+  Globe,
+  Lock,
   Mail,
   MapPin,
-  Globe,
-  Send,
-  Lock,
-  Calendar,
+  Menu,
   MessageCircle,
+  Phone,
+  Send,
 } from "lucide-react";
+import { Cormorant_Garamond, Outfit } from "next/font/google";
+import styles from "./contact.module.css";
+
+const serif = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--contact-serif",
+  display: "swap",
+});
+
+const sans = Outfit({
+  subsets: ["latin"],
+  variable: "--contact-sans",
+  display: "swap",
+});
+
+const services = [
+  "Achat immobilier",
+  "Location",
+  "Maîtrise d'oeuvre",
+  "Études & ingénierie",
+  "Gestion locative",
+  "Permis de construire",
+  "Estimation bien",
+  "Autre demande",
+];
+
+const budgets = [
+  "< 10M FCFA",
+  "10-50M FCFA",
+  "50-100M FCFA",
+  "100-500M FCFA",
+  "> 500M FCFA",
+  "Non défini",
+];
 
 export default function ContactPage() {
-  const [selectedService, setSelectedService] = useState("");
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [selectedBudget, setSelectedBudget] = useState("");
-    
+  const [submitted, setSubmitted] = useState(false);
+  const [reference, setReference] = useState("");
+  const [formKey, setFormKey] = useState(0);
+  const [serviceError, setServiceError] = useState(false);
+
+  function toggleService(service: string) {
+    setServiceError(false);
+    setSelectedServices((current) =>
+      current.includes(service)
+        ? current.filter((item) => item !== service)
+        : [...current, service],
+    );
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+
+    if (!form.reportValidity()) {
+      return;
+    }
+
+    if (selectedServices.length === 0) {
+      setServiceError(true);
+      return;
+    }
+
+    setReference(`PIE-2025-${Math.floor(Math.random() * 9000) + 1000}`);
+    setSubmitted(true);
+  }
+
+  function resetForm() {
+    setSubmitted(false);
+    setSelectedServices([]);
+    setSelectedBudget("");
+    setServiceError(false);
+    setFormKey((current) => current + 1);
+  }
+
   return (
-    <>
-      <Navbar />
+    <main className={`${styles.pageCenter} ${serif.variable} ${sans.variable}`}>
+      <div className={styles.site}>
+        <ContactNav />
 
-      <main>
-        <section className="border-b border-yellow-500/20 bg-[#0B1F3A] py-16 text-white lg:py-24">
-          <Container>
-            <div className="text-sm text-gray-400 mb-8">
-              Accueil <span className="text-yellow-500 mx-2">›</span>
-              <span className="text-yellow-500">Contact</span>
+        <section className={styles.hero}>
+          <div className={styles.heroInner}>
+            <div className={styles.breadcrumb}>
+              <Link href="/">Accueil</Link>
+              <span>›</span>
+              <strong>Contact</strong>
             </div>
-
-            <p className="uppercase tracking-[4px] text-yellow-500 text-sm font-semibold">
-              Parlons de votre projet
-            </p>
-
-            <h1 className="mt-5 text-5xl lg:text-6xl font-bold leading-tight">
-              Contactez{" "}
-              <span className="text-yellow-500 italic">notre équipe</span>
+            <p className={styles.eyebrow}>Parlons de votre projet</p>
+            <h1>
+              Contactez <em>notre équipe</em>
             </h1>
-
-            <p className="mt-6 text-gray-300 max-w-2xl text-lg leading-8">
+            <p>
               Notre équipe vous répond sous 24h ouvrées. Consultation initiale
               gratuite et sans engagement.
             </p>
-          </Container>
+          </div>
         </section>
 
-        <section className="bg-[#152B4E] border-b border-yellow-500/20">
-          <Container className="grid md:grid-cols-3">
-            <QuickItem icon={<Phone />} label="Téléphone" value="+237 6XX XXX XXX" />
-            <QuickItem icon={<Mail />} label="Email" value="contact@perfectimmo.cm" />
-            <QuickItem icon={<MapPin />} label="Adresse" value="Bonanjo, Douala" />
-          </Container>
+        <section className={styles.quickBar}>
+          <div className={styles.quickInner}>
+            <QuickLink
+              href="tel:+237676438342"
+              icon={Phone}
+              label="Téléphone"
+              value="+237 676 438 342"
+            />
+            <QuickLink
+              href="mailto:contact@perfectimmo.cm"
+              icon={Mail}
+              label="Email"
+              value="contact@perfectimmo.cm"
+            />
+            <QuickLink
+              href="#map"
+              icon={MapPin}
+              label="Adresse"
+              value="Bonanjo, Douala"
+            />
+          </div>
         </section>
 
-        <section className="bg-[#F8F8F5] border-b border-yellow-500/20">
-          <Container className="flex items-center justify-between py-3 text-sm">
-            <p className="text-yellow-700">
-              ● 3 consultations gratuites disponibles cette semaine
+        <section className={styles.urgency}>
+          <div className={styles.urgencyInner}>
+            <span className={styles.urgencyDot} />
+            <p>3 consultations gratuites disponibles cette semaine</p>
+            <span className={styles.urgencyBadge}>Délai de réponse : 24h</span>
+          </div>
+        </section>
+
+        <section className={styles.contactLayout}>
+          <div className={styles.formSide}>
+            <h2>Envoyez-nous un message</h2>
+            <p className={styles.formSubtitle}>
+              Tous les champs marqués d&apos;un <em>*</em> sont obligatoires
             </p>
 
-            <span className="hidden md:block border border-yellow-500/30 px-4 py-1 text-yellow-700">
-              Délai de réponse : 24h
-            </span>
-          </Container>
-        </section>
-
-        <section className="bg-[#F8F8F5] py-16 lg:py-24">
-          <Container className="grid lg:grid-cols-[1.7fr_1fr]">
-            <div className="p-8 lg:p-12 border-r border-gray-200">
-              <h2 className="text-3xl font-bold text-[#0B1F3A]">
-                Envoyez-nous un message
-              </h2>
-
-              <p className="mt-2 text-gray-500">
-                Tous les champs marqués d&apos;un{" "}
-                <span className="text-yellow-600">*</span> sont obligatoires
-              </p>
-
-              <form className="mt-10 space-y-6">
-                <div className="grid md:grid-cols-2 gap-5">
-                  <Field label="Prénom" placeholder="Jean-Marc" required />
-                  <Field label="Nom" placeholder="Essomba" required />
+            {submitted ? (
+              <SuccessMessage reference={reference} onReset={resetForm} />
+            ) : (
+              <form key={formKey} onSubmit={handleSubmit}>
+                <div className={styles.formRow}>
+                  <Field
+                    label="Prénom"
+                    name="firstName"
+                    placeholder="Jean-Marc"
+                    required
+                  />
+                  <Field
+                    label="Nom"
+                    name="lastName"
+                    placeholder="Essomba"
+                    required
+                  />
                 </div>
 
                 <Field
                   label="Adresse email"
+                  name="email"
+                  type="email"
                   placeholder="jean.essomba@email.com"
                   required
                 />
 
-                <div className="grid md:grid-cols-2 gap-5">
-                  <Field label="Téléphone" placeholder="+237 6XX XXX XXX" required />
-
-                  <div>
-                    <label className="font-semibold text-[#0B1F3A]">
-                      Ville
-                    </label>
-                    <select className="mt-2 w-full border border-gray-200 bg-white px-4 py-4 outline-none">
-                      <option>Sélectionner...</option>
-                      <option>Douala</option>
-                      <option>Yaoundé</option>
-                      <option>Kribi</option>
-                      <option>Bafoussam</option>
-                    </select>
-                  </div>
+                <div className={styles.formRow}>
+                  <Field
+                    label="Téléphone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+237 6XX XXX XXX"
+                    required
+                  />
+                  <SelectField label="Ville" name="city">
+                    <option value="">Sélectionner...</option>
+                    <option>Douala</option>
+                    <option>Yaoundé</option>
+                    <option>Bafoussam</option>
+                    <option>Kribi</option>
+                    <option>Autre ville</option>
+                  </SelectField>
                 </div>
 
-                <div>
-                  <label className="font-semibold text-[#0B1F3A]">
-                    Service concerné <span className="text-yellow-600">*</span>
+                <div className={styles.formGroup}>
+                  <label>
+                    Service concerné <em>*</em>
                   </label>
-
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    {[
-                      "Achat immobilier",
-                      "Location",
-                      "Maîtrise d'œuvre",
-                      "Études & ingénierie",
-                      "Gestion locative",
-                      "Permis de construire",
-                      "Estimation bien",
-                      "Autre demande",
-                    ].map((service) => (
+                  <div className={styles.serviceChips}>
+                    {services.map((service) => (
                       <button
                         type="button"
                         key={service}
-                        onClick={() => setSelectedService(service)}
-                        className={`px-5 py-3 border text-sm transition ${
-                          selectedService === service
-                            ? "border-yellow-500 bg-yellow-500/10 text-[#0B1F3A]"
-                            : "border-gray-200 bg-white text-gray-600 hover:border-yellow-500"
-                        }`}
+                        onClick={() => toggleService(service)}
+                        className={
+                          selectedServices.includes(service)
+                            ? styles.selectedChip
+                            : ""
+                        }
+                        aria-pressed={selectedServices.includes(service)}
                       >
                         {service}
                       </button>
                     ))}
                   </div>
+                  {serviceError && (
+                    <p className={styles.fieldError}>
+                      Veuillez sélectionner au moins un service.
+                    </p>
+                  )}
                 </div>
 
-                <div>
-                  <label className="font-semibold text-[#0B1F3A]">
-                    Budget estimé
-                  </label>
-
-                  <div className="mt-3 grid md:grid-cols-3 gap-3">
-                    {[
-                      "< 10M FCFA",
-                      "10–50M FCFA",
-                      "50–100M FCFA",
-                      "100–500M FCFA",
-                      "> 500M FCFA",
-                      "Non défini",
-                    ].map((budget) => (
+                <div className={styles.formGroup}>
+                  <label>Budget estimé</label>
+                  <div className={styles.budgetGrid}>
+                    {budgets.map((budget) => (
                       <button
                         type="button"
                         key={budget}
                         onClick={() => setSelectedBudget(budget)}
-                        className={`px-4 py-3 border text-sm transition ${
-                          selectedBudget === budget
-                            ? "border-yellow-500 bg-yellow-500/10 text-[#0B1F3A]"
-                            : "border-gray-200 bg-white text-gray-600 hover:border-yellow-500"
-                        }`}
+                        className={
+                          selectedBudget === budget ? styles.selectedChip : ""
+                        }
+                        aria-pressed={selectedBudget === budget}
                       >
                         {budget}
                       </button>
@@ -170,255 +244,366 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="font-semibold text-[#0B1F3A]">
-                    Objet de votre demande
-                  </label>
-                  <select className="mt-2 w-full border border-gray-200 bg-white px-4 py-4 outline-none">
-                    <option>Choisir l&apos;objet...</option>
-                    <option>Demande de devis</option>
-                    <option>Demande de visite</option>
-                    <option>Consultation technique</option>
-                    <option>Information générale</option>
-                  </select>
-                </div>
+                <SelectField label="Objet de votre demande" name="subject">
+                  <option value="">Choisir l&apos;objet...</option>
+                  <option>Demande de devis</option>
+                  <option>Demande de visite</option>
+                  <option>Consultation technique</option>
+                  <option>Partenariat</option>
+                  <option>Information générale</option>
+                  <option>Réclamation</option>
+                </SelectField>
 
-                <div>
-                  <label className="font-semibold text-[#0B1F3A]">
-                    Votre message <span className="text-yellow-600">*</span>
+                <div className={styles.formGroup}>
+                  <label htmlFor="message">
+                    Votre message <em>*</em>
                   </label>
                   <textarea
-                    className="mt-2 w-full min-h-[220px] border border-gray-200 bg-white px-4 py-4 outline-none"
+                    id="message"
+                    name="message"
+                    required
                     placeholder="Décrivez votre projet ou votre demande avec le maximum de détails (localisation souhaitée, superficie, délai, contraintes particulières...)"
                   />
                 </div>
-    
-                <div>
-                  <label className="font-semibold text-[#0B1F3A]">
-                    Comment avez-vous entendu parler de nous ?
-                  </label>
-                  <select className="mt-2 w-full border border-gray-200 bg-white px-4 py-4 outline-none">
-                    <option>Sélectionner...</option>
-                    <option>Google</option>
-                    <option>Réseaux sociaux</option>
-                    <option>Recommandation</option>
-                    <option>Autre</option>
-                  </select>
-                </div>
 
-                <div className="flex gap-4 bg-white border-l-4 border-yellow-500 p-5 text-sm text-gray-600">
-                  <input type="checkbox" className="mt-1" />
-                  <p>
-                    J&apos;accepte que mes données soient traitées par Perfect Immo &
-                    Engineering pour traiter ma demande, conformément à la
-                    politique de confidentialité.{" "}
-                    <span className="text-yellow-600">*</span>
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="w-full bg-yellow-500 text-[#0B1F3A] py-4 font-bold tracking-widest uppercase flex justify-center items-center gap-3 hover:bg-yellow-400 transition"
+                <SelectField
+                  label="Comment avez-vous entendu parler de nous ?"
+                  name="source"
                 >
-                  <Send size={18} />
-                  Envoyer ma demande
-                </button>
+                  <option value="">Sélectionner...</option>
+                  <option>Google / Recherche web</option>
+                  <option>Recommandation d&apos;un ami</option>
+                  <option>Réseaux sociaux</option>
+                  <option>Panneau publicitaire</option>
+                  <option>Partenaire professionnel</option>
+                  <option>Autre</option>
+                </SelectField>
 
-                <p className="text-center text-gray-400 text-sm flex justify-center gap-2 items-center">
-                  <Lock size={14} />
-                  Formulaire sécurisé · Réponse garantie sous 24h ouvrées
+                <label className={styles.rgpd}>
+                  <input type="checkbox" required />
+                  <span>
+                    J&apos;accepte que mes données soient traitées par Perfect
+                    Immo & Engineering pour traiter ma demande, conformément à
+                    la <a href="#">politique de confidentialité</a>. Ces données
+                    ne seront jamais revendues à des tiers. <em>*</em>
+                  </span>
+                </label>
+
+                <button type="submit" className={styles.submitButton}>
+                  <Send size={16} />
+                  Envoyer ma demande
+                  <span>→</span>
+                </button>
+                <p className={styles.formNote}>
+                  <Lock size={12} /> Formulaire sécurisé · Réponse garantie sous
+                  24h ouvrées
                 </p>
               </form>
-            </div>
+            )}
+          </div>
 
-            <aside className="p-8 lg:p-10 bg-white">
-              <div className="h-[220px] bg-[#0B1F3A] relative overflow-hidden mb-10 border border-gray-200 flex items-center justify-center">
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(201,168,76,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(201,168,76,0.08)_1px,transparent_1px)] bg-[length:35px_35px]" />
-                <div className="relative text-center">
-                  <div className="w-5 h-5 bg-yellow-500 rounded-full mx-auto mb-4 border-2 border-white" />
-                  <p className="text-gray-300">Bonanjo, Douala</p>
-                  <button className="mt-4 border border-yellow-500/40 text-yellow-500 px-5 py-2 text-xs uppercase tracking-widest">
-                    Voir sur Google Maps
-                  </button>
-                </div>
+          <aside id="map" className={styles.infoSide}>
+            <MapPlaceholder />
+            <ContactInfo />
+            <OpeningHours />
+
+            <a
+              href="https://wa.me/237676438342"
+              className={styles.whatsappButton}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <MessageCircle size={24} />
+              <span>
+                <strong>Écrire sur WhatsApp</strong>
+                <small>Réponse en moins de 2h</small>
+              </span>
+            </a>
+
+            <section className={styles.infoBlock}>
+              <h3>Nos réseaux sociaux</h3>
+              <div className={styles.socials}>
+                {[MessageCircle, Globe, Mail, Phone].map((Icon, index) => (
+                  <a key={index} href="#" aria-label={`Réseau social ${index + 1}`}>
+                    <Icon size={17} />
+                  </a>
+                ))}
               </div>
+            </section>
 
-              <InfoBlock />
-
-              <div className="mt-10">
-                <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold mb-5">
-                  Horaires d&apos;ouverture
-                </p>
-
-                <Hour day="Lun — Ven" time="08h00 – 18h00" />
-                <Hour day="Samedi" time="09h00 – 14h00" />
-                <Hour day="Dimanche" time="Fermé" muted />
-
-                <p className="text-sm text-gray-500 mt-4">
-                  Urgences chantier : disponible 7j/7 par WhatsApp
-                </p>
-              </div>
-
-              <button className="mt-8 w-full border border-green-400/30 bg-green-50 py-4 text-green-700 font-semibold">
-                Écrire sur WhatsApp
-                <br />
-                <span className="font-normal text-sm">
-                  Réponse en moins de 2h
-                </span>
-              </button>
-
-              <div className="mt-10">
-                <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold mb-5">
-                  Nos réseaux sociaux
-                </p>
-    
-                <div className="flex gap-4">
-                  {[MessageCircle, Globe, Mail, Phone].map((Icon, i) => (
-                    <div
-                      key={i}
-                      className="w-12 h-12 border border-gray-200 flex items-center justify-center hover:border-yellow-500 transition"
-                    >
-                      <Icon size={18} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-10 border border-yellow-500/30 bg-yellow-500/5 p-6">
-                <p className="uppercase tracking-[3px] text-yellow-600 text-sm font-semibold">
-                  Consultation gratuite
-                </p>
-
-                <p className="mt-4 text-gray-600">
-                  Premier rendez-vous offert pour tout nouveau projet de
-                  construction ou d&apos;acquisition immobilière.
-                </p>
-
-                <p className="mt-4 font-semibold text-[#0B1F3A] flex items-center gap-2">
-                  <Calendar size={16} className="text-yellow-600" />
-                  Prenez RDV dès aujourd&apos;hui
-                </p>
-              </div>
-            </aside>
-          </Container>
+            <section className={styles.consultation}>
+              <h3>Consultation gratuite</h3>
+              <p>
+                Premier rendez-vous offert pour tout nouveau projet de
+                construction ou d&apos;acquisition immobilière.
+              </p>
+              <strong>
+                <Calendar size={14} /> Prenez RDV dès aujourd&apos;hui
+              </strong>
+            </section>
+          </aside>
         </section>
-      </main>
 
-      <Footer />
-    </>
+        <footer className={styles.footer}>
+          <p>© 2025 Perfect Immo & Engineering · Douala, Cameroun</p>
+          <div>
+            <a href="#">Mentions légales</a>
+            <a href="#">Politique de confidentialité</a>
+            <a href="#">Sitemap</a>
+          </div>
+        </footer>
+      </div>
+    </main>
   );
 }
 
-function QuickItem({
-  icon,
+function ContactNav() {
+  return (
+    <header className={styles.navbar}>
+      <Link href="/" className={styles.logo}>
+        <span className={styles.logoMark}>PI</span>
+        <span>
+          <span className={styles.logoText}>
+            Perfect Immo <em>&</em> Engineering
+          </span>
+          <span className={styles.logoSub}>Douala, Cameroun</span>
+        </span>
+      </Link>
+      <nav className={styles.navLinks} aria-label="Navigation principale">
+        <Link href="/" className={styles.navLink}>
+          Accueil
+        </Link>
+        <Link href="/services" className={styles.navLink}>
+          Services
+        </Link>
+        <Link href="/realisations" className={styles.navLink}>
+          Réalisations
+        </Link>
+        <Link href="/projets" className={styles.navLink}>
+          Projets
+        </Link>
+        <Link
+          href="/contact"
+          className={`${styles.navLink} ${styles.activeNavLink}`}
+        >
+          Contact
+        </Link>
+      </nav>
+      <a href="tel:+237676438342" className={styles.navCta}>
+        +237 676 438 342
+      </a>
+      <button className={styles.mobileToggle} aria-label="Menu">
+        <Menu size={24} />
+      </button>
+    </header>
+  );
+}
+
+function QuickLink({
+  href,
+  icon: Icon,
   label,
   value,
 }: {
-  icon: React.ReactNode;
+  href: string;
+  icon: typeof Phone;
   label: string;
   value: string;
 }) {
   return (
-    <div className="flex items-center gap-4 px-8 py-5 border-r border-yellow-500/10">
-      <div className="w-12 h-12 border border-yellow-500/30 text-yellow-500 flex items-center justify-center">
-        {icon}
-      </div>
-
+    <a href={href} className={styles.quickItem}>
+      <span>
+        <Icon size={19} />
+      </span>
       <div>
-        <p className="text-gray-400 text-xs uppercase tracking-wider">{label}</p>
-        <p className="text-white font-medium">{value}</p>
+        <small>{label}</small>
+        <strong>{value}</strong>
       </div>
-    </div>
+    </a>
   );
 }
 
 function Field({
   label,
+  name,
+  type = "text",
   placeholder,
   required,
 }: {
   label: string;
+  name: string;
+  type?: string;
   placeholder: string;
   required?: boolean;
 }) {
   return (
-    <div>
-      <label className="font-semibold text-[#0B1F3A]">
-        {label} {required && <span className="text-yellow-600">*</span>}
+    <div className={styles.formGroup}>
+      <label htmlFor={name}>
+        {label} {required && <em>*</em>}
       </label>
       <input
-        className="mt-2 w-full border border-gray-200 bg-white px-4 py-4 outline-none"
+        id={name}
+        name={name}
+        type={type}
         placeholder={placeholder}
+        required={required}
       />
     </div>
   );
 }
 
-function InfoBlock() {
+function SelectField({
+  label,
+  name,
+  children,
+}: {
+  label: string;
+  name: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div>
-      <p className="uppercase tracking-[4px] text-yellow-600 text-sm font-semibold mb-5">
-        Nos coordonnées
-      </p>
-
-      <InfoItem
-        icon={<MapPin />}
-        label="Adresse"
-        value="Immeuble PI&E, Avenue de la Liberté Bonanjo — Douala, Cameroun"
-      />
-      <InfoItem
-        icon={<Phone />}
-        label="Téléphone"
-        value="+237 6XX XXX XXX · +237 2XX XXX XXX"
-      />
-      <InfoItem
-        icon={<Mail />}
-        label="Email"
-        value="contact@perfectimmo.cm · info@perfectimmo.cm"
-      />
-      <InfoItem icon={<Globe />} label="Site web" value="www.perfectimmo.cm" />
+    <div className={styles.formGroup}>
+      <label htmlFor={name}>{label}</label>
+      <select id={name} name={name}>
+        {children}
+      </select>
     </div>
+  );
+}
+
+function SuccessMessage({
+  reference,
+  onReset,
+}: {
+  reference: string;
+  onReset: () => void;
+}) {
+  return (
+    <div className={styles.success}>
+      <CheckCircle2 size={42} />
+      <h3>Message envoyé avec succès !</h3>
+      <p>
+        Un conseiller vous contactera dans les 24h ouvrées.
+        <br />
+        Référence : <strong>#{reference}</strong>
+      </p>
+      <button type="button" onClick={onReset}>
+        Envoyer un autre message
+      </button>
+    </div>
+  );
+}
+
+function MapPlaceholder() {
+  return (
+    <a
+      href="https://www.google.com/maps/search/?api=1&query=Bonanjo+Douala+Cameroun"
+      target="_blank"
+      rel="noreferrer"
+      className={styles.map}
+    >
+      <span className={styles.mapGrid} />
+      <span className={styles.mapMarker}>
+        <i />
+        <b />
+      </span>
+      <strong>Bonanjo, Douala</strong>
+      <small>Voir sur Google Maps</small>
+    </a>
+  );
+}
+
+function ContactInfo() {
+  return (
+    <section className={styles.infoBlock}>
+      <h3>Nos coordonnées</h3>
+      <InfoItem
+        icon={MapPin}
+        label="Adresse"
+        content={
+          <>
+            Immeuble PI&E, Avenue de la Liberté
+            <br />
+            Bonanjo - Douala, Cameroun
+          </>
+        }
+      />
+      <InfoItem
+        icon={Phone}
+        label="Téléphone"
+        content={
+          <>
+            <a href="tel:+237676438342">+237 676 438 342</a>
+            <br />
+            <small>+237 233 XX XX XX (bureau)</small>
+          </>
+        }
+      />
+      <InfoItem
+        icon={Mail}
+        label="Email"
+        content={
+          <>
+            <a href="mailto:contact@perfectimmo.cm">
+              contact@perfectimmo.cm
+            </a>
+            <br />
+            <small>info@perfectimmo.cm</small>
+          </>
+        }
+      />
+      <InfoItem
+        icon={Globe}
+        label="Site web"
+        content={<em>www.perfectimmo.cm</em>}
+      />
+    </section>
   );
 }
 
 function InfoItem({
-  icon,
+  icon: Icon,
   label,
-  value,
+  content,
 }: {
-  icon: React.ReactNode;
+  icon: typeof Phone;
   label: string;
-  value: string;
+  content: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-4 mb-6">
-      <div className="w-10 h-10 border border-gray-200 flex items-center justify-center text-[#0B1F3A] shrink-0">
-        {icon}
-      </div>
-
+    <div className={styles.infoItem}>
+      <span>
+        <Icon size={17} />
+      </span>
       <div>
-        <p className="text-gray-400 text-sm">{label}</p>
-        <p className="text-[#0B1F3A] font-semibold leading-6">{value}</p>
+        <small>{label}</small>
+        <p>{content}</p>
       </div>
     </div>
   );
 }
 
-function Hour({
-  day,
-  time,
-  muted,
-}: {
-  day: string;
-  time: string;
-  muted?: boolean;
-}) {
+function OpeningHours() {
   return (
-    <div className="flex justify-between py-3 border-b border-gray-200">
-      <span className="text-gray-600">{day}</span>
-      <span className={muted ? "text-gray-400 italic" : "font-semibold"}>
-        {time}
-      </span>
-    </div>
+    <section className={styles.infoBlock}>
+      <h3>Horaires d&apos;ouverture</h3>
+      <div className={styles.hours}>
+        <p>
+          <span>Lun - Ven</span>
+          <strong>08h00 - 18h00</strong>
+        </p>
+        <p>
+          <span>Samedi</span>
+          <strong>09h00 - 14h00</strong>
+        </p>
+        <p>
+          <span>Dimanche</span>
+          <em>Fermé</em>
+        </p>
+      </div>
+      <small className={styles.emergency}>
+        Urgences chantier : disponible 7j/7 par WhatsApp
+      </small>
+    </section>
   );
-    }
+}
