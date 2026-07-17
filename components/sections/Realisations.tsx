@@ -1,3 +1,5 @@
+import Container from "@/components/layout/Container";
+
 const realisations = [
   {
     tag: "Résidentiel · 2024",
@@ -19,8 +21,8 @@ const realisations = [
 
 export default function Realisations() {
   return (
-    <section className="w-full bg-[#f6f5f0] py-[52px]">
-      <div className="inner">
+    <section className="w-full bg-[#f6f5f0] py-16 lg:py-24">
+      <Container>
         <p className="eyebrow">Notre portfolio</p>
         <h2 className="section-title">
           Réalisations
@@ -54,7 +56,7 @@ export default function Realisations() {
             Voir toutes les réalisations →
           </a>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

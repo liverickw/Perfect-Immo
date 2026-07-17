@@ -1,3 +1,5 @@
+import Container from "@/components/layout/Container";
+
 const expertises = [
   [
     "Immobilier résidentiel",
@@ -27,8 +29,8 @@ const expertises = [
   
 export default function Expertise() {
   return (
-    <section className="w-full bg-[#fbfbf8] pb-[50px] pt-[52px]">
-      <div className="inner">
+    <section className="w-full bg-[#fbfbf8] py-16 lg:py-24">
+      <Container>
         <div className="max-w-[430px]">
           <p className="eyebrow">Ce que nous faisons</p>
           <h2 className="section-title">
@@ -42,13 +44,15 @@ export default function Expertise() {
           </p>
         </div>
 
-        <div className="mt-[34px] grid grid-cols-3 md:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {expertises.map(([title, description], index) => (
             <article
               key={title}
               className={`min-h-[217px] border-[#dedbd3] px-5 py-[25px] ${
                 index < 3 ? "border-b" : ""
-              } ${index % 3 !== 0 ? "md:border-l" : ""}`}
+              } ${index % 2 !== 0 ? "sm:border-l lg:border-l-0" : ""} ${
+                index % 3 !== 0 ? "lg:border-l" : ""
+              }`}
             >
               <span className="block h-[47px] w-[47px] border border-[#dedbd3] bg-white" />
               <h3 className="mt-[19px] text-[16px] font-black text-[#061b35]">
@@ -60,7 +64,7 @@ export default function Expertise() {
             </article>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

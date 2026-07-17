@@ -1,3 +1,5 @@
+import Container from "@/components/layout/Container";
+
 const values = [
   "Intégrité et transparence dans chaque transaction",
   "Excellence technique et respect des délais",
@@ -12,8 +14,8 @@ const stats = [
 
 export default function About() {
   return (
-    <section className="w-full bg-[#0a2039] py-[49px]">
-      <div className="inner grid gap-10 grid-cols-2">
+    <section className="w-full bg-[#0a2039] py-16 lg:py-24">
+      <Container className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
           <p className="eyebrow">Qui sommes-nous</p>
           <h2 className="serif mt-[17px] text-[31px] leading-[1.35] text-white">
@@ -40,8 +42,8 @@ export default function About() {
             ))}
           </div>
         </div>
-  
-        <div className="space-y-[13px] pt-[56px] h-[400px]">
+
+        <div className="space-y-[13px] lg:pt-[56px]">
           {stats.map(([number, title, text]) => (
             <article
               key={title}
@@ -61,8 +63,7 @@ export default function About() {
             </article>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
-  

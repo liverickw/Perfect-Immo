@@ -1,3 +1,5 @@
+import Container from "@/components/layout/Container";
+
 const testimonials = [
   {
     initials: "JE",
@@ -15,8 +17,8 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="site-shell bg-[#fbfbf8] py-[52px]">
-      <div className="inner">
+    <section className="w-full bg-[#fbfbf8] py-16 lg:py-24">
+      <Container>
         <p className="eyebrow">Ils nous font confiance</p>
         <h2 className="section-title">Témoignages clients</h2>
 
@@ -51,7 +53,7 @@ export default function Testimonials() {
             </article>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

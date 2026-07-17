@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Container from "@/components/layout/Container";
 
 const links = [
   { label: "Accueil", href: "/" },
@@ -11,7 +12,7 @@ const links = [
 export default function Navbar() {
   return (
     <header className="w-full bg-[#071d36]">
-      <nav className="inner flex h-[70px] items-center justify-between text-white">
+      <Container className="flex h-[70px] items-center justify-between text-white">
         <Link href="/" className="flex items-center gap-3">
           <span className="flex h-9 w-9 items-center justify-center border border-[#d2ad3d] font-serif text-sm text-[#d2ad3d]">
             PI
@@ -28,7 +29,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden h-full items-center md:flex">
+        <ul className="hidden h-full items-center gap-6 md:flex">
           {links.map((link, index) => (
             <li key={link.label} className="h-full">
               <Link
@@ -51,7 +52,7 @@ export default function Navbar() {
         >
           Contact
         </Link>
-      </nav>
+      </Container>
     </header>
   );
 }

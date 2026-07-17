@@ -1,3 +1,5 @@
+import Container from "@/components/layout/Container";
+
 const steps = [
   "Consultation\ngratuite",
   "Étude &\nfaisabilité",
@@ -8,8 +10,8 @@ const steps = [
 
 export default function Process() {
   return (
-    <section className="w-full bg-[#f6f5f0] pb-[70px] pt-[50px]">
-      <div className="inner">
+    <section className="w-full bg-[#f6f5f0] py-16 lg:py-24">
+      <Container>
         <p className="eyebrow">Notre méthode</p>
         <h2 className="section-title">Comment nous travaillons</h2>
 
@@ -28,7 +30,7 @@ export default function Process() {
             </div>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

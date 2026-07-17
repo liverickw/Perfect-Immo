@@ -1,12 +1,13 @@
 import Link from "next/link";
+import Container from "@/components/layout/Container";
 
 export default function CTA() {
   return (
-    <section className="w-full relative overflow-hidden bg-[#0a2039] py-[60px] text-center">
+    <section className="relative w-full overflow-hidden bg-[#0a2039] py-16 text-center lg:py-24">
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[470px] w-[470px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
 
-      <div className="inner relative h-[250px]">
+      <Container className="relative">
         <p className="text-[11px] font-black uppercase tracking-[4px] text-[#d2ad3d] h-[40px]">
           Démarrez dès aujourd&apos;hui
         </p>
@@ -26,8 +27,7 @@ export default function CTA() {
             Découvrir l&apos;entreprise
           </Link>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
-  
