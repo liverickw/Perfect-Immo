@@ -4,6 +4,7 @@ import blogRoutes from "./blog.routes";
 import contactRoutes from "./contact.routes";
 import projectRoutes from "./project.routes";
 import propertyRoutes from "./property.routes";
+import uploadRoutes from "./upload.routes";
 
 const router = Router();
 
@@ -13,5 +14,6 @@ router.use("/projects", projectRoutes);
 router.use("/realisations", projectRoutes);
 router.use("/blogs", blogRoutes);
 router.use("/contacts", contactRoutes);
+router.use("/upload", uploadRoutes);
 
 export default router;

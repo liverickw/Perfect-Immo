@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Prisma } from "@prisma/client";
+import { MulterError } from "multer";
 import { ZodError } from "zod";
 import { env } from "../config/env";
 import { AppError } from "../utils/app-error";
@@ -23,6 +24,16 @@ export const errorMiddleware = (
       success: false,
       message: "Validation failed",
       errors: error.flatten().fieldErrors,
+    });
+  }
+
+  if (error instanceof MulterError) {
+    return res.status(400).json({
+      success: false,
+      message:
+        error.code === "LIMIT_FILE_SIZE"
+          ? "Image too large (max 5MB)"
+          : error.message,
     });
   }
 

@@ -10,7 +10,13 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(5000),
   FRONTEND_URL: z.string().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  REDIS_URL: z.string().optional(),
+  CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(300),
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
 });
+
 
 const parsedEnv = envSchema.safeParse(process.env);
 

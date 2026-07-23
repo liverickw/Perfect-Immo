@@ -22,6 +22,17 @@ PORT=5000
 FRONTEND_URL="http://localhost:3000"
 ```
 
+Optional variables (the API runs fine without them, just with caching/upload disabled):
+
+```env
+REDIS_URL="redis://default:PASSWORD@HOST:6379"
+CACHE_TTL_SECONDS=300
+
+CLOUDINARY_CLOUD_NAME="..."
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
+```
+
 Use a fresh database URL if a previous secret was shared.
 
 3. Validate and generate Prisma:
@@ -43,12 +54,15 @@ npm.cmd run dev
 ```powershell
 Invoke-RestMethod -Uri "http://localhost:5000/health" -Method GET
 Invoke-RestMethod -Uri "http://localhost:5000/health/db" -Method GET
+Invoke-RestMethod -Uri "http://localhost:5000/health/redis" -Method GET
 Invoke-RestMethod -Uri "http://localhost:5000/api" -Method GET
 ```
 
 `/health` confirms Express is running.
 
 `/health/db` confirms Prisma can reach PostgreSQL.
+
+`/health/redis` confirms whether the Redis cache is connected (caching is optional; the API still works without it).
 
 ## Auth Flow
 
@@ -112,6 +126,9 @@ Admin protected:
 - `PUT /api/blogs/:id`
 - `DELETE /api/blogs/:id`
 - `GET /api/contacts`
+- `POST /api/upload/image` (multipart field `image`, optional body field `folder` = `properties` | `projects` | `blogs`, default `properties`)
+
+Upload flow: send the file to `POST /api/upload/image` first, get back `{ imageUrl }`, then use that URL in the `imageUrl` field when creating/updating a property, project, or blog. This endpoint returns 503 until `CLOUDINARY_*` env vars are set.
 
 ## Frontend Connection Map
 
@@ -129,14 +146,20 @@ http://localhost:5000
 
 ```text
 Browser
--> Next.js
--> Express API
--> Zod validation
--> JWT middleware for admin routes
--> Service layer
+-> Next.js (Vercel CDN + SSL)
+-> Express API (Zod validation, JWT middleware for admin routes)
+-> Service layer (Redis cache-aside: check cache, else hit repository + store)
 -> Repository layer
 -> Prisma ORM
 -> PostgreSQL
+
+Images:
+Browser -> POST /api/upload/image -> multer (memory) -> Cloudinary (auto WebP) -> imageUrl stored on the record
 ```
 
-Redis and Cloudinary are not installed in this backend yet. Add them later only when the project needs session caching or uploaded image management.
+Redis and Cloudinary are both wired in and optional:
+
+- No `REDIS_URL` set → every `getAll`/`getById` on properties, projects, and blogs just reads straight from PostgreSQL. No crash, no cache.
+- No `CLOUDINARY_*` vars set → `POST /api/upload/image` returns `503`, everything else keeps working.
+
+Cache keys are invalidated automatically on create/update/delete, so admin changes show up immediately for the next read.

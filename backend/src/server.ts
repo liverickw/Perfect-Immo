@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import { env } from "./config/env";
 import prisma from "./config/prisma";
+import redisClient from "./config/redis";
 import {
   errorMiddleware,
   notFoundMiddleware,
@@ -47,6 +48,15 @@ app.get("/health/db", async (_req, res, next) => {
   }
 });
 
+app.get("/health/redis", (_req, res) => {
+  const connected = redisClient?.status === "ready";
+  return res.status(200).json({
+    success: true,
+    message: connected ? "Redis is connected" : "Redis is not connected (caching disabled)",
+    connected,
+  });
+});
+
 app.get("/api", (_req, res) => {
   res.status(200).json({
     success: true,
@@ -58,7 +68,8 @@ app.get("/api", (_req, res) => {
       projects: ["/api/projects", "/api/realisations"],
       blogs: ["/api/blogs", "/api/blogs/:id", "/api/blogs/slug/:slug"],
       contacts: ["/api/contacts"],
-      health: ["/health", "/health/db"],
+      upload: ["/api/upload/image"],
+      health: ["/health", "/health/db", "/health/redis"],
     },
   });
 });
@@ -73,6 +84,9 @@ const server = app.listen(env.PORT, () => {
 
 const shutdown = async () => {
   await prisma.$disconnect();
+  if (redisClient) {
+    redisClient.disconnect();
+  }
   server.close(() => {
     process.exit(0);
   });
