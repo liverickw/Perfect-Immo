@@ -15,6 +15,7 @@ import {
   Send,
 } from "lucide-react";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
+import { api } from "@/lib/api/client";
 import styles from "./contact.module.css";
 
 const serif = Cormorant_Garamond({
@@ -56,6 +57,8 @@ export default function ContactPage() {
   const [reference, setReference] = useState("");
   const [formKey, setFormKey] = useState(0);
   const [serviceError, setServiceError] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function toggleService(service: string) {
     setServiceError(false);
@@ -66,9 +69,10 @@ export default function ContactPage() {
     );
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
+    setSubmitError("");
 
     if (!form.reportValidity()) {
       return;
@@ -79,8 +83,43 @@ export default function ContactPage() {
       return;
     }
 
-    setReference(`PIE-2025-${Math.floor(Math.random() * 9000) + 1000}`);
-    setSubmitted(true);
+    const formData = new FormData(form);
+    const firstName = String(formData.get("firstName") || "").trim();
+    const lastName = String(formData.get("lastName") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+    const city = String(formData.get("city") || "").trim();
+    const subject = String(formData.get("subject") || "").trim();
+    const message = String(formData.get("message") || "").trim();
+
+    try {
+      setIsSubmitting(true);
+      const contact = await api.createContact({
+        name: `${firstName} ${lastName}`.trim(),
+        email,
+        phone,
+        subject: [
+          subject || "Demande depuis le site",
+          selectedServices.join(", "),
+          selectedBudget && `Budget: ${selectedBudget}`,
+          city && `Ville: ${city}`,
+        ]
+          .filter(Boolean)
+          .join(" | "),
+        message,
+      });
+
+      setReference(
+        contact.id || `PIE-2025-${Math.floor(Math.random() * 9000) + 1000}`,
+      );
+      setSubmitted(true);
+    } catch {
+      setSubmitError(
+        "Impossible d'envoyer votre demande pour le moment. Veuillez réessayer ou nous contacter directement par téléphone.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function resetForm() {
@@ -88,6 +127,7 @@ export default function ContactPage() {
     setSelectedServices([]);
     setSelectedBudget("");
     setServiceError(false);
+    setSubmitError("");
     setFormKey((current) => current + 1);
   }
 
@@ -291,9 +331,14 @@ export default function ContactPage() {
 
                 <button type="submit" className={styles.submitButton}>
                   <Send size={16} />
-                  Envoyer ma demande
+                  {isSubmitting ? "Envoi en cours..." : "Envoyer ma demande"}
                   <span>→</span>
                 </button>
+                {submitError && (
+                  <p className={styles.fieldError} aria-live="polite">
+                    {submitError}
+                  </p>
+                )}
                 <p className={styles.formNote}>
                   <Lock size={12} /> Formulaire sécurisé · Réponse garantie sous
                   24h ouvrées

@@ -2,7 +2,7 @@ import streamifier from "streamifier";
 import cloudinary from "../config/cloudinary";
 import { AppError } from "./app-error";
 
-const FOLDERS = ["properties", "projects", "blogs"] as const;
+const FOLDERS = ["properties", "projects", "blogs", "services", "realisations", "media"] as const;
 export type UploadFolder = (typeof FOLDERS)[number];
 
 export const isValidUploadFolder = (value: string): value is UploadFolder =>

@@ -3,11 +3,11 @@ import prisma from "../config/prisma";
 
 export const propertyRepository = {
   findAll() {
-    return prisma.property.findMany({ orderBy: { createdAt: "desc" } });
+    return prisma.property.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
   },
 
   findById(id: string) {
-    return prisma.property.findUnique({ where: { id } });
+    return prisma.property.findFirst({ where: { id, deletedAt: null } });
   },
 
   create(data: Prisma.PropertyCreateInput) {
@@ -19,6 +19,6 @@ export const propertyRepository = {
   },
 
   delete(id: string) {
-    return prisma.property.delete({ where: { id } });
+    return prisma.property.update({ where: { id }, data: { deletedAt: new Date(), status: "ARCHIVED" } });
   },
 };

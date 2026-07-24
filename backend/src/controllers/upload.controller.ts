@@ -22,7 +22,7 @@ export const uploadController = {
     const folder = req.body.folder ?? "properties";
     if (!isValidUploadFolder(folder)) {
       throw new AppError(
-        "Invalid folder, expected one of: properties, projects, blogs",
+        "Invalid folder, expected one of: properties, projects, blogs, services, realisations, media",
         400
       );
     }

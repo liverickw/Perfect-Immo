@@ -45,8 +45,8 @@ const sans = Outfit({
   variable: "--services-sans",
   display: "swap",
 });
-
-type TabId = "immo" | "ingenierie" | "gestion" | "conseil" | "tarifs";
+  
+type TabId = "TOPO" | "GNSS & GÉODÉSIE" | "CARTOGRAPHIE" | "ARCHITECTURE" | "LOCATION";
 
 type ServiceItem = {
   icon: LucideIcon;
@@ -61,296 +61,295 @@ type FaqItem = {
 };
 
 const tabs: { id: TabId; label: string; icon: LucideIcon }[] = [
-  { id: "immo", label: "Immobilier", icon: Home },
-  { id: "ingenierie", label: "Ingénierie", icon: Ruler },
-  { id: "gestion", label: "Gestion locative", icon: KeyRound },
-  { id: "conseil", label: "Conseil & Études", icon: BadgeCheck },
-  { id: "tarifs", label: "Tarifs", icon: ReceiptText },
+  { id: "TOPO", label: "TOPOGRAPHIE", icon: Home },
+  { id: "GNSS & GÉODÉSIE", label: "GNSS & GÉODÉSIE", icon: Ruler },
+  { id: "CARTOGRAPHIE", label: "CARTOGRAPHIE SIG", icon: KeyRound },
+  { id: "ARCHITECTURE", label: "ARCHITECTURE", icon: BadgeCheck },
+  { id: "LOCATION", label: "LOCATION D'ÉQUIPEMENTS", icon: ReceiptText },
 ];
-
+  
 const immobilierServices: ServiceItem[] = [
   {
     icon: Home,
-    title: "Résidentiel - Vente",
+    title: "Levés Topographiques",
     description:
-      "Villas, appartements F2 à F6, duplex, terrains viabilisés. Zones : Bonapriso, Bastos, Akwa, Kotto, Makepe.",
-    tags: ["Villa", "Appartement", "Terrain"],
+      "Mesures de terrain, implantations, nivellement et plans topographiques.",
+    tags: ["Terrain", "Implantation", "Nivellement"],
   },
   {
     icon: KeyRound,
-    title: "Résidentiel - Location",
+    title: "Géodésie & GNSS",
     description:
-      "Location longue durée, location meublée, colocation sécurisée. Contrats de bail conformes au droit camerounais.",
-    tags: ["Longue durée", "Meublé", "Bail"],
+      "Levés GNSS RTK, géoréférencement et contrôle de précision.",
+    tags: ["RTK", "GNSS", "Géoréférencement"],
   },
   {
     icon: Store,
-    title: "Commercial - Vente",
+    title: "Cartographie & SIG",
     description:
-      "Immeubles de bureaux, locaux commerciaux, entrepôts et espaces industriels. Évaluation gratuite incluse.",
-    tags: ["Bureaux", "Commerce", "Entrepôt"],
+      "Production de cartes numériques, analyse spatiale et bases de données.",
+    tags: ["SIG", "Cartes", "Analyse"],
   },
   {
     icon: Building2,
-    title: "Commercial - Location",
+    title: "Architecture & Études",
     description:
-      "Location de bureaux équipés, espaces de coworking, surfaces commerciales en pied d'immeuble.",
-    tags: ["Coworking", "Pied immeuble"],
+      "Plans architecturaux, études techniques et faisabilité.",
+    tags: ["Plans", "Études", "Architecture"],
   },
   {
     icon: MapPin,
-    title: "Estimation immobilière",
+    title: "Implantation & VRD",
     description:
-      "Expertise et estimation de la valeur vénale de votre bien selon les prix du marché doualaien. Rapport certifié.",
-    tags: ["Expertise", "Rapport", "Certifié"],
+      "Implantation d'ouvrages, voiries et réseaux divers.",
+    tags: ["VRD", "Chantier", "Implantation"],
   },
   {
     icon: Star,
-    title: "Programmes neufs",
+    title: "Location d'Équipements",
     description:
-      "Vente sur plans (VEFA) de nos programmes résidentiels. Paiement échelonné disponible selon conditions.",
-    tags: ["VEFA", "Échelonné", "Neuf"],
+      "Drone, GNSS, stations totales et matériel terrain.",
+    tags: ["Drone", "GNSS", "Station Totale"],
   },
 ];
-
+  
 const engineeringServices: ServiceItem[] = [
   {
     icon: Hammer,
-    title: "Maîtrise d'oeuvre",
+    title: "Levés GNSS RTK",
     description:
-      "Direction et coordination complète du chantier, de l'appel d'offres à la livraison. Suivi budgétaire en temps réel.",
-    tags: ["Coordination", "Planning"],
+      "Acquisition de données GNSS avec précision centimétrique pour projets techniques.",
+    tags: ["RTK", "GNSS", "Précision"],
   },
   {
     icon: Ruler,
-    title: "Études structurelles",
+    title: "Géoréférencement",
     description:
-      "Calculs béton armé, charpente métallique, fondations profondes et spéciales. Logiciels ETABS, ROBOT, AutoCAD.",
-    tags: ["Béton armé", "Charpente"],
+      "Référencement précis de terrains, ouvrages et infrastructures.",
+    tags: ["Coordonnées", "SIG", "Référentiel"],
   },
   {
     icon: Building2,
-    title: "VRD & Réseaux",
+    title: "Points de contrôle",
     description:
-      "Voirie, réseaux divers : assainissement, eau potable, électricité BT/MT, télécom. Levés topographiques.",
-    tags: ["VRD", "Assainissement", "AEP"],
+      "Installation et contrôle de repères géodésiques pour vos projets.",
+    tags: ["Repères", "Contrôle", "Mesures"],
   },
   {
     icon: Building2,
-    title: "Architecture & Plans",
+    title: "Densification géodésique",
     description:
-      "Conception architecturale, plans d'exécution, permis de construire, dépouillement des offres des entreprises.",
-    tags: ["Plans", "3D", "Permis"],
+      "Extension de réseaux géodésiques pour zones d'aménagement.",
+    tags: ["Réseau", "Géodésie", "Précision"],
   },
   {
     icon: Eye,
-    title: "Contrôle technique",
+    title: "Implantation GNSS",
     description:
-      "Inspection béton, contrôle qualité matériaux, essais de charge et rapports certifiés pour maîtres d'ouvrage.",
-    tags: ["Inspection", "Qualité"],
+      "Implantation d'ouvrages, axes et points de chantier.",
+    tags: ["Implantation", "Chantier", "GNSS"],
   },
   {
     icon: Plug,
-    title: "Fluides & Électricité",
+    title: "Contrôle qualité",
     description:
-      "Climatisation CVC, plomberie sanitaire, électricité courants forts/faibles, groupes électrogènes et solaire.",
-    tags: ["CVC", "Électricité", "Solaire"],
+      "Vérification des données, contrôle et validation des relevés.",
+    tags: ["Contrôle", "Validation", "Qualité"],
   },
 ];
-
+  
 const managementServices: ServiceItem[] = [
   {
     icon: Users,
-    title: "Recherche de locataires",
+    title: "Cartographie numérique",
     description:
-      "Sélection rigoureuse des candidats : vérification solvabilité, référencement et état des lieux d'entrée.",
-    tags: ["Sélection", "Solvabilité"],
+      "Création de cartes numériques professionnelles pour projets, études et aménagements.",
+    tags: ["SIG", "Cartes", "Numérique"],
   },
   {
     icon: Banknote,
-    title: "Perception des loyers",
+    title: "Analyse spatiale",
     description:
-      "Encaissement mensuel, relances impayés, reversement propriétaire avec relevé de compte détaillé.",
-    tags: ["Loyers", "Relevé"],
+      "Traitement et analyse des données géographiques pour faciliter la prise de décision.",
+    tags: ["Analyse", "Données", "Territoire"],
   },
   {
     icon: Wrench,
-    title: "Entretien & réparations",
+    title: "Cartographie thématique",
     description:
-      "Réseau d'artisans certifiés pour interventions rapides. Devis validé avant tout engagement de dépense.",
-    tags: ["Maintenance", "Artisans"],
+      "Production de cartes spécialisées : urbanisme, environnement, infrastructures et réseaux.",
+    tags: ["Thématique", "Urbanisme", "Réseaux"],
   },
   {
     icon: FileText,
-    title: "Suivi juridique & baux",
+    title: "Bases de données SIG",
     description:
-      "Rédaction des baux, renouvellements et gestion des contentieux locatifs avec notre service juridique.",
-    tags: ["Baux", "Juridique"],
+      "Conception et structuration de bases de données géographiques performantes.",
+    tags: ["Base SIG", "Données", "GIS"],
   },
   {
     icon: BarChart3,
-    title: "Rapports trimestriels",
+    title: "Mise à jour géospatiale",
     description:
-      "Reporting complet : taux d'occupation, revenus, dépenses et rentabilité nette de votre patrimoine.",
-    tags: ["Reporting", "Rentabilité"],
+      "Actualisation et maintenance des données géographiques de vos projets.",
+    tags: ["Mise à jour", "Données", "Suivi"],
   },
   {
     icon: ShieldCheck,
-    title: "Assurance vacance",
+    title: "Visualisation & reporting",
     description:
-      "Garantie loyers impayés et protection juridique propriétaire incluses dans nos formules Premium.",
-    tags: ["GLI", "Protection"],
+      "Présentation claire des données spatiales sous forme de cartes et tableaux d'analyse.",
+    tags: ["Rapports", "Cartes", "Décision"],
   },
 ];
-
+  
 const consultingServices: ServiceItem[] = [
   {
     icon: FileCheck,
-    title: "Audit technique",
+    title: "Plans architecturaux",
     description:
-      "Diagnostic complet d'un bâtiment existant : structure, toiture, fluides, humidité. Rapport certifié.",
-    tags: ["Diagnostic", "Rapport"],
+      "Conception de plans de maisons, immeubles, commerces et bâtiments administratifs selon vos besoins.",
+    tags: ["Plans", "Conception"],
   },
   {
     icon: BarChart3,
-    title: "Étude de faisabilité",
+    title: "Études de faisabilité",
     description:
-      "Analyse technique, financière et réglementaire de votre projet avant tout engagement.",
+      "Analyse technique, financière et réglementaire pour évaluer la viabilité de votre projet avant son lancement.",
     tags: ["Faisabilité", "Rentabilité"],
   },
   {
     icon: BadgeCheck,
     title: "Permis de construire",
     description:
-      "Constitution et dépôt du dossier de permis auprès des services de l'urbanisme de Douala.",
+      "Préparation et dépôt des dossiers administratifs nécessaires à l'obtention du permis de construire.",
     tags: ["Urbanisme", "Dossier"],
   },
   {
     icon: Banknote,
-    title: "Conseil en investissement",
+    title: "Modélisation 3D",
     description:
-      "Analyse du marché immobilier local, recommandations d'acquisition et optimisation du rendement.",
-    tags: ["Marché", "Rendement"],
+      "Visualisation réaliste de votre futur bâtiment grâce à des maquettes et rendus architecturaux 3D.",
+    tags: ["3D", "Rendu"],
   },
   {
     icon: Scale,
-    title: "Assistance juridique",
+    title: "Suivi administratif",
     description:
-      "Vérification des titres fonciers, sécurisation des transactions et conseils OHADA.",
-    tags: ["Titre foncier", "OHADA"],
+      "Accompagnement auprès des administrations et organismes compétents durant tout le projet.",
+    tags: ["Suivi", "Formalités"],
   },
   {
     icon: Plane,
-    title: "Service diaspora",
+    title: "Assistance projet",
     description:
-      "Investissement à distance, visites virtuelles, mandats de représentation et remises de clés.",
-    tags: ["Diaspora", "À distance"],
+      "Conseils techniques et coordination des différents intervenants pour garantir le bon déroulement du projet.",
+    tags: ["Coordination", "Support"],
   },
 ];
-
+  
 const immobilierFaqs: FaqItem[] = [
   {
-    question: "Quels documents faut-il pour acheter un bien à Douala ?",
+    question: "Qu'est-ce qu'un levé topographique ?",
     answer:
-      "Pour l'achat : CNI ou passeport valide, justificatif de domicile, preuves de revenus et apport initial si financement bancaire. Nous vous guidons dans la constitution du dossier notarial complet.",
+      "Un levé topographique permet de relever avec précision les caractéristiques d'un terrain avant un projet de construction.",
   },
   {
-    question: "Quel est le délai moyen pour finaliser une vente immobilière ?",
+    question: "Quelle précision obtenez-vous avec le GNSS RTK ?",
     answer:
-      "En moyenne 4 à 8 semaines entre la signature du compromis et l'acte définitif chez le notaire, selon la disponibilité des documents et le financement.",
+      "La technologie RTK permet une précision centimétrique.",
   },
   {
-    question: "Proposez-vous des visites en dehors de Douala ?",
+    question: "Proposez-vous la location d'équipements ?",
     answer:
-      "Oui. Nous intervenons à Yaoundé, Kribi, Bafoussam et Limbé. Pour la diaspora, nous proposons des visites virtuelles en vidéo HD et des mandats de représentation.",
+      "Oui. Nous proposons drones, récepteurs GNSS et stations totales.",
   },
 ];
-
+  
 const engineeringFaqs: FaqItem[] = [
   {
-    question: "Quel est le coût d'une mission de maîtrise d'oeuvre ?",
+    question: "Quelle précision obtenez-vous avec le GNSS RTK ?",
     answer:
-      "Les honoraires varient généralement entre 8% et 12% du montant HT des travaux, selon la complexité du projet. Un devis détaillé est établi après étude du programme.",
+      "Nos levés GNSS RTK atteignent généralement une précision centimétrique selon les conditions du terrain.",
   },
   {
-    question: "Intervenez-vous en dehors de Douala sur des chantiers ?",
+    question: "Intervenez-vous partout au Cameroun ?",
     answer:
-      "Oui, nos équipes interviennent sur l'ensemble du territoire camerounais. Des frais de déplacement peuvent s'appliquer au-delà de 100 km de Douala.",
+      "Oui, nos équipes interviennent à Douala, Yaoundé et dans toutes les régions du Cameroun.",
   },
   {
     question:
-      "Travaillez-vous avec les entreprises de construction existantes du client ?",
+      "Les données sont-elles compatibles avec AutoCAD et SIG ?",
     answer:
-      "Oui. Nous pouvons assurer le contrôle et la supervision même si vous avez déjà sélectionné votre entreprise, en qualité d'assistant à maîtrise d'ouvrage.",
+      "Oui, les données peuvent être livrées dans des formats compatibles AutoCAD, SIG et autres logiciels techniques.",
   },
 ];
-
+  
 const consultingFaqs: FaqItem[] = [
   {
-    question: "Comment vérifier la fiabilité d'un titre foncier au Cameroun ?",
+    question: "Combien coûte un plan architectural ?",
     answer:
-      "Nous vérifions l'authenticité du titre, l'absence d'hypothèque, les limites cadastrales et l'identité du propriétaire auprès de la Conservation Foncière compétente.",
+      "Le coût dépend de la superficie, du type de bâtiment et du niveau de détail demandé. Un devis personnalisé est établi après étude de votre projet.",
   },
   {
-    question: "Pouvez-vous m'aider à investir depuis la France ou les USA ?",
+    question: "Pouvez-vous obtenir le permis de construire pour moi ?",
     answer:
-      "Oui. Notre service diaspora inclut visites virtuelles HD, mandat de représentation notarié, coordination bancaire et remise des clés en votre absence.",
+      "Oui. Nous pouvons constituer le dossier technique et vous accompagner dans les démarches administratives jusqu'à l'obtention du permis.",
   },
 ];
 
 const pricingPlans = [
   {
-    name: "Essentiel",
+    name: "CARTOGRAPHIE",
     price: "6%",
-    note: "des loyers encaissés / mois",
+    note: "Cartes de base pour projets simples.",
     features: [
-      "Recherche locataire",
-      "État des lieux",
-      "Rédaction bail",
-      "Encaissement loyers",
-      "Relevé mensuel",
+      "Cartographie numérique",
+      "Export PDF",
+      "Géoréférencement",
+      "Livraison rapide",
     ],
   },
   {
-    name: "Premium",
+    name: "SIG AVANCÉ",
     price: "9%",
-    note: "des loyers encaissés / mois",
+    note: "Analyses spatiales avancées et solutions géomatiques pour projets professionnels.",
     featured: true,
     features: [
-      "Tout Essentiel inclus",
-      "Entretien courant",
-      "Suivi juridique",
-      "Rapport trimestriel",
-      "GLI incluse",
+      "Tout Cartographie inclus",
+      "Analyse spatiale",
+      "Base de données SIG",
+      "Cartes thématiques",
+      "Rapport techniqu",
     ],
   },
   {
-    name: "Patrimoine",
+    name: "PROJET SUR MESURE",
     price: "Sur devis",
-    note: "pour 5 biens et plus",
+    note: "Accompagnement complet pour projets complexes et grands territoires.",
     features: [
-      "Tout Premium inclus",
-      "Gestionnaire dédié",
-      "Optimisation fiscale",
-      "Bilan annuel certifié",
-      "Tarif préférentiel",
+      "Études complexes",
+      "Grand territoir",
+      "Données multi-sources",
+      "Accompagnement complet",
+      "Support technique",
     ],
   },
 ];
-
+  
 const priceRows = [
-  ["Transaction immobilière (vente)", "3 à 5 %", "4-8 semaines"],
-  ["Transaction immobilière (location)", "1 mois loyer", "1-3 semaines"],
-  ["Maîtrise d'oeuvre", "8 à 12 %", "Selon projet"],
-  ["Études structurelles", "Sur devis", "2-4 semaines"],
-  ["Gestion locative Essentiel", "6 % / mois", "Continu"],
-  ["Gestion locative Premium", "9 % / mois", "Continu"],
-  ["Audit technique bâtiment", "Sur devis", "5-10 jours"],
-  ["Consultation initiale", "GRATUITE", "Sous 24h"],
+  ["Drone DJI Mavic 3 Enterprise", "40 000 FCFA", "Per day"],
+  ["GNSS RTK Receiver Pair", "20 000 FCFA", "Per day"],
+  ["CORS GNSS Receiver", "10 000 FCFA", "5 days"],
+  ["Total Station", "Quotation", "Per day"],
+  ["Field Controller", "Included depending on equipment", "Per day"],
+  ["Specialized Software", "Quotation", "Per project"],
+  ["Technical Assistance", "Quotation", "Per mission"],
+  ["Reservation & Consultation", "FREE", "Immediate"],
 ];
 
 export default function ServicesPage() {
-  const [activeTab, setActiveTab] = useState<TabId>("immo");
+  const [activeTab, setActiveTab] = useState<TabId>("TOPO");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   function selectTab(id: TabId) {
@@ -370,16 +369,15 @@ export default function ServicesPage() {
               <span>›</span>
               <strong>Services</strong>
             </div>
-            <p className={styles.eyebrow}>Notre expertise</p>
+            <p className={styles.eyebrow}>NOS PRESTATIONS</p>
             <h1>
-              Des services <em>complets</em>
+              Des solutions <em>techniques</em>
               <br />
-              de A à Z
+              pour tous vos projets
             </h1>
             <p className={styles.heroDescription}>
-              Immobilier résidentiel, commercial, maîtrise d&apos;oeuvre, études
-              d&apos;ingénierie - une seule adresse pour tous vos projets à
-              Douala et au Cameroun.
+              Topographie, géodésie GNSS, cartographie SIG,
+              architecture, implantation et location d&apos;équipements professionnels.
             </p>
           </div>
         </section>
@@ -387,10 +385,10 @@ export default function ServicesPage() {
         <section className={styles.stats}>
           <div className={styles.statsInner}>
             {[
-              ["120+", "Projets livrés"],
-              ["15 ans", "Expérience"],
-              ["6", "Pôles d'expertise"],
-              ["48h", "Délai devis"],
+              ["120+", "LEVÉS RÉALISÉS"],
+              ["15 ans", "ANS D'EXPÉRIENCE"],
+              ["6", "DOMAINES TECHNIQUES"],
+              ["48h", "DE RÉPONSE"],
             ].map(([number, label]) => (
               <div key={label} className={styles.stat}>
                 <strong>{number}</strong>
@@ -417,42 +415,42 @@ export default function ServicesPage() {
             ))}
           </div>
         </nav>
-
+  
         <section className={styles.panel}>
-          {activeTab === "immo" && (
+          {activeTab === "TOPO" && (
             <StandardPanel
-              eyebrow="Pôle Immobilier"
+              eyebrow="TOPOGRAPHIE & GÉOMATIQUE"
               title={
                 <>
-                  Vente & Location
+                  Levés topographiques
                   <br />
-                  de biens immobiliers
+                  et implantation terrain
                 </>
               }
-              description="Résidentiel, commercial ou industriel - nous vous accompagnons à chaque étape, de la recherche à la signature de l'acte."
+              description="Mesures de terrain, implantations, nivellement et plans topographiques pour projets de construction et d'aménagement."
               featuredTitle={
                 <>
-                  Vente clé en main
+                  Levés topographiques
                   <br />
-                  résidentielle
+                  professionnels
                 </>
               }
-              featuredDescription="Villas, appartements, duplex et programmes neufs à Douala, Yaoundé et Kribi. Accompagnement notarial inclus."
+              featuredDescription="Levés planimétriques et altimétriques, implantation d'ouvrages, nivellement de précision et plans détaillés."
               featuredPoints={[
-                "Portefeuille de 80+ biens actifs à Douala",
-                "Visites organisées sous 48h",
-                "Accompagnement complet jusqu'à l'acte notarié",
-                "Financement bancaire facilité",
-                "Garantie juridique sur tous les titres fonciers",
+                "Levés GNSS RTK de haute précision",
+                "Implantation de bâtiments et infrastructures",
+                "Nivellement de chantier",
+                "Plans topographiques détaillés",
+                "Contrôle et suivi d'exécution",
               ]}
               services={immobilierServices}
               processTitle="Notre processus d'acquisition"
               steps={[
                 ["1", "Analyse", "de besoins"],
-                ["2", "Sélection", "de biens"],
-                ["3", "Visite", "guidée"],
-                ["4", "Offre &", "négociation"],
-                ["5", "Acte", "notarié"],
+                ["2", "Reconnaissance", "terrain"],
+                ["3", "Acquisition", "des données"],
+                ["4", "Traitement &", "contrôle"],
+                ["5", "Livraison des", "résultats"],
               ]}
               faqTitle="Questions fréquentes - Immobilier"
               faqs={immobilierFaqs}
@@ -462,41 +460,41 @@ export default function ServicesPage() {
               <Testimonials />
             </StandardPanel>
           )}
-
-          {activeTab === "ingenierie" && (
+  
+          {activeTab === "GNSS & GÉODÉSIE" && (
             <StandardPanel
-              eyebrow="Pôle Ingénierie"
+              eyebrow="GNSS & GÉODÉSIE"
               title={
                 <>
-                  Maîtrise d&apos;oeuvre &
+                  Géodésie &
                   <br />
-                  Ingénierie technique
+                  Positionnement GNSS
                 </>
               }
-              description="De la conception à la livraison, nos ingénieurs certifiés pilotent vos chantiers avec rigueur, respect du budget et des délais."
+              description="Levés GNSS RTK, géoréférencement, densification de réseaux géodésiques et contrôle de précision pour tous vos projets."
               featuredTitle={
                 <>
-                  Maîtrise d&apos;oeuvre
+                  Levés GNSS RTK
                   <br />
-                  complète
+                  de haute précision
                 </>
               }
-              featuredDescription="Pilotage intégral de votre projet : conception, coordination des corps de métier, suivi de chantier et réception des travaux."
+              featuredDescription="Mesures GNSS centimétriques, géoréférencement de projets, implantation et contrôle géodésique."
               featuredPoints={[
-                "12 ingénieurs certifiés (génie civil, structure, VRD)",
-                "Respect du budget ± 5% garanti contractuellement",
-                "Rapports de chantier hebdomadaires digitaux",
-                "Assurance décennale et responsabilité civile",
-                "Conformité normes camerounaises & OHADA",
+                "Précision centimétrique RTK",
+                "Géoréférencement de projets",
+                "Mise en place de points de contrôle",
+                "Densification géodésique",
+                "Contrôle de précision et vérification",
               ]}
               services={engineeringServices}
-              processTitle="Notre processus d'ingénierie"
+              processTitle="NOTRE PROCESSUS GNSS"
               steps={[
-                ["1", "Consultation", "technique"],
-                ["2", "Études &", "conception"],
-                ["3", "Appel", "d'offres"],
-                ["4", "Exécution", "chantier"],
-                ["5", "Réception &", "garantie"],
+                ["1", "Analyse du", "besoin"],
+                ["2", "Préparation", "terrain"],
+                ["3", " Acquisition", "GNSS"],
+                ["4", "Traitement", "des données"],
+                ["5", "Livraison", "des résultats"],
               ]}
               faqTitle="Questions fréquentes - Ingénierie"
               faqs={engineeringFaqs}
@@ -506,47 +504,47 @@ export default function ServicesPage() {
               <Engagements />
             </StandardPanel>
           )}
-
-          {activeTab === "gestion" && (
+    
+          {activeTab === "CARTOGRAPHIE" && (
             <>
               <SectionHeading
-                eyebrow="Pôle Gestion"
+                eyebrow="PÔLE CARTOGRAPHIE"
                 title={
                   <>
-                    Gestion locative
+                    Cartographie SIG
                     <br />
-                    <em>sans tracas</em>
+                    <em>et analyse spatiale</em>
                   </>
                 }
-                description="Confiez-nous votre patrimoine immobilier. Nous gérons tout : locataires, loyers, entretien et aspects juridiques."
+                description="Valorisation et analyse de vos données spatiales. Production de cartes numériques, analyses SIG et gestion de bases de données géographiques."
               />
               <ServiceGrid services={managementServices} />
               <PricingCards />
             </>
           )}
-
-          {activeTab === "conseil" && (
+  
+          {activeTab === "ARCHITECTURE" && (
             <>
               <SectionHeading
-                eyebrow="Pôle Conseil"
+                eyebrow="ARCHITECTURE"
                 title={
                   <>
-                    Études, conseil &
+                    Architecture, études &
                     <br />
-                    <em>accompagnement</em>
+                    <em>conception</em>
                   </>
                 }
-                description="Expertise technique et juridique pour sécuriser vos décisions d'investissement immobilier et de construction au Cameroun."
+                description="Conception architecturale, études techniques et accompagnement administratif pour concrétiser vos projets de construction."
               />
               <ServiceGrid services={consultingServices} />
               <ProcessBlock
-                title="Processus d'étude & conseil"
+                title="PROCESSUS ARCHITECTURAL"
                 steps={[
-                  ["1", "Briefing", "initial"],
-                  ["2", "Collecte", "données"],
-                  ["3", "Analyse", "technique"],
-                  ["4", "Rapport &", "recommandations"],
-                  ["5", "Suivi &", "mise en oeuvre"],
+                  ["1", "Prise de", "besoin"],
+                  ["2", "Étude &", "conception"],
+                  ["3", "Plans &", "validation"],
+                  ["4", "Permis &", "formalités"],
+                  ["5", "Suivi du", "projet"],
                 ]}
               />
               <FaqBlock
@@ -557,24 +555,38 @@ export default function ServicesPage() {
               />
             </>
           )}
-
-          {activeTab === "tarifs" && <PricingTable />}
+  
+          {activeTab === "LOCATION" && <PricingTable />}
         </section>
-
+  
         <section className={styles.ctaBand}>
           <div>
             <h2>
-              Consultation gratuite
-              <br />
-              sans engagement
+              {activeTab === "LOCATION" ? (
+                <>
+                  Need professional
+                  <br />
+                  surveying equipment?
+                </>
+              ) : (
+                <>
+                  Besoin d&apos;une expertise
+                  <br />
+                  pour votre projet ?
+                </>
+              )}
             </h2>
-            <p>Réponse sous 24h · Devis sous 48h</p>
+            <p>
+              {activeTab === "LOCATION"
+                ? "Drone • GNSS RTK • CORS • Total Stations • Mapping"
+                : "Topographie • GNSS • Cartographie • Architecture • Équipements"}
+            </p>
           </div>
           <Link href="/contact" className={styles.navyButton}>
             <Send size={16} /> Demander un devis
           </Link>
         </section>
-
+  
         <footer className={styles.footer}>
           <p>© 2025 Perfect Immo & Engineering · Douala, Cameroun</p>
           <div>
@@ -716,7 +728,7 @@ function FeaturedService({
   return (
     <article className={styles.featuredService}>
       <div>
-        <p className={styles.featuredLabel}>Service phare</p>
+        <p className={styles.featuredLabel}>PRESTATION PRINCIPALE</p>
         <h3>{title}</h3>
         <div className={styles.featuredDescription}>{description}</div>
         <Link href="/contact" className={styles.goldButton}>
@@ -734,7 +746,7 @@ function FeaturedService({
     </article>
   );
 }
-
+  
 function ServiceGrid({ services }: { services: ServiceItem[] }) {
   return (
     <div className={styles.serviceGrid}>
@@ -826,12 +838,12 @@ function Testimonials() {
     <div className={styles.testimonials}>
       {[
         [
-          "J'ai trouvé ma villa à Kotto en 3 semaines. L'équipe est très professionnelle et rassurante dans les démarches.",
+          "PIE a réalisé nos levés topographiques avec une excellente précision et dans les délais annoncés.",
           "Christelle Mbarga",
           "Acheteuse - Résidentiel",
         ],
         [
-          "Nos locaux commerciaux à Akwa ont été loués en 10 jours. Service rapide et suivi impeccable du bail.",
+          "Leur expertise GNSS RTK nous a permis d'obtenir des résultats fiables pour notre chantier.",
           "Robert Tagne",
           "Investisseur - Commercial",
         ],
@@ -849,12 +861,12 @@ function Testimonials() {
 
 function Engagements() {
   const items = [
-    [ShieldCheck, "Assurance décennale", "Couverture complète 10 ans sur tous nos ouvrages livrés"],
-    [CalendarDays, "Respect des délais", "Pénalités contractuelles en cas de retard imputable à PI&E"],
-    [BarChart3, "Reporting digital", "Rapport de chantier chaque vendredi avec photos et avancement"],
-    [Check, "Normes & conformité", "Respect strict des normes camerounaises, DTU et EUROCODE"],
+    [ShieldCheck, "Précision RTK", "Précision centimétrique garantie sur les relevés."],
+    [CalendarDays, "Rapidité d'exécution", "Acquisition rapide des données terrain."],
+    [BarChart3, "Compatibilité SIG", "Export compatible SIG, DAO et BIM."],
+    [Check, "Fiabilité des données", "Contrôle qualité avant livraison."],
   ] as const;
-
+  
   return (
     <div className={styles.engagements}>
       {items.map(([Icon, title, description]) => (
@@ -904,21 +916,23 @@ function PricingTable() {
   return (
     <>
       <SectionHeading
-        eyebrow="Nos honoraires"
+        eyebrow="Location d'équipements"
         title={
           <>
-            Tarifs clairs &
+            Des équipements
             <br />
-            <em>transparents</em>
+            professionnels
+            <br />
+            <em>à votre disposition</em>
           </>
         }
-        description="Pas de frais cachés. Tous nos tarifs sont annoncés dès la première consultation et formalisés dans un contrat de mission signé."
+        description="Louez du matériel topographique de haute précision pour vos levés, implantations, contrôles et travaux de terrain."
       />
       <div className={styles.priceTable}>
         <div className={`${styles.priceRow} ${styles.priceHead}`}>
-          <span>Service</span>
-          <span>Tarif</span>
-          <span>Délai</span>
+          <span>Equipment</span>
+          <span>Price</span>
+          <span>Duration</span>
         </div>
         {priceRows.map(([service, price, delay], index) => (
           <div
@@ -934,9 +948,8 @@ function PricingTable() {
         ))}
       </div>
       <div className={styles.priceNote}>
-        <strong>Note :</strong> Tous les tarifs sont exprimés hors TVA. Le taux
-        applicable au Cameroun est de 19,25 %. Un devis détaillé et un contrat
-        de mission sont établis avant toute prestation.
+        Equipment availability depends on stock. A rental agreement and
+        security deposit may be required depending on the selected equipment.
       </div>
     </>
   );

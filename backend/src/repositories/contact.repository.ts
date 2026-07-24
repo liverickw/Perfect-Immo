@@ -6,7 +6,15 @@ export const contactRepository = {
     return prisma.contact.findMany({ orderBy: { createdAt: "desc" } });
   },
 
+  findById(id: string) {
+    return prisma.contact.findUnique({ where: { id } });
+  },
+
   create(data: Prisma.ContactCreateInput) {
     return prisma.contact.create({ data });
+  },
+
+  update(id: string, data: Prisma.ContactUpdateInput) {
+    return prisma.contact.update({ where: { id }, data });
   },
 };

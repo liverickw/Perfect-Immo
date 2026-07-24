@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,6 +14,8 @@ import {
   X,
 } from "lucide-react";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
+import { api } from "@/lib/api/client";
+import type { ApiRealisation } from "@/lib/api/types";
 import styles from "./realisations.module.css";
 
 const serif = Cormorant_Garamond({
@@ -29,10 +31,11 @@ const sans = Outfit({
 });
 
 type Category =
-  | "residential"
-  | "commercial"
-  | "industrial"
-  | "infrastructure";
+  | "topography"
+  | "geodesy"
+  | "gis"
+  | "architecture"
+  | "equipment";
 type Filter = "all" | Category;
 type Sort = "recent" | "oldest" | "surface";
 
@@ -57,400 +60,390 @@ type Project = {
 const projects: Project[] = [
   {
     id: "p0",
-    category: "commercial",
-    categoryLabel: "Commercial",
+    category: "topography",
+    categoryLabel: "Topographie",
     year: 2024,
-    surfaceValue: 5200,
-    surface: "5 200 m²",
-    title: "Tour Bonanjo Business Center",
-    location: "Bonanjo, Douala",
+    surfaceValue: 420,
+    surface: "420 ha",
+    title: "Levé topographique - Zone industrielle de Bonabéri",
+    location: "Douala",
     meta: [
-      ["Surface", "5 200 m²"],
-      ["Niveaux", "8"],
-      ["Budget", "850M FCFA"],
+      ["Surface", "420 ha"],
+      ["Mission", "Levé complet"],
+      ["Résultat", "Livré"],
     ],
-    tags: ["Bureaux", "Climatisation", "Parking"],
+    tags: ["Drone", "GPS RTK"],
     color: "#1E3A64",
     description:
-      "Immeuble de bureaux de prestige au coeur de Bonanjo. Huit niveaux climatisés, ascenseurs panoramiques, parking souterrain et plateaux modulables.",
-    features: [
-      "8 niveaux",
-      "Climatisation centrale",
-      "Ascenseurs panoramiques",
-      "Parking souterrain",
-      "Fibre optique",
-      "Sécurité 24h",
-    ],
+      "Levé topographique complet d'une zone industrielle de 420 hectares à Douala, réalisé par drone et GPS RTK.",
+    features: ["Drone", "GPS RTK", "Levé complet", "Mission livrée"],
     featured: true,
-    award: "Livré en avance",
+    award: "Mission livrée",
   },
   {
     id: "p1",
-    category: "residential",
-    categoryLabel: "Résidentiel",
+    category: "topography",
+    categoryLabel: "Topographie",
     year: 2024,
-    surfaceValue: 650,
-    surface: "650 m²",
-    title: "Villa Prestige - Bastos",
-    location: "Bastos, Yaoundé",
+    surfaceValue: 1.8,
+    surface: "1,8 ha",
+    title: "Implantation d’un immeuble R+8",
+    location: "Douala",
     meta: [
-      ["Surface", "650 m²"],
-      ["Chambres", "7"],
-      ["Budget", "120M FCFA"],
+      ["Surface", "1,8 ha"],
+      ["Mission", "Implantation"],
+      ["Résultat", "Précision ±2 cm"],
     ],
-    tags: ["Piscine", "Jardin", "Standing"],
+    tags: ["Implantation", "Station totale"],
     color: "#162F52",
     description:
-      "Villa de standing dans le quartier diplomatique de Bastos. Architecture contemporaine, piscine à débordement et jardin paysagé.",
-    features: [
-      "Piscine à débordement",
-      "Jardin paysagé",
-      "Double garage",
-      "Cuisine équipée",
-      "Groupe électrogène",
-    ],
+      "Implantation topographique d'un immeuble R+8 sur une surface de 1,8 hectare avec une précision de ±2 cm.",
+    features: ["Implantation", "Station totale", "Précision ±2 cm"],
   },
   {
     id: "p2",
-    category: "residential",
-    categoryLabel: "Résidentiel",
+    category: "geodesy",
+    categoryLabel: "GNSS & Géodésie",
     year: 2023,
-    surfaceValue: 3800,
-    surface: "3 800 m²",
-    title: "Résidence Les Palmiers",
-    location: "Akwa Nord, Douala",
+    surfaceValue: 125,
+    surface: "125 points",
+    title: "Réseau géodésique communal",
+    location: "Yaoundé",
     meta: [
-      ["Surface", "3 800 m²"],
-      ["Unités", "24 appts"],
-      ["Budget", "480M FCFA"],
+      ["Points", "125"],
+      ["Mission", "GNSS"],
+      ["Résultat", "Validé"],
     ],
-    tags: ["R+4", "Ascenseur", "Parking"],
+    tags: ["GNSS", "Réseau"],
     color: "#1C3560",
     description:
-      "Résidence R+4 de 24 appartements à Akwa Nord, vendue intégralement trois mois après livraison.",
-    features: [
-      "24 appartements",
-      "Gardiennage 24h",
-      "Parking sécurisé",
-      "Ascenseur",
-      "Espaces verts",
-    ],
+      "Mise en place et validation d'un réseau géodésique communal composé de 125 points GNSS à Yaoundé.",
+    features: ["GNSS", "Réseau", "125 points", "Mission validée"],
   },
   {
     id: "p3",
-    category: "infrastructure",
-    categoryLabel: "Infrastructure",
+    category: "gis",
+    categoryLabel: "Cartographie SIG",
     year: 2023,
-    surfaceValue: 4200,
-    surface: "4,2 km",
-    title: "Route Ndokoti - VRD & Voirie",
-    location: "Ndokoti, Douala",
+    surfaceValue: 180,
+    surface: "180 km²",
+    title: "Cartographie SIG d’une commune",
+    location: "Kribi",
     meta: [
-      ["Longueur", "4,2 km"],
-      ["Réseau", "VRD complet"],
-      ["Budget", "320M FCFA"],
+      ["Surface", "180 km²"],
+      ["Mission", "SIG"],
+      ["Résultat", "Base livrée"],
     ],
-    tags: ["Voirie", "Assainissement", "Éclairage"],
+    tags: ["SIG", "QGIS"],
     color: "#0F2A4A",
     description:
-      "Réhabilitation complète de la voirie et des réseaux divers : chaussée bitumée, assainissement pluvial et éclairage public.",
-    features: [
-      "Voirie bitumée",
-      "Assainissement pluvial",
-      "Éclairage public",
-      "Trottoirs",
-      "Signalisation",
-    ],
+      "Cartographie SIG d'une commune couvrant 180 km² à Kribi, avec constitution et livraison de la base de données.",
+    features: ["SIG", "QGIS", "Base de données", "180 km²"],
   },
   {
     id: "p4",
-    category: "commercial",
-    categoryLabel: "Commercial",
-    year: 2022,
-    surfaceValue: 2100,
-    surface: "2 100 m²",
-    title: "Centre Commercial Bonapriso",
-    location: "Bonapriso, Douala",
+    category: "topography",
+    categoryLabel: "Topographie",
+    year: 2023,
+    surfaceValue: 55,
+    surface: "55 ha",
+    title: "Lotissement résidentiel",
+    location: "Douala",
     meta: [
-      ["Surface", "2 100 m²"],
-      ["Boutiques", "18"],
-      ["Budget", "290M FCFA"],
+      ["Surface", "55 ha"],
+      ["Mission", "Bornage"],
+      ["Résultat", "Plans livrés"],
     ],
-    tags: ["Commerce", "Food court", "Parking"],
+    tags: ["Bornage", "Cadastre"],
     color: "#182E50",
     description:
-      "Centre commercial de 18 boutiques avec parking de 60 places et food court, conçu pour fluidifier les circulations.",
-    features: [
-      "18 boutiques",
-      "Parking 60 places",
-      "Food court",
-      "Climatisation",
-      "Sécurité 24h",
-    ],
+      "Mission de bornage d'un lotissement résidentiel de 55 hectares à Douala, avec production des plans cadastraux.",
+    features: ["Bornage", "Cadastre", "55 ha", "Plans livrés"],
   },
   {
     id: "p5",
-    category: "industrial",
-    categoryLabel: "Industriel",
-    year: 2022,
-    surfaceValue: 8500,
-    surface: "8 500 m²",
-    title: "Entrepôt logistique - Zone Industrielle",
-    location: "Bassa, Douala",
+    category: "architecture",
+    categoryLabel: "Architecture",
+    year: 2023,
+    surfaceValue: 4800,
+    surface: "4 800 m²",
+    title: "Plans d’un complexe scolaire",
+    location: "Douala",
     meta: [
-      ["Surface", "8 500 m²"],
-      ["Quais", "12"],
-      ["Budget", "650M FCFA"],
+      ["Surface", "4 800 m²"],
+      ["Mission", "Architecture"],
+      ["Résultat", "Permis préparé"],
     ],
-    tags: ["Logistique", "Charpente", "Stockage"],
+    tags: ["Plans", "Permis"],
     color: "#112440",
     description:
-      "Entrepôt logistique avec 12 quais de chargement, structure métallique et toiture isolée pour la manutention lourde.",
-    features: [
-      "12 quais",
-      "Structure métallique",
-      "Toiture isolée",
-      "Sol renforcé",
-      "Vidéosurveillance",
-    ],
+      "Conception des plans architecturaux d'un complexe scolaire de 4 800 m² et préparation du dossier de permis.",
+    features: ["Plans", "Permis", "Architecture", "4 800 m²"],
   },
   {
     id: "p6",
-    category: "infrastructure",
-    categoryLabel: "Infrastructure",
+    category: "gis",
+    categoryLabel: "Cartographie SIG",
     year: 2022,
-    surfaceValue: 6000,
-    surface: "6 km",
-    title: "Réseau AEP - Quartier Logpom",
-    location: "Logpom, Douala",
+    surfaceValue: 48,
+    surface: "48 km",
+    title: "Cartographie des réseaux d’eau",
+    location: "Douala",
     meta: [
-      ["Réseau", "6 km"],
-      ["Foyers", "1 200"],
-      ["Budget", "180M FCFA"],
+      ["Réseau", "48 km"],
+      ["Mission", "SIG"],
+      ["Résultat", "Données structurées"],
     ],
-    tags: ["AEP", "Pompage", "Raccordement"],
+    tags: ["AEP", "SIG"],
     color: "#0D2240",
     description:
-      "Extension du réseau d'eau potable desservant 1 200 foyers, avec station de pompage et raccordements individuels.",
-    features: [
-      "6 km de réseau",
-      "1 200 foyers",
-      "Station de pompage",
-      "Compteurs installés",
-    ],
+      "Cartographie SIG de 48 km de réseaux d'eau à Douala et structuration des données géospatiales associées.",
+    features: ["AEP", "SIG", "48 km", "Données structurées"],
   },
   {
     id: "p7",
-    category: "residential",
-    categoryLabel: "Résidentiel",
-    year: 2021,
-    surfaceValue: 1200,
-    surface: "1 200 m²",
-    title: "Villa Duplex - Kotto",
-    location: "Kotto, Douala",
+    category: "topography",
+    categoryLabel: "Topographie",
+    year: 2022,
+    surfaceValue: 32,
+    surface: "32 km",
+    title: "Étude corridor routier",
+    location: "Bafoussam",
     meta: [
-      ["Terrain", "1 200 m²"],
-      ["Chambres", "4"],
-      ["Budget", "95M FCFA"],
+      ["Distance", "32 km"],
+      ["Mission", "Levé"],
+      ["Résultat", "Profil livré"],
     ],
-    tags: ["Duplex", "Terrasse", "Clé en main"],
+    tags: ["Route", "Levé"],
     color: "#1A3260",
     description:
-      "Duplex contemporain avec terrasse privative, suite parentale et dressing intégré dans un quartier sécurisé.",
-    features: [
-      "Terrasse privative",
-      "Suite parentale",
-      "Dressing",
-      "2 parkings",
-    ],
+      "Levé topographique d'un corridor routier de 32 km à Bafoussam avec production du profil demandé.",
+    features: ["Route", "Levé", "32 km", "Profil livré"],
   },
   {
     id: "p8",
-    category: "commercial",
-    categoryLabel: "Commercial",
-    year: 2021,
-    surfaceValue: 900,
-    surface: "900 m²",
-    title: "Immeuble de Bureaux - Akwa",
-    location: "Akwa, Douala",
+    category: "equipment",
+    categoryLabel: "Équipements",
+    year: 2022,
+    surfaceValue: 6,
+    surface: "6 mois",
+    title: "Location GPS RTK",
+    location: "Douala",
     meta: [
-      ["Surface", "900 m²"],
-      ["Niveaux", "R+3"],
-      ["Budget", "110M FCFA"],
+      ["Durée", "6 mois"],
+      ["Mission", "Location"],
+      ["Résultat", "Matériel disponible"],
     ],
-    tags: ["Bureaux", "Ascenseur", "Modulable"],
+    tags: ["GPS", "RTK"],
     color: "#0E2442",
     description:
-      "Immeuble de bureaux R+3 au coeur d'Akwa, avec climatisation centrale et plateaux modulables.",
-    features: [
-      "R+3",
-      "Climatisation centrale",
-      "Plateaux modulables",
-      "Parking",
-      "Ascenseur",
-    ],
+      "Mise à disposition d'un équipement GPS RTK à Douala pour une période de six mois.",
+    features: ["GPS", "RTK", "Location", "6 mois"],
   },
   {
     id: "p9",
-    category: "industrial",
-    categoryLabel: "Industriel",
+    category: "geodesy",
+    categoryLabel: "GNSS & Géodésie",
     year: 2021,
-    surfaceValue: 3200,
-    surface: "3 200 m²",
-    title: "Usine de traitement - Dibamba",
-    location: "Dibamba, Douala",
+    surfaceValue: 34,
+    surface: "34 sites",
+    title: "Implantation pylônes télécom",
+    location: "Garoua",
     meta: [
-      ["Surface", "3 200 m²"],
-      ["Capacité", "50t/j"],
-      ["Budget", "420M FCFA"],
+      ["Sites", "34"],
+      ["Mission", "GNSS"],
+      ["Résultat", "Points validés"],
     ],
-    tags: ["Usine", "Béton armé", "Stockage"],
+    tags: ["Télécom", "RTK"],
     color: "#102036",
     description:
-      "Unité de traitement industriel d'une capacité de 50 tonnes par jour, conçue pour les contraintes lourdes.",
-    features: [
-      "Capacité 50t/jour",
-      "Béton armé renforcé",
-      "Zones de stockage",
-      "Bureaux administratifs",
-    ],
+      "Implantation GNSS de pylônes télécom sur 34 sites à Garoua avec validation des points RTK.",
+    features: ["Télécom", "RTK", "34 sites", "Points validés"],
   },
   {
     id: "p10",
-    category: "infrastructure",
-    categoryLabel: "Infrastructure",
-    year: 2020,
-    surfaceValue: 45,
-    surface: "45 m",
-    title: "Pont piétonnier - Makepe",
-    location: "Makepe, Douala",
+    category: "architecture",
+    categoryLabel: "Architecture",
+    year: 2021,
+    surfaceValue: 6500,
+    surface: "6 500 m²",
+    title: "Étude d’un bâtiment administratif",
+    location: "Douala",
     meta: [
-      ["Portée", "45 m"],
-      ["Largeur", "4 m"],
-      ["Budget", "75M FCFA"],
+      ["Surface", "6 500 m²"],
+      ["Mission", "Étude"],
+      ["Résultat", "Dossier livré"],
     ],
-    tags: ["Génie civil", "LED", "Accès PMR"],
+    tags: ["Architecture", "BIM"],
     color: "#13253E",
     description:
-      "Pont piétonnier reliant deux quartiers de Makepe avec garde-corps sécurisés, éclairage LED et accès PMR.",
-    features: [
-      "45 m de portée",
-      "Garde-corps sécurisés",
-      "Éclairage LED",
-      "Accès PMR",
-    ],
+      "Étude architecturale et technique d'un bâtiment administratif de 6 500 m² à Douala avec dossier BIM livré.",
+    features: ["Architecture", "BIM", "6 500 m²", "Dossier livré"],
   },
   {
     id: "p11",
-    category: "residential",
-    categoryLabel: "Résidentiel",
-    year: 2020,
-    surfaceValue: 560,
-    surface: "560 m²",
-    title: "Villa Bali - New Bell",
-    location: "New Bell, Douala",
+    category: "gis",
+    categoryLabel: "Cartographie SIG",
+    year: 2021,
+    surfaceValue: 720,
+    surface: "720 ha",
+    title: "SIG agricole",
+    location: "Bafoussam",
     meta: [
-      ["Surface", "560 m²"],
-      ["Chambres", "4"],
-      ["Budget", "55M FCFA"],
+      ["Surface", "720 ha"],
+      ["Mission", "SIG"],
+      ["Résultat", "Cartes livrées"],
     ],
-    tags: ["Résidentiel", "Clé en main"],
+    tags: ["Agriculture", "SIG"],
     color: "#192E54",
     description:
-      "Villa familiale clé en main avec quatre chambres, cuisine équipée, cour intérieure et garage.",
-    features: ["4 chambres", "Cuisine équipée", "Cour intérieure", "Garage"],
+      "Développement d'un SIG agricole couvrant 720 hectares à Bafoussam avec production des cartes thématiques.",
+    features: ["Agriculture", "SIG", "720 ha", "Cartes livrées"],
   },
   {
     id: "p12",
-    category: "commercial",
-    categoryLabel: "Commercial",
+    category: "topography",
+    categoryLabel: "Topographie",
     year: 2020,
-    surfaceValue: 1400,
-    surface: "1 400 m²",
-    title: "Complexe Hôtelier - Kribi",
-    location: "Centre-ville, Kribi",
+    surfaceValue: 285,
+    surface: "285 parcelles",
+    title: "Bornage foncier",
+    location: "Yaoundé",
     meta: [
-      ["Surface", "1 400 m²"],
-      ["Chambres", "32"],
-      ["Budget", "195M FCFA"],
+      ["Parcelles", "285"],
+      ["Mission", "Cadastre"],
+      ["Résultat", "Bornes posées"],
     ],
-    tags: ["Hôtellerie", "Piscine"],
+    tags: ["Bornage", "Cadastre"],
     color: "#142848",
     description:
-      "Complexe hôtelier de 32 chambres en bord de mer avec piscine, restaurant, bar et salle de conférence.",
-    features: [
-      "32 chambres",
-      "Piscine",
-      "Restaurant",
-      "Salle de conférence",
-      "Vue mer",
-    ],
+      "Mission cadastrale de bornage foncier portant sur 285 parcelles à Yaoundé avec pose des bornes.",
+    features: ["Bornage", "Cadastre", "285 parcelles", "Bornes posées"],
   },
   {
     id: "p13",
-    category: "industrial",
-    categoryLabel: "Industriel",
-    year: 2019,
-    surfaceValue: 4600,
-    surface: "4 600 m²",
-    title: "Plateforme industrielle - Yassa",
-    location: "Yassa, Douala",
+    category: "geodesy",
+    categoryLabel: "GNSS & Géodésie",
+    year: 2020,
+    surfaceValue: 92,
+    surface: "92 points",
+    title: "Contrôle géodésique barrage",
+    location: "Lom Pangar",
     meta: [
-      ["Surface", "4 600 m²"],
-      ["Ateliers", "6"],
-      ["Budget", "520M FCFA"],
+      ["Points", "92"],
+      ["Mission", "Contrôle"],
+      ["Résultat", "Contrôle validé"],
     ],
-    tags: ["Industrie lourde", "Charpente"],
+    tags: ["GNSS", "Contrôle"],
     color: "#0C1E38",
     description:
-      "Plateforme industrielle comprenant six ateliers indépendants, charpente métallique lourde et quais dédiés.",
-    features: [
-      "6 ateliers",
-      "Charpente métallique",
-      "Quais de chargement",
-      "Aire de stockage",
-    ],
+      "Contrôle géodésique de 92 points sur le barrage de Lom Pangar avec validation des mesures GNSS.",
+    features: ["GNSS", "Contrôle", "92 points", "Contrôle validé"],
   },
   {
     id: "p14",
-    category: "residential",
-    categoryLabel: "Résidentiel",
+    category: "equipment",
+    categoryLabel: "Équipements",
     year: 2019,
-    surfaceValue: 2400,
-    surface: "2 400 m²",
-    title: "Résidence Mboppi - 2 tours",
-    location: "Mboppi, Douala",
+    surfaceValue: 3,
+    surface: "3 mois",
+    title: "Location Station Totale Leica",
+    location: "Douala",
     meta: [
-      ["Surface", "2 400 m²"],
-      ["Unités", "16 appts"],
-      ["Budget", "210M FCFA"],
+      ["Durée", "3 mois"],
+      ["Mission", "Location"],
+      ["Résultat", "Équipement loué"],
     ],
-    tags: ["R+5", "Ascenseur"],
+    tags: ["Leica", "Station totale"],
     color: "#172C50",
     description:
-      "Programme de deux tours R+5 totalisant 16 appartements avec ascenseur, parking et espaces verts.",
-    features: [
-      "2 tours R+5",
-      "16 appartements",
-      "Ascenseur",
-      "Parking commun",
-      "Gardiennage",
-    ],
+      "Location d'une station totale Leica à Douala pour une mission professionnelle d'une durée de trois mois.",
+    features: ["Leica", "Station totale", "Location", "3 mois"],
   },
 ];
 
 const filterOptions: { id: Filter; label: string }[] = [
   { id: "all", label: "Tous" },
-  { id: "residential", label: "Résidentiel" },
-  { id: "commercial", label: "Commercial" },
-  { id: "industrial", label: "Industriel" },
-  { id: "infrastructure", label: "Infrastructures" },
+  { id: "topography", label: "Topographie" },
+  { id: "geodesy", label: "GNSS & Géodésie" },
+  { id: "gis", label: "Cartographie SIG" },
+  { id: "architecture", label: "Architecture" },
+  { id: "equipment", label: "Équipements" },
 ];
+
+function normalizeProjectCategory(category?: string | null): Category {
+  const value = (category || "").toLowerCase();
+  if (value.includes("gnss") || value.includes("gÃ©od")) return "geodesy";
+  if (value.includes("sig") || value.includes("cart")) return "gis";
+  if (value.includes("arch")) return "architecture";
+  if (value.includes("equip") || value.includes("Ã©quip")) return "equipment";
+  return "topography";
+}
+
+function getCategoryLabel(category: Category) {
+  return (
+    filterOptions.find((option) => option.id === category)?.label ||
+    "Topographie"
+  );
+}
+
+function mapApiRealisation(project: ApiRealisation, index: number): Project {
+  const primaryService = project.servicesUsed[0] || null;
+  const category = normalizeProjectCategory(primaryService);
+  const year = new Date(project.completionDate || project.createdAt).getFullYear();
+  const label = getCategoryLabel(category);
+
+  return {
+    id: project.id,
+    category,
+    categoryLabel: label,
+    year,
+    surfaceValue: 0,
+    surface: "Mission",
+    title: project.title,
+    location: project.location || "Cameroun",
+    meta: [
+      ["AnnÃ©e", String(year)],
+      ["Mission", primaryService || label],
+      ["RÃ©sultat", "LivrÃ©"],
+    ],
+    tags: project.servicesUsed.length ? project.servicesUsed : [label, "PIE"],
+    color: ["#1E3A64", "#162F52", "#1C3560", "#0F2A4A"][index % 4],
+    description: project.description,
+    features: project.servicesUsed.length
+      ? project.servicesUsed
+      : [label, "Ã‰tude", "Livrable"],
+    featured: project.featured || index === 0,
+    award: index === 0 ? "Mission livrÃ©e" : undefined,
+  };
+}
 
 export default function RealisationsPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<Sort>("recent");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [portfolioProjects, setPortfolioProjects] = useState<Project[]>(projects);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProjects() {
+      try {
+        const data = await api.getRealisations();
+        if (active && data.length) {
+          setPortfolioProjects(data.map(mapApiRealisation));
+        }
+      } catch {
+        if (active) setPortfolioProjects(projects);
+      }
+    }
+
+    loadProjects();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const counts = useMemo(
     () =>
@@ -458,34 +451,35 @@ export default function RealisationsPage() {
         (result, option) => {
           result[option.id] =
             option.id === "all"
-              ? projects.length
-              : projects.filter((project) => project.category === option.id)
+              ? portfolioProjects.length
+              : portfolioProjects.filter((project) => project.category === option.id)
                   .length;
           return result;
         },
         {
           all: 0,
-          residential: 0,
-          commercial: 0,
-          industrial: 0,
-          infrastructure: 0,
+          topography: 0,
+          geodesy: 0,
+          gis: 0,
+          architecture: 0,
+          equipment: 0,
         },
       ),
-    [],
+    [portfolioProjects],
   );
 
   const visibleProjects = useMemo(() => {
     const filtered =
       filter === "all"
-        ? [...projects]
-        : projects.filter((project) => project.category === filter);
+        ? [...portfolioProjects]
+        : portfolioProjects.filter((project) => project.category === filter);
 
     return filtered.sort((a, b) => {
       if (sort === "oldest") return a.year - b.year;
       if (sort === "surface") return b.surfaceValue - a.surfaceValue;
       return b.year - a.year;
     });
-  }, [filter, sort]);
+  }, [filter, portfolioProjects, sort]);
 
   return (
     <main className={`${styles.pageCenter} ${serif.variable} ${sans.variable}`}>
@@ -499,23 +493,23 @@ export default function RealisationsPage() {
               <span>›</span>
               <strong>Réalisations</strong>
             </div>
-            <p className={styles.eyebrow}>Notre portfolio</p>
+            <p className={styles.eyebrow}>Nos réalisations</p>
             <h1>
-              Nos <em>réalisations</em>
+              Nos <em>réalisations sur le terrain</em>
               <br />
-              parlent pour nous
+              témoignent de notre expertise
             </h1>
             <p className={styles.heroDescription}>
-              Plus de 120 projets livrés à Douala, Yaoundé et dans les grandes
-              villes du Cameroun. Chaque projet est une démonstration de notre
-              exigence.
+              Découvrez quelques-unes de nos missions en topographie, géodésie,
+              cartographie SIG, architecture, études techniques et
+              accompagnement de projets réalisées au Cameroun.
             </p>
             <div className={styles.heroStats}>
               {[
-                ["120+", "Projets livrés"],
-                ["85k", "m² construits"],
+                ["250+", "Missions réalisées"],
+                ["3 500+", "Ha levés"],
                 ["15", "Ans d'expérience"],
-                ["98%", "Satisfaction client"],
+                ["98%", "Clients satisfaits"],
               ].map(([number, label]) => (
                 <div key={label}>
                   <strong>{number}</strong>
@@ -591,14 +585,17 @@ export default function RealisationsPage() {
         <section className={styles.cta}>
           <div>
             <h2>
-              Votre projet sera notre
+              Confiez votre prochain
               <br />
-              prochaine réalisation
+              projet à nos experts
             </h2>
-            <p>Consultation gratuite · Devis sous 48h</p>
+            <p>
+              Étude gratuite • Réponse rapide • Intervention partout au
+              Cameroun
+            </p>
           </div>
           <Link href="/contact" className={styles.navyButton}>
-            <Send size={16} /> Démarrer mon projet
+            <Send size={16} /> Demander un devis
           </Link>
         </section>
 
@@ -726,18 +723,18 @@ function ProjectCard({
 function Testimonials() {
   const testimonials = [
     {
-      initials: "AB",
+      initials: "JN",
       quote:
-        "La Tour Bonanjo a été livrée avec 2 semaines d'avance sur le planning initial. L'équipe a géré chaque détail avec une précision remarquable.",
-      name: "Alain Biyidi",
-      role: "Directeur, SCI Bonanjo Tower",
+        "PIE a réalisé le levé topographique de notre site industriel avec une grande précision. Les livrables étaient conformes aux délais et parfaitement exploitables.",
+      name: "Jean-Paul Nzambe",
+      role: "Chef de projet - Entreprise BTP",
     },
     {
-      initials: "PN",
+      initials: "MN",
       quote:
-        "Nos 24 appartements des Palmiers se sont vendus en 3 mois. La qualité de construction rassure immédiatement les acheteurs.",
-      name: "Patricia Nkengne",
-      role: "Promotrice, Groupe Nkengne",
+        "Grâce à leur expertise en cartographie SIG, nous disposons aujourd’hui d’une base de données géospatiale fiable qui facilite la gestion de nos infrastructures.",
+      name: "Marie Ndzie",
+      role: "Responsable SIG - Collectivité locale",
     },
   ];
 

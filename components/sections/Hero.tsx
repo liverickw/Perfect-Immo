@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Container from "@/components/layout/Container";
   
 function BuildingPlaceholder() {
   return (
@@ -23,13 +22,12 @@ function BuildingPlaceholder() {
     </div>
   );
 }
-
+  
 export default function Hero() {
   return (
-    <main className="w-full bg-[#071D36] pattern-dark">
-      <Container>
-        <section className="grid min-h-[500px] grid-cols-1 border-t border-white/5 md:grid-cols-[55%_45%]">
-        <div className="py-14 md:pr-10 lg:py-20">
+    <main className="w-full pattern-dark">
+      <section className="grid min-h-[500px] grid-cols-2 border-t border-white/5 bg-[#071D36] md:grid-cols-[55%_45%]">
+        <div className="px-[30px] pb-10 pt-[50px]">
           <div className="inline-flex items-center gap-2 border border-[#d2ad3d]/35 px-4 py-[6px] text-[11px] font-bold uppercase tracking-[2.5px] text-[#d2ad3d]">
             <span className="h-[6px] w-[6px] rounded-full bg-[#d2ad3d]/50" />
             Nouveau programme - Bonanjo 2025
@@ -37,7 +35,7 @@ export default function Hero() {
   
           <p className="mt-[24px] flex items-center gap-3 text-[11px] font-bold uppercase tracking-[5px] text-[#d2ad3d]">
             <span className="h-px w-6 bg-[#d2ad3d]" />
-            Immobilier & Ingénierie
+            Topographie, Architecture, Immobilier & Ingénierie
           </p>
 
           <h1 className="serif mt-[25px] text-[38px] font-semibold leading-[1.24] text-white md:text-[39px]">
@@ -47,10 +45,9 @@ export default function Hero() {
           </h1>
   
           <p className="mt-[22px] max-w-[350px] text-[15px] font-semibold leading-[1.72] text-gray-300">
-            Votre partenaire de confiance à Douala pour la vente, la location
-            et la maîtrise d&apos;oeuvre de vos projets immobiliers.
+            Votre partenaire technique pour la topographie, l'architecture, les études techniques et les projets immobiliers au Cameroun.
           </p>
-  
+
           <div className="mt-[29px] flex flex-wrap gap-4">
             <Link href="/projets" className="btn btn-primary">
               <button className="bg-yellow-400 text-black px-8 py-4 font-semibold rounded-none hover:bg-yellow-400 transition">
@@ -88,11 +85,10 @@ export default function Hero() {
           </div>
         </div>
   
-        <div className="flex items-center justify-center border-t border-white/10 bg-[#172f51] px-8 md:border-l md:border-t-0">
+        <div className="flex items-center justify-center border-l border-white/10 bg-[#172f51] px-8">
           <BuildingPlaceholder />
         </div>
       </section>
-      </Container>
     </main>
   );
 }

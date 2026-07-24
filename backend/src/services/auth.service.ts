@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import type { Role } from "@prisma/client";
 import { authRepository } from "../repositories/auth.repository";
 import { AppError } from "../utils/app-error";
 import { generateToken } from "../utils/jwt";
@@ -22,7 +23,7 @@ export const authService = {
       name: data.name,
       email: data.email,
       password: hashedPassword,
-      role: "ADMIN",
+      role: data.role ?? "ADMIN",
     });
 
     const token = generateToken({
@@ -41,6 +42,10 @@ export const authService = {
       throw new AppError("Invalid email or password", 401);
     }
 
+    if (!user.active || user.deletedAt) {
+      throw new AppError("This account is inactive", 403);
+    }
+
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
 
     if (!isPasswordValid) {
@@ -54,5 +59,45 @@ export const authService = {
     });
 
     return { user: sanitizeUser(user), token };
+  },
+
+  getUsers() {
+    return authRepository.findAll();
+  },
+
+  async createUser(data: RegisterInput) {
+    return this.register(data);
+  },
+
+  async updateUser(id: string, data: Partial<RegisterInput> & { active?: boolean; role?: Role }) {
+    const existing = await authRepository.findById(id);
+    if (!existing) throw new AppError("User not found", 404);
+
+    const updateData: Record<string, unknown> = {
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      active: data.active,
+    };
+
+    if (data.password) {
+      updateData.password = await bcrypt.hash(data.password, 12);
+    }
+
+    const user = await authRepository.update(id, updateData);
+    return sanitizeUser(user);
+  },
+
+  async deactivateUser(id: string) {
+    const existing = await authRepository.findById(id);
+    if (!existing) throw new AppError("User not found", 404);
+    if (existing.role === "SUPER_ADMIN") {
+      throw new AppError("Super Admin accounts cannot be deleted", 403);
+    }
+    const user = await authRepository.update(id, {
+      active: false,
+      deletedAt: new Date(),
+    });
+    return sanitizeUser(user);
   },
 };

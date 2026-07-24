@@ -13,7 +13,9 @@ model User {
   name      String
   email     String   @unique
   password  String
-  role      String   @default("ADMIN")
+  role      Role     @default(ADMIN)
+  active    Boolean  @default(true)
+  deletedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -21,14 +23,22 @@ model User {
 model Property {
   id          String   @id @default(uuid())
   title       String
+  slug        String?  @unique
   description String
+  longDescription String?
   location    String
   price       Float
   bedrooms    Int?
   bathrooms   Int?
   area        Float?
   imageUrl    String?
+  gallery     String[]
   status      String   @default("AVAILABLE")
+  published   Boolean  @default(true)
+  featured    Boolean  @default(false)
+  metaTitle   String?
+  metaDescription String?
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -36,9 +46,18 @@ model Property {
 model Project {
   id          String   @id @default(uuid())
   title       String
+  slug        String?  @unique
   description String
+  longDescription String?
   imageUrl    String?
+  gallery     String[]
   category    String?
+  status      ContentStatus @default(DRAFT)
+  published   Boolean @default(false)
+  featured    Boolean @default(false)
+  metaTitle   String?
+  metaDescription String?
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -48,8 +67,18 @@ model Blog {
   title       String
   slug        String   @unique
   content     String
+  excerpt     String?
+  category    String?
+  tags        String[]
   imageUrl    String?
+  status      ContentStatus @default(DRAFT)
   published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  publishedAt DateTime?
+  scheduledAt DateTime?
+  metaTitle   String?
+  metaDescription String?
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -61,5 +90,100 @@ model Contact {
   phone     String?
   subject   String?
   message   String
+  status    ContactStatus @default(UNREAD)
+  replyStatus ReplyStatus @default(PENDING)
+  readAt    DateTime?
+  archivedAt DateTime?
   createdAt DateTime @default(now())
+}
+
+model Service {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  description     String
+  longDescription String?
+  category        String?
+  icon            String?
+  imageUrl        String?
+  gallery         String[]
+  displayOrder    Int      @default(0)
+  published       Boolean  @default(false)
+  metaTitle       String?
+  metaDescription String?
+  deletedAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Realisation {
+  id             String   @id @default(uuid())
+  title          String
+  slug           String   @unique
+  client         String?
+  location       String?
+  completionDate DateTime?
+  imageUrl       String?
+  gallery        String[]
+  description    String
+  servicesUsed   String[]
+  published      Boolean  @default(false)
+  featured       Boolean  @default(false)
+  metaTitle      String?
+  metaDescription String?
+  deletedAt      DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model MediaAsset {
+  id        String   @id @default(uuid())
+  url       String
+  publicId  String   @unique
+  folder    String?
+  fileName  String?
+  mimeType  String?
+  size      Int?
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  entity    String?
+  entityId  String?
+  userId    String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ContactStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+enum ReplyStatus {
+  PENDING
+  REPLIED
 }

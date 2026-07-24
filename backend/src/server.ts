@@ -1,5 +1,7 @@
 import cors from "cors";
 import express from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import { env } from "./config/env";
 import prisma from "./config/prisma";
 import redisClient from "./config/redis";
@@ -13,6 +15,17 @@ const app = express();
 
 const allowedOrigins = env.FRONTEND_URL.split(",").map((origin) => origin.trim());
 
+app.use(
+  helmet()
+);
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -64,10 +77,13 @@ app.get("/api", (_req, res) => {
     version: "1.0.0",
     endpoints: {
       auth: ["/api/auth/register", "/api/auth/login"],
+      admin: ["/api/admin/dashboard", "/api/admin/settings", "/api/admin/media", "/api/admin/audit-logs"],
       properties: ["/api/properties", "/api/properties/:id"],
-      projects: ["/api/projects", "/api/realisations"],
+      projects: ["/api/projects", "/api/projects/:id"],
+      services: ["/api/services", "/api/services/:id"],
+      realisations: ["/api/realisations", "/api/realisations/:id"],
       blogs: ["/api/blogs", "/api/blogs/:id", "/api/blogs/slug/:slug"],
-      contacts: ["/api/contacts"],
+      contacts: ["/api/contacts", "/api/contacts/export"],
       upload: ["/api/upload/image"],
       health: ["/health", "/health/db", "/health/redis"],
     },

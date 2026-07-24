@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -19,6 +19,8 @@ import {
   X,
 } from "lucide-react";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
+import { api } from "@/lib/api/client";
+import type { ApiProject } from "@/lib/api/types";
 import styles from "./projets.module.css";
 
 const serif = Cormorant_Garamond({
@@ -96,7 +98,7 @@ const programme: Property = {
   ],
 };
 
-const properties: Property[] = [
+const fallbackProperties: Property[] = [
   {
     id: "p1",
     ref: "PIE-2025-001",
@@ -433,6 +435,55 @@ const initialFilters = {
   surface: "",
 };
 
+function inferPropertyType(title: string) {
+  const value = title.toLowerCase();
+  if (value.includes("villa")) return ["villa", "Villa"] as const;
+  if (value.includes("duplex")) return ["duplex", "Duplex"] as const;
+  if (value.includes("terrain")) return ["terrain", "Terrain"] as const;
+  if (value.includes("bureau") || value.includes("commercial")) {
+    return ["commercial", "Bureau"] as const;
+  }
+  return ["appartement", "Appartement"] as const;
+}
+
+function mapApiProject(project: ApiProject, index: number): Property {
+  const [type, typeLabel] = inferPropertyType(
+    `${project.title} ${project.category || ""}`,
+  );
+  const year = new Date(project.createdAt).getFullYear();
+
+  return {
+    id: project.id,
+    ref: `PIE-${year}-${String(index + 1).padStart(3, "0")}`,
+    name: project.title,
+    price: "Sur devis",
+    priceValue: 0,
+    priceNote: project.category || "Projet",
+    location: "Cameroun",
+    zone: "",
+    type,
+    typeLabel,
+    transaction: "vente",
+    status: "Disponible",
+    surfaceValue: 0,
+    color: ["#1A3260", "#152B4E", "#1E3A64", "#112238"][index % 4],
+    cardSpecs: [
+      [String(year), "Année"],
+      [project.category || "-", "Catégorie"],
+      ["Projet", "Type"],
+      ["Oui", "Disponible"],
+    ],
+    modalSpecs: [
+      [String(year), "Année"],
+      [project.category || "Non précisée", "Catégorie"],
+      ["Sur devis", "Budget"],
+      ["Disponible", "Statut"],
+    ],
+    description: project.description,
+    features: [typeLabel, project.category || "Projet", "Perfect Immo"],
+  };
+}
+
 export default function ProjetsPage() {
   const [filters, setFilters] = useState(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState(initialFilters);
@@ -441,6 +492,34 @@ export default function ProjetsPage() {
   const [selected, setSelected] = useState<Property | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [mapOpen, setMapOpen] = useState(false);
+  const [properties, setProperties] = useState<Property[]>(fallbackProperties);
+  const [isLoading, setIsLoading] = useState(true);
+  const [apiError, setApiError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProperties() {
+      try {
+        const data = await api.getProjects();
+        if (!active) return;
+        setProperties(data.length ? data.map(mapApiProject) : fallbackProperties);
+        setApiError("");
+      } catch {
+        if (!active) return;
+        setProperties(fallbackProperties);
+        setApiError("Les projets dynamiques sont momentanément indisponibles.");
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    }
+
+    loadProperties();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const visibleProperties = useMemo(() => {
     const budget = Number(appliedFilters.budget || Number.POSITIVE_INFINITY);
@@ -461,7 +540,30 @@ export default function ProjetsPage() {
       if (sort === "surface") return b.surfaceValue - a.surfaceValue;
       return properties.indexOf(a) - properties.indexOf(b);
     });
-  }, [appliedFilters, sort]);
+  }, [appliedFilters, properties, sort]);
+
+  const currentProgramme =
+    properties.find((property) => property.status === "Programme neuf") ||
+    programme;
+
+  const propertyStats = useMemo(() => {
+    const available = properties.filter(
+      (property) => property.status === "Disponible",
+    ).length;
+    const reserved = properties.filter(
+      (property) => property.status === "Réservé",
+    ).length;
+    const newPrograms = properties.filter(
+      (property) => property.status === "Programme neuf",
+    ).length;
+
+    return [
+      [String(available), "Disponibles"],
+      [String(reserved), "Réservés"],
+      [String(newPrograms), "Programmes neufs"],
+      ["48h", "Délai visite"],
+    ];
+  }, [properties]);
 
   const updateFilter = (key: keyof typeof filters, value: string) => {
     setFilters((current) => ({ ...current, [key]: value }));
@@ -498,12 +600,7 @@ export default function ProjetsPage() {
 
         <section className={styles.stats}>
           <div>
-            {[
-              ["14", "Disponibles"],
-              ["3", "Réservés"],
-              ["2", "Programmes neufs"],
-              ["48h", "Délai visite"],
-            ].map(([number, label]) => (
+            {propertyStats.map(([number, label]) => (
               <article key={label}>
                 <strong>{number}</strong>
                 <span>{label}</span>
@@ -603,6 +700,7 @@ export default function ProjetsPage() {
           <div>
             <span>
               Affichage : <strong>{visibleProperties.length}</strong> biens
+              {isLoading ? " · Chargement..." : ""}
             </span>
             <div className={styles.viewToggle}>
               <button
@@ -639,10 +737,9 @@ export default function ProjetsPage() {
           <article className={styles.programme}>
             <div className={styles.ribbon}>Programme neuf</div>
             <p className={styles.eyebrow}>Lancement exclusif</p>
-            <h2>Résidence Horizon — Bonapriso</h2>
+            <h2>{currentProgramme.name}</h2>
             <p className={styles.programmeDescription}>
-              24 appartements standing R+6 avec vue dégagée. Livraison prévue
-              Q3 2026. Paiement échelonné sur 36 mois disponible.
+              {currentProgramme.description}
             </p>
             <div className={styles.programmeDetails}>
               {[
@@ -658,7 +755,7 @@ export default function ProjetsPage() {
               ))}
             </div>
             <div className={styles.programmeActions}>
-              <button type="button" onClick={() => setSelected(programme)}>
+              <button type="button" onClick={() => setSelected(currentProgramme)}>
                 Voir le programme
               </button>
               <Link href="/contact">Réserver un appartement</Link>
@@ -671,7 +768,7 @@ export default function ProjetsPage() {
               Activez les <strong>alertes email</strong> pour être notifié en
               premier lors de l&apos;ajout de nouveaux biens correspondant à
               vos critères.{" "}
-              <Link href="/contact">S&apos;inscrire aux alertes →</Link>
+              <Link href="/contact">S&apos;inscrire aux alertes ?</Link>
             </p>
           </div>
 
@@ -702,7 +799,7 @@ export default function ProjetsPage() {
             <div className={styles.emptyState}>
               <Building2 size={38} />
               <p>
-                Aucun bien ne correspond à vos critères.
+                {apiError || "Aucun bien ne correspond à vos critères."}
                 <br />
                 Essayez d&apos;élargir votre recherche.
               </p>

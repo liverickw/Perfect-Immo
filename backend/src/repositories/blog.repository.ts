@@ -3,15 +3,15 @@ import prisma from "../config/prisma";
 
 export const blogRepository = {
   findAll() {
-    return prisma.blog.findMany({ orderBy: { createdAt: "desc" } });
+    return prisma.blog.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
   },
 
   findById(id: string) {
-    return prisma.blog.findUnique({ where: { id } });
+    return prisma.blog.findFirst({ where: { id, deletedAt: null } });
   },
 
   findBySlug(slug: string) {
-    return prisma.blog.findUnique({ where: { slug } });
+    return prisma.blog.findFirst({ where: { slug, deletedAt: null } });
   },
 
   create(data: Prisma.BlogCreateInput) {
@@ -23,6 +23,6 @@ export const blogRepository = {
   },
 
   delete(id: string) {
-    return prisma.blog.delete({ where: { id } });
+    return prisma.blog.update({ where: { id }, data: { deletedAt: new Date(), status: "ARCHIVED", published: false } });
   },
 };
