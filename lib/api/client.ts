@@ -28,14 +28,19 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
       ...options.headers,
     },
-    body: options.body ? JSON.stringify(options.body) : undefined,
+    body: options.body
+      ? isFormData
+        ? (options.body as BodyInit)
+        : JSON.stringify(options.body)
+      : undefined,
   });
 
   const payload = (await response.json().catch(() => null)) as
@@ -82,6 +87,14 @@ export const api = {
 
   deleteAdminRecord(path: string, token: string) {
     return request<{ message?: string }>(path, { method: "DELETE", token });
+  },
+
+  uploadImage(token: string, formData: FormData) {
+    return request<{ imageUrl: string; publicId: string }>("/upload/image", {
+      method: "POST",
+      token,
+      body: formData,
+    });
   },
 
   getProperties() {

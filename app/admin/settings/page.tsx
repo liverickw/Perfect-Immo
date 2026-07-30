@@ -6,6 +6,8 @@ export default function AdminSettingsPage() {
       title="Settings"
       description="Manage website name, company info, footer and homepage settings."
       endpoint="/admin/settings"
+      listLabel="Paramètres"
+      createLabel="Ajouter un paramètre"
       fields={[
         { name: "key", label: "Key", required: true },
         { name: "value", label: "Value", type: "textarea", required: true },

@@ -2,40 +2,62 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  BarChart3,
-  Bell,
-  BookOpen,
-  BriefcaseBusiness,
-  Building2,
-  FileText,
-  Image,
-  LogOut,
-  Moon,
-  Search,
-  Settings,
-  UserRound,
-  Users,
-} from "lucide-react";
+import { useMemo, useState } from "react";
 import { clearAdminSession, getAdminUser } from "@/lib/api/admin-auth";
 
-const navItems = [
-  ["/admin", "Dashboard", BarChart3],
-  ["/admin/projects", "Projects", BriefcaseBusiness],
-  ["/admin/properties", "Properties", Building2],
-  ["/admin/services", "Services", FileText],
-  ["/admin/realisations", "Realisations", BookOpen],
-  ["/admin/blog", "Blog", FileText],
-  ["/admin/messages", "Messages", Bell],
-  ["/admin/media", "Media Library", Image],
-  ["/admin/users", "Users", Users],
-  ["/admin/settings", "Settings", Settings],
+const navGroups = [
+  {
+    label: "Principal",
+    items: [
+      ["/admin/dashboard", "Dashboard", "ti-layout-dashboard", ""],
+      ["/admin/properties", "Properties", "ti-building", "47"],
+      ["/admin/projects", "Projects", "ti-hammer", ""],
+      ["/admin/services", "Services", "ti-list", ""],
+      ["/admin/realisations", "Realisations", "ti-photo", ""],
+      ["/admin/blog", "Blog", "ti-file-text", ""],
+      ["/admin/messages", "Contacts", "ti-mail", "8"],
+    ],
+  },
+  {
+    label: "Médias & Contenu",
+    items: [
+      ["/admin/media", "Media Library", "ti-photo", ""],
+      ["/admin/statistics", "Statistics", "ti-chart-bar", ""],
+    ],
+  },
+  {
+    label: "Administration",
+    items: [
+      ["/admin/users", "Users", "ti-users", ""],
+      ["/admin/settings", "Settings", "ti-settings", ""],
+    ],
+  },
 ] as const;
+
+const titles: Record<string, string> = {
+  "/admin/dashboard": "Tableau de bord",
+  "/admin/properties": "Biens immobiliers",
+  "/admin/projects": "Projets",
+  "/admin/services": "Services",
+  "/admin/realisations": "Réalisations",
+  "/admin/blog": "Articles & Blog",
+  "/admin/messages": "Contacts & Demandes",
+  "/admin/media": "Bibliothèque médias",
+  "/admin/statistics": "Statistiques & Analytics",
+  "/admin/users": "Utilisateurs & Rôles",
+  "/admin/settings": "Paramètres du site",
+};
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const user = typeof window !== "undefined" ? getAdminUser() : null;
+
+  const title = useMemo(() => {
+    if (pathname === "/admin") return titles["/admin/dashboard"];
+    return titles[pathname] || "Administration";
+  }, [pathname]);
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
@@ -47,79 +69,116 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F5F0] text-[#071D36]">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-[#071D36]/10 bg-[#071D36] px-4 py-5 text-white lg:block">
-        <Link href="/admin" className="flex items-center gap-3 px-2">
-          <span className="flex h-10 w-10 items-center justify-center border border-[#D2AD3D] text-sm font-bold text-[#D2AD3D]">
-            PI
-          </span>
-          <span>
-            <strong className="block font-serif text-lg leading-tight">
-              Perfect Immo
-            </strong>
-            <small className="text-xs uppercase tracking-[0.25em] text-white/45">
-              Admin CMS
-            </small>
-          </span>
-        </Link>
-        <nav className="mt-8 space-y-1">
-          {navItems.map(([href, label, Icon]) => {
-            const active =
-              href === "/admin" ? pathname === href : pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold transition ${
-                  active
-                    ? "bg-[#D2AD3D] text-[#071D36]"
-                    : "text-white/70 hover:bg-white/8 hover:text-white"
-                }`}
-              >
-                <Icon size={17} />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-
-      <section className="min-h-screen lg:pl-72">
-        <header className="sticky top-0 z-20 border-b border-[#071D36]/10 bg-[#F6F5F0]/95 backdrop-blur">
-          <div className="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-            <div className="hidden w-full max-w-md items-center gap-2 rounded-md border border-[#071D36]/10 bg-white px-3 py-2 md:flex">
-              <Search size={16} className="text-[#071D36]/45" />
-              <input
-                className="w-full bg-transparent text-sm outline-none"
-                placeholder="Search projects, properties, users..."
-              />
-            </div>
-            <div className="ml-auto flex items-center gap-2">
-              <button className="rounded-md border border-[#071D36]/10 bg-white p-2">
-                <Moon size={16} />
-              </button>
-              <button className="rounded-md border border-[#071D36]/10 bg-white p-2">
-                <Bell size={16} />
-              </button>
-              <div className="hidden items-center gap-2 rounded-md border border-[#071D36]/10 bg-white px-3 py-2 sm:flex">
-                <UserRound size={16} />
-                <span className="text-sm font-semibold">
-                  {user?.name || "Admin"}
-                </span>
+    <main className={`pie-admin ${open ? "sidebar-open" : ""}`}>
+      <h2 className="sr-only">
+        Dashboard administrateur Perfect Immo & Engineering - gestion des biens,
+        contacts, réalisations, médias et utilisateurs
+      </h2>
+      <div className="admin-shell">
+        <aside className="sidebar">
+          <div className="sb-brand">
+            <Link href="/admin/dashboard" className="sb-logo">
+              <div className="sb-logo-mark">PI</div>
+              <div>
+                <div className="sb-logo-text">
+                  Perfect Immo <span>&</span> E.
+                </div>
+                <div className="sb-logo-sub">Administration</div>
               </div>
-              <button
-                onClick={logout}
-                className="rounded-md bg-[#071D36] px-3 py-2 text-sm font-semibold text-white"
-              >
-                <LogOut size={15} className="inline" /> Logout
-              </button>
+            </Link>
+          </div>
+
+          <div className="sb-user">
+            <div className="sb-avatar">
+              {(user?.name || "AD").slice(0, 2).toUpperCase()}
+            </div>
+            <div>
+              <div className="sb-uname">{user?.name || "Admin Principal"}</div>
+              <div className="sb-urole">Douala, Cameroun</div>
+            </div>
+            <div className="sb-badge-role">
+              {user?.role?.replace("_", " ") || "Super Admin"}
             </div>
           </div>
-        </header>
-        <div className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
-          {children}
-        </div>
-      </section>
+
+          <nav className="sb-nav" aria-label="Admin navigation">
+            {navGroups.map((group) => (
+              <div key={group.label}>
+                <div className="sb-section-label">{group.label}</div>
+                {group.items.map(([href, label, icon, badge]) => {
+                  const active =
+                    href === "/admin/dashboard"
+                      ? pathname === href || pathname === "/admin"
+                      : pathname.startsWith(href);
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      className={`sb-item ${active ? "active" : ""}`}
+                      onClick={() => setOpen(false)}
+                    >
+                      <i className={`ti ${icon}`} aria-hidden="true" />
+                      {label}
+                      {badge && (
+                        <span
+                          className={`sb-item-badge ${
+                            label === "Properties" ? "gold" : ""
+                          }`}
+                        >
+                          {badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
+          </nav>
+
+          <div className="sb-footer">
+            <Link href="/" className="sb-footer-link">
+              <i className="ti ti-external-link" aria-hidden="true" /> Voir le
+              site public
+            </Link>
+            <button className="sb-footer-link" type="button" onClick={logout}>
+              <i className="ti ti-logout" aria-hidden="true" /> Déconnexion
+            </button>
+          </div>
+        </aside>
+
+        <section className="main">
+          <header className="topbar">
+            <button
+              type="button"
+              className="topbar-btn mobile-menu"
+              onClick={() => setOpen((value) => !value)}
+              aria-label="Ouvrir le menu"
+            >
+              <i className="ti ti-menu-2" aria-hidden="true" />
+            </button>
+            <div className="topbar-title" id="page-title">
+              {title}
+            </div>
+            <div className="topbar-right">
+              <div className="topbar-search">
+                <i className="ti ti-search" aria-hidden="true" />
+                <span style={{ color: "var(--text-muted)", fontSize: 12 }}>
+                  Rechercher...
+                </span>
+              </div>
+              <Link href="/admin/messages" className="topbar-btn">
+                <i className="ti ti-bell" aria-hidden="true" />
+                <div className="notif-dot" />
+              </Link>
+              <button type="button" className="topbar-btn">
+                <i className="ti ti-help-circle" aria-hidden="true" />
+              </button>
+            </div>
+          </header>
+
+          <div className="content">{children}</div>
+        </section>
+      </div>
     </main>
   );
 }

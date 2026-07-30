@@ -10,7 +10,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (isLoginRoute && hasSession) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
   return NextResponse.next();

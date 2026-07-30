@@ -22,7 +22,7 @@ export default function AdminLoginPage() {
         password: String(formData.get("password") || ""),
       });
       saveAdminSession(result.token, result.user);
-      router.replace("/admin");
+      router.replace("/admin/dashboard");
     } catch {
       setError("Invalid credentials or inactive account.");
     } finally {

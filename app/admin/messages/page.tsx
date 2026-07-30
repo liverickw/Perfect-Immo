@@ -6,6 +6,8 @@ export default function AdminMessagesPage() {
       title="Messages"
       description="Review contact requests, search, archive and export from the API."
       endpoint="/contacts"
+      listLabel="Tous les contacts"
+      createLabel="Ajouter un contact"
       fields={[
         { name: "name", label: "Name", required: true },
         { name: "email", label: "Email", required: true },

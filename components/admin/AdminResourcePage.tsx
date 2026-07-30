@@ -1,105 +1,245 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Plus, RefreshCcw, Search, Trash2 } from "lucide-react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api/client";
-import { getAdminToken } from "@/lib/api/admin-auth";
+import { getAdminToken, getAdminUser } from "@/lib/api/admin-auth";
 
-type Field = {
+export type AdminField = {
   name: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "checkbox";
+  type?: "text" | "textarea" | "number" | "checkbox" | "select" | "date" | "array" | "image";
   required?: boolean;
+  options?: string[];
 };
 
 type RecordValue = Record<string, unknown>;
+
+function toTitle(value: RecordValue) {
+  return String(value.title || value.name || value.email || value.key || value.fileName || value.id || "Sans titre");
+}
+
+function toSubtitle(value: RecordValue) {
+  return String(value.description || value.subject || value.location || value.category || value.slug || value.role || value.publicId || "");
+}
+
+function formatDate(value: unknown) {
+  if (!value) return "";
+  const date = new Date(String(value));
+  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString("fr-FR");
+}
+
+function badgeClass(value: unknown) {
+  const text = String(value || "").toUpperCase();
+  if (text.includes("PUBLISHED") || text.includes("AVAILABLE") || text.includes("READ") || text === "TRUE") return "badge-green";
+  if (text.includes("DRAFT") || text.includes("UNREAD") || text.includes("PENDING")) return "badge-amber";
+  if (text.includes("ARCHIVED") || text.includes("DISABLED") || text === "FALSE") return "badge-gray";
+  return "badge-blue";
+}
+
+function buildBody(form: HTMLFormElement, fields: AdminField[]) {
+  const formData = new FormData(form);
+  const body: RecordValue = {};
+  fields.forEach((field) => {
+    if (field.type === "checkbox") {
+      body[field.name] = formData.get(field.name) === "on";
+      return;
+    }
+    const raw = formData.get(field.name);
+    if ((raw === "" || raw === null) && !field.required) return;
+    if (field.type === "number") {
+      body[field.name] = Number(raw);
+      return;
+    }
+    if (field.type === "array") {
+      body[field.name] = String(raw || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+      return;
+    }
+    body[field.name] = raw;
+  });
+  return body;
+}
+
+function fieldDefault(record: RecordValue | null, field: AdminField) {
+  const value = record?.[field.name];
+  if (Array.isArray(value)) return value.join(", ");
+  if (field.type === "date" && value) return String(value).slice(0, 10);
+  if (typeof value === "boolean") return value;
+  return value == null ? "" : String(value);
+}
+
+function AdminForm({
+  fields,
+  record,
+  saving,
+  onSubmit,
+  onCancel,
+}: {
+  fields: AdminField[];
+  record: RecordValue | null;
+  saving: boolean;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onCancel?: () => void;
+}) {
+  return (
+    <form onSubmit={onSubmit}>
+      <div className="form-grid">
+        {fields.map((field) => {
+          const value = fieldDefault(record, field);
+          return (
+            <div className="form-group" key={field.name}>
+              <label>{field.label}</label>
+              {field.type === "textarea" ? (
+                <textarea name={field.name} className="form-control" required={field.required} defaultValue={String(value)} />
+              ) : field.type === "checkbox" ? (
+                <button
+                  type="button"
+                  className={`toggle-switch ${value ? "on" : ""}`}
+                  onClick={(event) => {
+                    const input = event.currentTarget.nextElementSibling as HTMLInputElement | null;
+                    if (input) input.checked = !input.checked;
+                    event.currentTarget.classList.toggle("on");
+                  }}
+                >
+                  <div className="toggle-knob" />
+                </button>
+              ) : field.type === "select" ? (
+                <select name={field.name} className="form-control" required={field.required} defaultValue={String(value)}>
+                  <option value="">Sélectionner</option>
+                  {(field.options || []).map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              ) : (
+                <input
+                  name={field.name}
+                  type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+                  className="form-control"
+                  required={field.required}
+                  defaultValue={typeof value === "boolean" ? "" : String(value)}
+                />
+              )}
+              {field.type === "checkbox" && (
+                <input name={field.name} type="checkbox" defaultChecked={Boolean(value)} hidden />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, flexWrap: "wrap" }}>
+        {onCancel && <button type="button" className="btn-sm" onClick={onCancel}>Annuler</button>}
+        <button type="submit" className="btn-sm gold" disabled={saving}>
+          <i className="ti ti-device-floppy" aria-hidden="true" />
+          {saving ? "Enregistrement..." : record ? "Mettre à jour" : "Publier"}
+        </button>
+      </div>
+    </form>
+  );
+}
 
 export default function AdminResourcePage({
   title,
   description,
   endpoint,
   fields,
+  listLabel = "Liste",
+  createLabel = "Ajouter",
 }: {
   title: string;
   description: string;
   endpoint: string;
-  fields: Field[];
+  fields: AdminField[];
+  listLabel?: string;
+  createLabel?: string;
 }) {
   const [records, setRecords] = useState<RecordValue[]>([]);
   const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("all");
+  const [page, setPage] = useState(1);
+  const [tab, setTab] = useState<"list" | "create">("list");
+  const [editing, setEditing] = useState<RecordValue | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const currentUser = typeof window !== "undefined" ? getAdminUser() : null;
+  const pageSize = 8;
 
-  async function load() {
+  const load = useCallback(async () => {
     const token = getAdminToken();
     if (!token) return;
     setLoading(true);
     setError("");
     try {
       const data = await api.getAdminCollection<RecordValue>(endpoint, token);
-      setRecords(data);
+      setRecords(Array.isArray(data) ? data : []);
     } catch {
-      setError("Unable to load records. Check API, database and permissions.");
+      setError("Impossible de charger les enregistrements. Vérifiez l'API, la base de données et les permissions.");
     } finally {
       setLoading(false);
     }
-  }
+  }, [endpoint]);
 
   useEffect(() => {
-    let active = true;
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [load]);
 
-    async function loadInitial() {
-      const token = getAdminToken();
-      if (!token) return;
-      try {
-        const data = await api.getAdminCollection<RecordValue>(endpoint, token);
-        if (active) setRecords(data);
-      } catch {
-        if (active) {
-          setError("Unable to load records. Check API, database and permissions.");
-        }
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-
-    loadInitial();
-
-    return () => {
-      active = false;
-    };
+  useEffect(() => {
+    const timer = window.setTimeout(() => setPage(1), 0);
+    return () => window.clearTimeout(timer);
   }, [endpoint]);
 
   const filtered = useMemo(() => {
     const value = query.toLowerCase();
-    return records.filter((record) =>
-      JSON.stringify(record).toLowerCase().includes(value),
-    );
-  }, [query, records]);
+    return records.filter((record) => {
+      const matchesText = JSON.stringify(record).toLowerCase().includes(value);
+      const rawStatus = String(record.status || record.published || record.active || "").toLowerCase();
+      const matchesStatus = status === "all" || rawStatus.includes(status.toLowerCase());
+      return matchesText && matchesStatus;
+    });
+  }, [query, records, status]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const visible = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   async function createRecord(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const token = getAdminToken();
     if (!token) return;
-    const formData = new FormData(event.currentTarget);
-    const body: RecordValue = {};
-    fields.forEach((field) => {
-      if (field.type === "checkbox") {
-        body[field.name] = formData.get(field.name) === "on";
-      } else {
-        const value = formData.get(field.name);
-        if (value === "" && !field.required) return;
-        body[field.name] = value;
-      }
-    });
+    const body = buildBody(event.currentTarget, fields);
+    if (endpoint === "/auth/users" && currentUser?.role === "ADMIN" && body.role === "SUPER_ADMIN") {
+      setError("Un Admin ne peut pas créer un Super Admin.");
+      return;
+    }
     setSaving(true);
+    setError("");
     try {
       await api.createAdminRecord(endpoint, token, body);
       event.currentTarget.reset();
+      setTab("list");
       await load();
     } catch {
-      setError("Unable to save record. Please verify the fields.");
+      setError("Impossible d'enregistrer. Vérifiez les champs et permissions.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function updateRecord(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const token = getAdminToken();
+    if (!token || !editing?.id) return;
+    const body = buildBody(event.currentTarget, fields);
+    setSaving(true);
+    setError("");
+    try {
+      await api.updateAdminRecord(`${endpoint}/${editing.id}`, token, body);
+      setEditing(null);
+      await load();
+    } catch {
+      setError("Impossible de mettre à jour cet enregistrement.");
     } finally {
       setSaving(false);
     }
@@ -108,117 +248,196 @@ export default function AdminResourcePage({
   async function deleteRecord(id: unknown) {
     const token = getAdminToken();
     if (!token || typeof id !== "string") return;
-    if (!confirm("Archive this record?")) return;
-    await api.deleteAdminRecord(`${endpoint}/${id}`, token).catch(() => {
-      setError("Unable to archive record.");
-    });
-    await load();
+    if (!confirm("Supprimer ou archiver cet enregistrement ?")) return;
+    try {
+      await api.deleteAdminRecord(`${endpoint}/${id}`, token);
+      await load();
+    } catch {
+      setError("Impossible de supprimer ou archiver cet enregistrement.");
+    }
+  }
+
+  async function togglePublished(record: RecordValue) {
+    const token = getAdminToken();
+    if (!token || typeof record.id !== "string") return;
+    const next = !Boolean(record.published ?? record.active);
+    const key = "active" in record ? "active" : "published";
+    try {
+      await api.updateAdminRecord(`${endpoint}/${record.id}`, token, { [key]: next });
+      await load();
+    } catch {
+      setError("Impossible de modifier le statut de publication.");
+    }
+  }
+
+  async function exportContacts() {
+    const token = getAdminToken();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+    if (!token) return;
+    try {
+      const response = await fetch(`${apiUrl}/contacts/export`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Export failed");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "perfect-immo-contacts.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("Impossible d'exporter les contacts.");
+    }
+  }
+
+  async function uploadMedia(files: FileList | null) {
+    const token = getAdminToken();
+    if (!token || !files?.length) return;
+    setSaving(true);
+    setError("");
+    try {
+      for (const file of Array.from(files)) {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("folder", "media");
+        const uploaded = await api.uploadImage(token, formData);
+        await api.createAdminRecord("/admin/media", token, {
+          url: uploaded.imageUrl,
+          publicId: uploaded.publicId,
+          folder: "media",
+          fileName: file.name,
+          mimeType: file.type,
+          size: file.size,
+        });
+      }
+      await load();
+    } catch {
+      setError("Impossible d'importer les fichiers médias.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+    <div className="panel show">
+      <div className="page-tabs">
+        <button className={`ptab ${tab === "list" ? "at" : ""}`} onClick={() => setTab("list")}>{listLabel}</button>
+        <button className={`ptab ${tab === "create" ? "at" : ""}`} onClick={() => setTab("create")}>{createLabel}</button>
+      </div>
+
+      {tab === "list" ? (
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#D2AD3D]">
-            CMS
-          </p>
-          <h1 className="mt-2 font-serif text-3xl font-semibold">{title}</h1>
-          <p className="mt-2 max-w-2xl text-sm text-[#071D36]/60">
-            {description}
-          </p>
-        </div>
-        <button
-          onClick={load}
-          className="inline-flex items-center gap-2 rounded-md border border-[#071D36]/10 bg-white px-4 py-2 text-sm font-bold"
-        >
-          <RefreshCcw size={15} /> Refresh
-        </button>
-      </header>
-
-      <section className="grid gap-6 xl:grid-cols-[380px_1fr]">
-        <form
-          onSubmit={createRecord}
-          className="rounded-lg border border-[#071D36]/10 bg-white p-5 shadow-sm"
-        >
-          <h2 className="font-serif text-xl font-semibold">Create</h2>
-          <div className="mt-5 space-y-4">
-            {fields.map((field) => (
-              <label key={field.name} className="block">
-                <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#071D36]/50">
-                  {field.label}
-                </span>
-                {field.type === "textarea" ? (
-                  <textarea
-                    name={field.name}
-                    required={field.required}
-                    className="mt-2 min-h-28 w-full rounded-md border border-[#071D36]/10 px-3 py-2 text-sm outline-none focus:border-[#D2AD3D]"
-                  />
-                ) : field.type === "checkbox" ? (
-                  <input name={field.name} type="checkbox" className="mt-3 block" />
-                ) : (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", gap: 10, flexWrap: "wrap" }}>
+            <div>
+              <div className="table-title">{title}</div>
+              <div className="td-ref">{description}</div>
+            </div>
+            <div className="table-actions">
+              <input className="form-control" style={{ width: 190 }} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher..." />
+              <select className="btn-sm" style={{ padding: "5px 8px" }} value={status} onChange={(event) => setStatus(event.target.value)}>
+                <option value="all">Tous statuts</option>
+                <option value="published">Publiés</option>
+                <option value="draft">Brouillons</option>
+                <option value="available">Disponibles</option>
+                <option value="unread">Nouveaux</option>
+              </select>
+              <button className="btn-sm" onClick={load}><i className="ti ti-refresh" /> Actualiser</button>
+              {endpoint === "/contacts" && (
+                <button className="btn-sm" onClick={exportContacts}><i className="ti ti-download" /> Exporter CSV</button>
+              )}
+              {endpoint === "/admin/media" && (
+                <label className="btn-sm gold">
+                  <i className="ti ti-upload" /> Importer des fichiers
                   <input
-                    name={field.name}
-                    type={field.type || "text"}
-                    required={field.required}
-                    className="mt-2 h-11 w-full rounded-md border border-[#071D36]/10 px-3 text-sm outline-none focus:border-[#D2AD3D]"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden
+                    onChange={(event) => uploadMedia(event.currentTarget.files)}
                   />
-                )}
-              </label>
-            ))}
+                </label>
+              )}
+              <button className="btn-sm gold" onClick={() => setTab("create")}><i className="ti ti-plus" /> Ajouter</button>
+            </div>
           </div>
-          <button
-            disabled={saving}
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#D2AD3D] px-4 py-3 text-sm font-black uppercase text-[#071D36]"
-          >
-            <Plus size={15} /> {saving ? "Saving..." : "Create record"}
-          </button>
-        </form>
 
-        <section className="rounded-lg border border-[#071D36]/10 bg-white shadow-sm">
-          <div className="flex items-center gap-2 border-b border-[#071D36]/10 p-4">
-            <Search size={16} className="text-[#071D36]/40" />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search records..."
-              className="w-full bg-transparent text-sm outline-none"
-            />
+          <div className="table-card">
+            <div className="table-header">
+              <div className="table-title">Tous les enregistrements</div>
+              <div className="td-ref">Affichage {visible.length} sur {filtered.length}</div>
+            </div>
+            {error && <div className="admin-error">{error}</div>}
+            {loading ? (
+              <div className="empty-state">Chargement...</div>
+            ) : visible.length === 0 ? (
+              <div className="empty-state">Aucun enregistrement trouvé.</div>
+            ) : (
+              <div className="table-scroll">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Référence</th><th>Contenu</th><th>Catégorie</th><th>Date</th><th>Statut</th><th>Publié</th><th style={{ width: 100 }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visible.map((record) => (
+                      <tr key={String(record.id)}>
+                        <td><div className="td-ref">{String(record.slug || record.publicId || record.id).slice(0, 18)}</div></td>
+                        <td><div className="td-name">{toTitle(record)}</div><div className="td-ref">{toSubtitle(record)}</div></td>
+                        <td>{String(record.category || record.role || record.folder || record.location || "CMS")}</td>
+                        <td>{formatDate(record.createdAt)}</td>
+                        <td><span className={`badge ${badgeClass(record.status || record.replyStatus || record.active || record.published)}`}>{String(record.status || record.replyStatus || (record.active === false ? "Disabled" : record.published ? "Published" : "Draft"))}</span></td>
+                        <td>
+                          {"published" in record || "active" in record ? (
+                            <button type="button" className={`toggle-switch ${Boolean(record.published ?? record.active) ? "on" : ""}`} onClick={() => togglePublished(record)}>
+                              <div className="toggle-knob" />
+                            </button>
+                          ) : <span className="td-ref">—</span>}
+                        </td>
+                        <td>
+                          <div className="td-actions">
+                            <button className="icon-btn" onClick={() => setEditing(record)} title="Modifier"><i className="ti ti-edit" /></button>
+                            <button className="icon-btn danger" onClick={() => deleteRecord(record.id)} title="Supprimer"><i className="ti ti-trash" /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-          {error && <p className="border-b border-red-100 bg-red-50 p-4 text-sm text-red-700">{error}</p>}
-          {loading ? (
-            <div className="space-y-3 p-4">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div key={index} className="h-16 animate-pulse rounded-md bg-[#F6F5F0]" />
-              ))}
+
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <button className="btn-sm" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Précédent</button>
+            <button className="btn-sm" disabled>Page {page} / {pageCount}</button>
+            <button className="btn-sm" disabled={page >= pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>Suivant</button>
+          </div>
+        </div>
+      ) : (
+        <div className="table-card" style={{ padding: "1.25rem" }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)", marginBottom: "1rem", paddingBottom: ".75rem", borderBottom: ".5px solid var(--border)" }}>
+            {createLabel}
+          </div>
+          {error && <div className="admin-error" style={{ marginBottom: 12 }}>{error}</div>}
+          <AdminForm fields={fields} record={null} saving={saving} onSubmit={createRecord} onCancel={() => setTab("list")} />
+        </div>
+      )}
+
+      {editing && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <div className="modal-head">
+              <div className="table-title">Modifier - {toTitle(editing)}</div>
+              <button className="icon-btn" onClick={() => setEditing(null)}><i className="ti ti-x" /></button>
             </div>
-          ) : filtered.length === 0 ? (
-            <p className="p-8 text-center text-sm text-[#071D36]/50">
-              No records found.
-            </p>
-          ) : (
-            <div className="divide-y divide-[#071D36]/10">
-              {filtered.map((record) => (
-                <article key={String(record.id)} className="flex items-center justify-between gap-4 p-4">
-                  <div className="min-w-0">
-                    <h3 className="truncate font-semibold">
-                      {String(record.title || record.name || record.email || record.key || record.id)}
-                    </h3>
-                    <p className="mt-1 line-clamp-1 text-sm text-[#071D36]/55">
-                      {String(record.description || record.subject || record.role || record.slug || "")}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => deleteRecord(record.id)}
-                    className="rounded-md border border-red-100 p-2 text-red-600"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </article>
-              ))}
+            <div style={{ padding: "1.25rem" }}>
+              <AdminForm fields={fields} record={editing} saving={saving} onSubmit={updateRecord} onCancel={() => setEditing(null)} />
             </div>
-          )}
-        </section>
-      </section>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
