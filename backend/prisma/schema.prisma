@@ -3,137 +3,137 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String    @unique
   password  String
-  role      Role     @default(ADMIN)
-  active    Boolean  @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  active    Boolean   @default(true)
   deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role      @default(ADMIN)
 }
 
 model Property {
-  id          String   @id @default(uuid())
-  title       String
-  slug        String?  @unique
-  description String
+  id              String    @id @default(uuid())
+  title           String
+  description     String
+  location        String
+  price           Float
+  bedrooms        Int?
+  bathrooms       Int?
+  area            Float?
+  imageUrl        String?
+  status          String    @default("AVAILABLE")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  featured        Boolean   @default(false)
+  gallery         String[]
   longDescription String?
-  location    String
-  price       Float
-  bedrooms    Int?
-  bathrooms   Int?
-  area        Float?
-  imageUrl    String?
-  gallery     String[]
-  status      String   @default("AVAILABLE")
-  published   Boolean  @default(true)
-  featured    Boolean  @default(false)
-  metaTitle   String?
   metaDescription String?
-  deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  metaTitle       String?
+  published       Boolean   @default(true)
+  slug            String?   @unique
 }
 
 model Project {
-  id          String   @id @default(uuid())
-  title       String
-  slug        String?  @unique
-  description String
+  id              String        @id @default(uuid())
+  title           String
+  description     String
+  imageUrl        String?
+  category        String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+  featured        Boolean       @default(false)
+  gallery         String[]
   longDescription String?
-  imageUrl    String?
-  gallery     String[]
-  category    String?
-  status      ContentStatus @default(DRAFT)
-  published   Boolean @default(false)
-  featured    Boolean @default(false)
-  metaTitle   String?
   metaDescription String?
-  deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  metaTitle       String?
+  published       Boolean       @default(false)
+  slug            String?       @unique
+  status          ContentStatus @default(DRAFT)
 }
 
 model Blog {
-  id          String   @id @default(uuid())
-  title       String
-  slug        String   @unique
-  content     String
-  excerpt     String?
-  category    String?
-  tags        String[]
-  imageUrl    String?
-  status      ContentStatus @default(DRAFT)
-  published   Boolean  @default(false)
-  featured    Boolean  @default(false)
-  publishedAt DateTime?
-  scheduledAt DateTime?
-  metaTitle   String?
+  id              String        @id @default(uuid())
+  title           String
+  slug            String        @unique
+  content         String
+  imageUrl        String?
+  published       Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  category        String?
+  deletedAt       DateTime?
+  excerpt         String?
+  featured        Boolean       @default(false)
   metaDescription String?
-  deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  metaTitle       String?
+  publishedAt     DateTime?
+  scheduledAt     DateTime?
+  status          ContentStatus @default(DRAFT)
+  tags            String[]
 }
 
 model Contact {
-  id        String   @id @default(uuid())
-  name      String
-  email     String
-  phone     String?
-  subject   String?
-  message   String
-  status    ContactStatus @default(UNREAD)
-  replyStatus ReplyStatus @default(PENDING)
-  readAt    DateTime?
-  archivedAt DateTime?
-  createdAt DateTime @default(now())
+  id          String        @id @default(uuid())
+  name        String
+  email       String
+  phone       String?
+  subject     String?
+  message     String
+  createdAt   DateTime      @default(now())
+  archivedAt  DateTime?
+  readAt      DateTime?
+  replyStatus ReplyStatus   @default(PENDING)
+  status      ContactStatus @default(UNREAD)
 }
 
 model Service {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   title           String
-  slug            String   @unique
+  slug            String    @unique
   description     String
   longDescription String?
   category        String?
   icon            String?
   imageUrl        String?
   gallery         String[]
-  displayOrder    Int      @default(0)
-  published       Boolean  @default(false)
+  displayOrder    Int       @default(0)
+  published       Boolean   @default(false)
   metaTitle       String?
   metaDescription String?
   deletedAt       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model Realisation {
-  id             String   @id @default(uuid())
-  title          String
-  slug           String   @unique
-  client         String?
-  location       String?
-  completionDate DateTime?
-  imageUrl       String?
-  gallery        String[]
-  description    String
-  servicesUsed   String[]
-  published      Boolean  @default(false)
-  featured       Boolean  @default(false)
-  metaTitle      String?
+  id              String    @id @default(uuid())
+  title           String
+  slug            String    @unique
+  client          String?
+  location        String?
+  completionDate  DateTime?
+  imageUrl        String?
+  gallery         String[]
+  description     String
+  servicesUsed    String[]
+  published       Boolean   @default(false)
+  featured        Boolean   @default(false)
+  metaTitle       String?
   metaDescription String?
-  deletedAt      DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model MediaAsset {

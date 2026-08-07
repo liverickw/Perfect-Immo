@@ -36,6 +36,18 @@ function badgeClass(value: unknown) {
   return "badge-blue";
 }
 
+const valueLabels: Record<string, string> = {
+  AVAILABLE: "Disponible", RESERVED: "Réservé", SOLD: "Vendu", RENTED: "Loué",
+  DRAFT: "Brouillon", PUBLISHED: "Publié", ARCHIVED: "Archivé",
+  DISABLED: "Désactivé", ACTIVE: "Actif", UNREAD: "Nouveau", READ: "Lu",
+  EDITOR: "Éditeur", ADMIN: "Administrateur", SUPER_ADMIN: "Super administrateur",
+};
+
+function translatedValue(value: unknown) {
+  const text = String(value || "");
+  return valueLabels[text.toUpperCase()] || text;
+}
+
 function buildBody(form: HTMLFormElement, fields: AdminField[]) {
   const formData = new FormData(form);
   const body: RecordValue = {};
@@ -108,7 +120,7 @@ function AdminForm({
               ) : field.type === "select" ? (
                 <select name={field.name} className="form-control" required={field.required} defaultValue={String(value)}>
                   <option value="">Sélectionner</option>
-                  {(field.options || []).map((option) => <option key={option} value={option}>{option}</option>)}
+                  {(field.options || []).map((option) => <option key={option} value={option}>{translatedValue(option)}</option>)}
                 </select>
               ) : (
                 <input
@@ -387,7 +399,7 @@ export default function AdminResourcePage({
                         <td><div className="td-name">{toTitle(record)}</div><div className="td-ref">{toSubtitle(record)}</div></td>
                         <td>{String(record.category || record.role || record.folder || record.location || "CMS")}</td>
                         <td>{formatDate(record.createdAt)}</td>
-                        <td><span className={`badge ${badgeClass(record.status || record.replyStatus || record.active || record.published)}`}>{String(record.status || record.replyStatus || (record.active === false ? "Disabled" : record.published ? "Published" : "Draft"))}</span></td>
+                        <td><span className={`badge ${badgeClass(record.status || record.replyStatus || record.active || record.published)}`}>{translatedValue(record.status || record.replyStatus || (record.active === false ? "DISABLED" : record.published ? "PUBLISHED" : "DRAFT"))}</span></td>
                         <td>
                           {"published" in record || "active" in record ? (
                             <button type="button" className={`toggle-switch ${Boolean(record.published ?? record.active) ? "on" : ""}`} onClick={() => togglePublished(record)}>

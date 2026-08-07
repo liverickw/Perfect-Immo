@@ -4,15 +4,15 @@ export default function AdminMessagesPage() {
   return (
     <AdminResourcePage
       title="Messages"
-      description="Review contact requests, search, archive and export from the API."
+      description="Consultez, recherchez, archivez et exportez les demandes de contact."
       endpoint="/contacts"
       listLabel="Tous les contacts"
       createLabel="Ajouter un contact"
       fields={[
-        { name: "name", label: "Name", required: true },
+        { name: "name", label: "Nom", required: true },
         { name: "email", label: "Email", required: true },
-        { name: "phone", label: "Phone" },
-        { name: "subject", label: "Subject" },
+        { name: "phone", label: "Téléphone" },
+        { name: "subject", label: "Objet" },
         { name: "message", label: "Message", type: "textarea", required: true },
       ]}
     />

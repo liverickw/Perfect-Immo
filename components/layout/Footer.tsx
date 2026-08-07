@@ -8,6 +8,7 @@ const navigation = [
   "Projets",
   "Blog",
   "Contact",
+  "Paramètres",
 ];
 
 const services = [

@@ -10,6 +10,18 @@
   --line: rgba(10, 32, 57, 0.14);
 }
 
+html {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #eef3f8;
+  --muted: #aab5c3;
+  --cream: #08182a;
+  --line: rgba(226, 232, 240, 0.16);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -24,6 +36,64 @@ body {
   overflow-x: hidden;
 }
 
+html[data-theme="dark"] body {
+  background: #061321;
+  color: #e7eef7;
+}
+
+/* Public pages define their palette locally; these shared overrides let the
+   root theme preference reach every CSS-module page. */
+html[data-theme="dark"] [class*="_pageCenter_"] {
+  --navy: #e7eef7;
+  --navy-2: #c4cfdd;
+  --navy-3: #9eafc2;
+  --cream: #08182a;
+  --gray-1: #10243a;
+  --gray-2: #263a50;
+  --gray-3: #aab5c3;
+  --gray-4: #d5dde8;
+  background: #061321;
+  color: #e7eef7;
+}
+
+html[data-theme="dark"] [class*="_site_"] {
+  background: #08182a;
+  box-shadow: 0 0 0 1px rgba(226, 232, 240, 0.1);
+}
+
+html[data-theme="dark"] :is(
+  [class*="_navbar_"],
+  [class*="_hero_"],
+  [class*="_footer_"],
+  [class*="_ctaBand_"],
+  [class*="_featuredService_"]
+) {
+  --navy: #0b1f3a;
+  --navy-2: #152b4e;
+  --navy-3: #1e3a64;
+  --cream: #fafaf6;
+}
+
+/* Shared Tailwind surfaces used by the public homepage sections. */
+html[data-theme="dark"] :is(
+  .bg-white,
+  [class~="bg-[#f6f5f0]"],
+  [class~="bg-[#fbfbf8]"]
+) {
+  background-color: #10243a !important;
+}
+
+html[data-theme="dark"] :is(
+  [class~="text-[#071D36]"],
+  [class~="text-[#061b35]"],
+  [class~="text-[#8a8178]"],
+  [class~="text-[#665f57]"],
+  [class~="text-[#514b46]"],
+  .text-black
+) {
+  color: #e7eef7 !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -31,6 +101,113 @@ a {
 
 button {
   font: inherit;
+}
+
+.public-settings-page {
+  display: flex;
+  min-height: 62vh;
+  justify-content: center;
+  padding: 64px 24px;
+  background: var(--cream);
+}
+
+.public-settings-link {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  border: 1px solid rgba(210, 173, 61, 0.5);
+  border-radius: 999px;
+  background: #071d36;
+  box-shadow: 0 8px 30px rgba(6, 27, 53, 0.22);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.public-settings-link:hover { color: var(--gold); }
+
+@media (max-width: 520px) {
+  .public-settings-link { width: 44px; padding: 0; justify-content: center; }
+  .public-settings-link span { display: none; }
+}
+
+.public-settings-card {
+  width: min(900px, 100%);
+}
+
+.public-settings-card h1 {
+  margin-top: 14px;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 500;
+}
+
+.public-settings-intro {
+  margin: 8px 0 28px;
+  color: var(--muted);
+}
+
+.public-settings-page .theme-settings {
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.public-settings-page .theme-settings-head h3 {
+  color: var(--ink);
+  font-size: 20px;
+}
+
+.public-settings-page .theme-settings-head p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.public-settings-page .theme-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.public-settings-page .theme-option {
+  display: flex;
+  min-height: 92px;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--cream);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.public-settings-page .theme-option.selected {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+
+.public-settings-page .theme-option > i:first-child { color: var(--gold); font-size: 22px; }
+.public-settings-page .theme-option span { display: flex; flex: 1; flex-direction: column; gap: 4px; }
+.public-settings-page .theme-option strong { font-size: 14px; }
+.public-settings-page .theme-option small { color: var(--muted); font-size: 11px; }
+.public-settings-page .theme-option-check { color: var(--gold); opacity: 0; }
+.public-settings-page .theme-option.selected .theme-option-check { opacity: 1; }
+
+html[data-theme="dark"] .public-settings-page .theme-settings { background: #10243a; }
+
+@media (max-width: 700px) {
+  .public-settings-page { padding: 42px 18px; }
+  .public-settings-page .theme-options { grid-template-columns: 1fr; }
 }
 
 .serif {

@@ -1,17 +1,21 @@
 import AdminResourcePage from "@/components/admin/AdminResourcePage";
+import ThemeSettings from "@/components/theme/ThemeSettings";
 
 export default function AdminSettingsPage() {
   return (
-    <AdminResourcePage
-      title="Settings"
-      description="Manage website name, company info, footer and homepage settings."
+    <>
+      <ThemeSettings />
+      <AdminResourcePage
+      title="Paramètres"
+      description="Gérez le nom du site, les informations de l’entreprise, le pied de page et l’accueil."
       endpoint="/admin/settings"
       listLabel="Paramètres"
       createLabel="Ajouter un paramètre"
       fields={[
-        { name: "key", label: "Key", required: true },
-        { name: "value", label: "Value", type: "textarea", required: true },
+        { name: "key", label: "Clé", required: true },
+        { name: "value", label: "Valeur", type: "textarea", required: true },
       ]}
-    />
+      />
+    </>
   );
 }

@@ -2,18 +2,18 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { clearAdminSession, getAdminUser } from "@/lib/api/admin-auth";
 
 const navGroups = [
   {
     label: "Principal",
     items: [
-      ["/admin/dashboard", "Dashboard", "ti-layout-dashboard", ""],
-      ["/admin/properties", "Properties", "ti-building", "47"],
-      ["/admin/projects", "Projects", "ti-hammer", ""],
+      ["/admin/dashboard", "Tableau de bord", "ti-layout-dashboard", ""],
+      ["/admin/properties", "Biens immobiliers", "ti-building", "47"],
+      ["/admin/projects", "Projets", "ti-hammer", ""],
       ["/admin/services", "Services", "ti-list", ""],
-      ["/admin/realisations", "Realisations", "ti-photo", ""],
+      ["/admin/realisations", "Réalisations", "ti-photo", ""],
       ["/admin/blog", "Blog", "ti-file-text", ""],
       ["/admin/messages", "Contacts", "ti-mail", "8"],
     ],
@@ -21,15 +21,15 @@ const navGroups = [
   {
     label: "Médias & Contenu",
     items: [
-      ["/admin/media", "Media Library", "ti-photo", ""],
-      ["/admin/statistics", "Statistics", "ti-chart-bar", ""],
+      ["/admin/media", "Médiathèque", "ti-photo", ""],
+      ["/admin/statistics", "Statistiques", "ti-chart-bar", ""],
     ],
   },
   {
     label: "Administration",
     items: [
-      ["/admin/users", "Users", "ti-users", ""],
-      ["/admin/settings", "Settings", "ti-settings", ""],
+      ["/admin/users", "Utilisateurs", "ti-users", ""],
+      ["/admin/settings", "Paramètres", "ti-settings", ""],
     ],
   },
 ] as const;
@@ -59,6 +59,23 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     return titles[pathname] || "Administration";
   }, [pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
@@ -71,7 +88,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   return (
     <main className={`pie-admin ${open ? "sidebar-open" : ""}`}>
       <h2 className="sr-only">
-        Dashboard administrateur Perfect Immo & Engineering - gestion des biens,
+        Tableau de bord administrateur Perfect Immo & Engineering - gestion des biens,
         contacts, réalisations, médias et utilisateurs
       </h2>
       <div className="admin-shell">
@@ -122,7 +139,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                       {badge && (
                         <span
                           className={`sb-item-badge ${
-                            label === "Properties" ? "gold" : ""
+                            label === "Biens immobiliers" ? "gold" : ""
                           }`}
                         >
                           {badge}
@@ -146,13 +163,23 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </div>
         </aside>
 
+        {open && (
+          <button
+            type="button"
+            className="sidebar-dismiss"
+            aria-label="Fermer le menu"
+            onClick={() => setOpen(false)}
+          />
+        )}
+
         <section className="main">
           <header className="topbar">
             <button
               type="button"
               className="topbar-btn mobile-menu"
               onClick={() => setOpen((value) => !value)}
-              aria-label="Ouvrir le menu"
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={open}
             >
               <i className="ti ti-menu-2" aria-hidden="true" />
             </button>

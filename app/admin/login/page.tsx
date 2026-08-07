@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
         </label>
         <label className="mt-4 block">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#071D36]/50">
-            Password
+            Mot de passe
           </span>
           <div className="mt-2 flex h-12 items-center gap-2 rounded-md border border-[#071D36]/10 px-3">
             <Lock size={16} className="text-[#071D36]/40" />

@@ -211,6 +211,9 @@ export default async function HomePage() {
             <Link href="/#blog" className={styles.navLink}>
               Blog
             </Link>
+            <Link href="/parametres" className={styles.navLink}>
+              Paramètres
+            </Link>
           </nav>
 
           <Link href="/contact" className={styles.navCta}>
@@ -494,6 +497,7 @@ export default async function HomePage() {
                 ["Projets", "/projets"],
                 ["Blog", "/#blog"],
                 ["Contact", "/contact"],
+                ["Paramètres", "/parametres"],
               ]}
             />
             <FooterColumn
