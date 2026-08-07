@@ -10,16 +10,17 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setLoading(true);
-    const formData = new FormData(event.currentTarget);
     try {
       const result = await api.login({
-        email: String(formData.get("email") || ""),
-        password: String(formData.get("password") || ""),
+        email,
+        password,
       });
       saveAdminSession(result.token, result.user);
       router.replace("/admin/dashboard");
@@ -33,6 +34,7 @@ export default function AdminLoginPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-[#071D36] px-4">
       <form
+        method="post"
         onSubmit={submit}
         className="w-full max-w-md rounded-lg border border-white/10 bg-white p-8 shadow-2xl"
       >
@@ -55,6 +57,9 @@ export default function AdminLoginPage() {
               name="email"
               type="email"
               required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
               className="w-full bg-transparent text-sm outline-none"
             />
           </div>
@@ -69,12 +74,16 @@ export default function AdminLoginPage() {
               name="password"
               type="password"
               required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
               className="w-full bg-transparent text-sm outline-none"
             />
           </div>
         </label>
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
         <button
+          type="submit"
           disabled={loading}
           className="mt-6 h-12 w-full rounded-md bg-[#D2AD3D] text-sm font-black uppercase text-[#071D36]"
         >

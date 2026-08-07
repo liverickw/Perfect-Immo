@@ -17,8 +17,6 @@ import {
   Ruler,
 } from "lucide-react";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
-import { api, safeApi } from "@/lib/api/client";
-import type { ApiBlog, ApiProject } from "@/lib/api/types";
 import styles from "./home.module.css";
 
 const serif = Cormorant_Garamond({
@@ -32,155 +30,124 @@ const sans = Outfit({
   variable: "--home-sans",
   display: "swap",
 });
-
+  
 const services = [
   {
     icon: Hammer,
-    title: "LevÃ©s Topographiques",
+      title: "Levés Topographiques",
     description:
       "Mesures de terrain, implantations, nivellement et plans topographiques.",
   },
   {
     icon: Building2,
-    title: "GÃ©odÃ©sie & GNSS",
+    title: "Géodésie & GNSS",
     description:
-      "LevÃ©s GNSS RTK, gÃ©orÃ©fÃ©rencement et contrÃ´le de prÃ©cision.",
+      "Levés GNSS RTK, géoréférencement et contrôle de précision.",
   },
   {
     icon: Ruler,
     title: "Cartographie & SIG",
     description:
-      "Production de cartes numÃ©riques, analyse spatiale et bases de donnÃ©es gÃ©ographiques.",
+      "Production de cartes numériques, analyse spatiale et bases de données géographiques.",
   },
   {
     icon: Home,
     title: "Architecture & Immobilier",
     description:
-      "Conception architecturale, Ã©tudes techniques et accompagnement immobilier.",
+      "Conception architecturale, études techniques et accompagnement immobilier.",
   },
   {
     icon: KeyRound,
     title: "Implantation & VRD",
     description:
-      "Implantation d'ouvrages, voiries et rÃ©seaux divers.",
+      "Implantation d'ouvrages, voiries et réseaux divers.",
   },
   {
     icon: BadgeCheck,
-    title: "Location d'Ã‰quipements",
+    title: "Location d'Équipements",
     description:
-      "Drone, GNSS RTK, stations totales et matÃ©riel topographique.",
+      "Drone, GNSS RTK, stations totales et matériel topographique.",
   },
 ];
-
+  
 const projects = [
   {
-    tag: "RÃ©sidentiel Â· 2024",
-    name: "Campagne de LevÃ©s Topographiques",
-    location: "Douala â€¢ 150 ha cartographiÃ©s",
+    tag: "Résidentiel · 2024",
+    name: "Campagne de Levés Topographiques",
+    location: "Douala • 150 ha cartographiés",
     featured: true,
   },
   {
-    tag: "Commercial Â· 2023",
+    tag: "Commercial · 2023",
     name: "Implantation d'Infrastructures",
-    location: "Bonanjo â€¢ BÃ¢timents et rÃ©seaux",
+    location: "Bonanjo • Bâtiments et réseaux",
   },
   {
-    tag: "Infrastructure Â· 2023",
-    name: "Projet GÃ©odÃ©sie GNSS RTK",
-    location: "Douala â€¢ RÃ©seau de points de contrÃ´le",
+    tag: "Infrastructure · 2023",
+    name: "Projet Géodésie GNSS RTK",
+    location: "Douala • Réseau de points de contrôle",
   },
 ];
-
+  
 const values = [
-  "PrÃ©cision et fiabilitÃ© des mesures",
-  "Ã‰quipements professionnels de derniÃ¨re gÃ©nÃ©ration",
-  "Solutions adaptÃ©es aux besoins de chaque projet",
+  "Précision et fiabilité des mesures",
+  "Équipements professionnels de dernière génération",
+  "Solutions adaptées aux besoins de chaque projet",
 ];
 
 const aboutStats = [
-  ["15", "AnnÃ©es d'expÃ©rience", "dans l'immobilier & l'ingÃ©nierie au Cameroun"],
-  ["12", "IngÃ©nieurs certifiÃ©s", "gÃ©nie civil, structure, VRD et bÃ¢timent"],
-  ["98%", "Taux de satisfaction", "mesurÃ© auprÃ¨s de nos clients depuis 2020"],
+  ["15", "Années d'expérience", "dans l'immobilier & l'ingénierie au Cameroun"],
+  ["12", "Ingénieurs certifiés", "génie civil, structure, VRD et bâtiment"],
+  ["98%", "Taux de satisfaction", "mesuré auprès de nos clients depuis 2020"],
 ];
 
 const steps = [
   ["1", "Analyse", "du besoin"],
   ["2", "Reconnaissance", "terrain"],
-  ["3", "LevÃ©s &", "acquisition des donnÃ©es"],
-  ["4", "Traitement &", "vÃ©rification"],
-  ["5", "Livraison des", "rÃ©sultats"],
+  ["3", "Levés &", "acquisition des données"],
+  ["4", "Traitement &", "vérification"],
+  ["5", "Livraison des", "résultats"],
 ];
-
+  
 const testimonials = [
   {
     initials: "JE",
     name: "Jean-Marc Essomba",
     role: "PDG, Groupe Essomba",
     quote:
-      "L'Ã©quipe PIE a rÃ©alisÃ© nos levÃ©s topographiques avec une prÃ©cision remarquable et dans les dÃ©lais prÃ©vus.",
+      "L'équipe PIE a réalisé nos levés topographiques avec une précision remarquable et dans les délais prévus.",
   },
   {
     initials: "MN",
     name: "Marie Ngo Biyong",
     role: "Promotrice, SCI Palmier",
     quote:
-      "Leur expertise GNSS et leur accompagnement technique ont Ã©tÃ© essentiels pour la rÃ©ussite de notre projet.",
+      "Leur expertise GNSS et leur accompagnement technique ont été essentiels pour la réussite de notre projet.",
   },
 ];
-
+  
 const posts = [
   {
     icon: Building2,
-    category: "MarchÃ©",
+    category: "Marché",
     title: "Pourquoi la topographie est essentielle avant de construire",
     date: "14 mai 2025",
   },
   {
     icon: DraftingCompass,
-    category: "IngÃ©nierie",
-    title: "GNSS RTK : comprendre la prÃ©cision centimÃ©trique",
+    category: "Ingénierie",
+    title: "GNSS RTK : comprendre la précision centimétrique",
     date: "2 avril 2025",
   },
   {
     icon: Banknote,
     category: "Conseils",
-    title: "Cartographie SIG : un outil stratÃ©gique pour les projets modernes",
+    title: "Cartographie SIG : un outil stratégique pour les projets modernes",
     date: "18 mars 2025",
   },
 ];
-
-function mapHomeProject(project: ApiProject, index: number) {
-  return {
-    tag: `${project.category || "RÃ©alisation"} Â· ${new Date(project.createdAt).getFullYear()}`,
-    name: project.title,
-    location: project.description,
-    featured: index === 0,
-  };
-}
-
-function mapHomePost(post: ApiBlog) {
-  return {
-    icon: DraftingCompass,
-    category: post.published ? "ActualitÃ©" : "Conseil",
-    title: post.title,
-    date: new Intl.DateTimeFormat("fr-FR", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(new Date(post.createdAt)),
-  };
-}
-
-export default async function HomePage() {
-  const [apiProjects, apiPosts] = await Promise.all([
-    safeApi(() => api.getProjects(), []),
-    safeApi(() => api.getBlogs(), []),
-  ]);
-  const featuredProjects = apiProjects.length
-    ? apiProjects.slice(0, 3).map(mapHomeProject)
-    : projects;
-  const blogPosts = apiPosts.length ? apiPosts.slice(0, 3).map(mapHomePost) : posts;
-
+  
+export default function HomePage() {
   return (
     <main className={`${styles.pageCenter} ${serif.variable} ${sans.variable}`}>
       <div className={styles.site}>
@@ -203,7 +170,7 @@ export default async function HomePage() {
               Services
             </Link>
             <Link href="/realisations" className={styles.navLink}>
-              RÃ©alisations
+              Réalisations
             </Link>
             <Link href="/projets" className={styles.navLink}>
               Projets
@@ -233,20 +200,20 @@ export default async function HomePage() {
               <span className={styles.buildingLabel}>Photo HD ici</span>
             </div>
           </div>
-
+  
           <div className={styles.heroContent}>
             <div className={styles.newBadge}>
               <span className={styles.newDot} />
-              <span>TOPOGRAPHIE â€¢ ARCHITECTURE â€¢ IMMOBILIER</span>
+              <span>TOPOGRAPHIE • ARCHITECTURE • IMMOBILIER</span>
             </div>
-            <p className={styles.eyebrow}>GÃ‰OMATIQUE & INGÃ‰NIERIE</p>
+            <p className={styles.eyebrow}>GÉOMATIQUE & INGÉNIERIE</p>
             <h1 className={styles.heroTitle}>
-              La prÃ©cision au
+              La précision au
               <br />
               service de <em>vos Projets</em>
             </h1>
             <p className={styles.heroDescription}>
-              PIE accompagne les projets de topographie, gÃ©odÃ©sie GNSS, cartographie SIG, architecture, immobilier et ingÃ©nierie partout au Cameroun.
+              PIE accompagne les projets de topographie, géodésie GNSS, cartographie SIG, architecture, immobilier et ingénierie partout au Cameroun.
             </p>
             <div className={styles.heroActions}>
               <Link href="/projets" className={styles.goldButton}>
@@ -258,10 +225,10 @@ export default async function HomePage() {
             </div>
             <div className={styles.heroStats}>
               {[
-                ["120+", "LEVÃ‰S RÃ‰ALISÃ‰S"],
-                ["15", "ANS D'EXPÃ‰RIENCE"],
+                ["120+", "LEVÉS RÉALISÉS"],
+                ["15", "ANS D'EXPÉRIENCE"],
                 ["500+", "Clients"],
-                ["85k", "PRÃ‰CISION RTK"],
+                ["85k", "PRÉCISION RTK"],
               ].map(([number, label]) => (
                 <div key={label} className={styles.heroStat}>
                   <strong>{number}</strong>
@@ -271,7 +238,7 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
-
+  
         <a
           href="https://wa.me/237676438342"
           className={styles.whatsappBar}
@@ -280,8 +247,8 @@ export default async function HomePage() {
         >
           <MessageCircle size={24} />
           <span>
-            <strong>WhatsApp - RÃ©ponse en moins de 2h</strong>
-            <small>+237 676 438 342 Â· Lun-Sam 8h-18h</small>
+            <strong>WhatsApp - Réponse en moins de 2h</strong>
+            <small>+237 676 438 342 · Lun-Sam 8h-18h</small>
           </span>
         </a>
 
@@ -295,7 +262,7 @@ export default async function HomePage() {
                 d&apos;expertise
               </>
             }
-            description="De la topographie de terrain Ã  la cartographie numÃ©rique, nous accompagnons les projets d'infrastructure, de construction et d'amÃ©nagement."
+            description="De la topographie de terrain à la cartographie numérique, nous accompagnons les projets d'infrastructure, de construction et d'aménagement."
           />
           <div className={styles.servicesGrid}>
             {services.map(({ icon: Icon, title, description }) => (
@@ -310,20 +277,20 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
-
+  
         <section className={styles.section}>
           <SectionHeader
             eyebrow="Notre portfolio"
             title={
               <>
-                RÃ©alisations
+                Réalisations
                 <br />
-                rÃ©centes
+                récentes
               </>
             }
           />
           <div className={styles.projectsGrid}>
-            {featuredProjects.map((project) => (
+            {projects.map((project) => (
               <article
                 key={project.name}
                 className={`${styles.projectCard} ${
@@ -343,7 +310,7 @@ export default async function HomePage() {
           </div>
           <div className={styles.centerAction}>
             <Link href="/realisations" className={styles.goldButton}>
-              Voir toutes les rÃ©alisations <ArrowRight size={15} />
+              Voir toutes les réalisations <ArrowRight size={15} />
             </Link>
           </div>
         </section>
@@ -353,14 +320,14 @@ export default async function HomePage() {
             <div>
               <p className={styles.eyebrow}>Qui sommes-nous</p>
               <h2 className={styles.aboutTitle}>
-                Mesurer avec prÃ©cision,
+                Mesurer avec précision,
                 <br />
                 accompagner avec <em>expertise</em>
               </h2>
               <p className={styles.aboutDescription}>
-                Perfect Immo & Engineering SARL rÃ©unit des spÃ©cialistes en topographie,
-                gÃ©odÃ©sie, cartographie, architecture et immobilier afin d&apos;accompagner les
-                projets publics et privÃ©s au Cameroun.
+                Perfect Immo & Engineering SARL réunit des spécialistes en topographie,
+                géodésie, cartographie, architecture et immobilier afin d'accompagner les
+                projets publics et privés au Cameroun.
               </p>
               <div className={styles.valueList}>
                 {values.map((value) => (
@@ -384,10 +351,10 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
-
+  
         <section className={styles.process}>
           <div className={styles.processHeader}>
-            <p className={styles.centeredEyebrow}>Notre mÃ©thode</p>
+            <p className={styles.centeredEyebrow}>Notre méthode</p>
             <h2>Comment nous travaillons</h2>
           </div>
           <div className={styles.processSteps}>
@@ -408,12 +375,12 @@ export default async function HomePage() {
         <section className={`${styles.section} ${styles.whiteSection}`}>
           <SectionHeader
             eyebrow="Ils nous font confiance"
-            title="TÃ©moignages clients"
+            title="Témoignages clients"
           />
           <div className={styles.testimonialGrid}>
             {testimonials.map((testimonial) => (
               <article key={testimonial.name} className={styles.testimonialCard}>
-                <div className={styles.stars}>â˜…â˜…â˜…â˜…â˜…</div>
+                <div className={styles.stars}>★★★★★</div>
                 <p className={styles.quote}>{testimonial.quote}</p>
                 <div className={styles.author}>
                   <span>{testimonial.initials}</span>
@@ -428,9 +395,9 @@ export default async function HomePage() {
         </section>
 
         <section id="blog" className={styles.section}>
-          <SectionHeader eyebrow="ActualitÃ©s & Conseil" title="Notre blog" />
+          <SectionHeader eyebrow="Actualités & Conseil" title="Notre blog" />
           <div className={styles.blogGrid}>
-            {blogPosts.map(({ icon: Icon, category, title, date }) => (
+            {posts.map(({ icon: Icon, category, title, date }) => (
               <article key={title} className={styles.blogCard}>
                 <div className={styles.blogImage}>
                   <Icon size={36} />
@@ -446,25 +413,25 @@ export default async function HomePage() {
         </section>
 
         <section className={styles.finalCta}>
-          <p className={styles.ctaEyebrow}>DÃ©marrez dÃ¨s aujourd&apos;hui</p>
+          <p className={styles.ctaEyebrow}>Démarrez dès aujourd&apos;hui</p>
           <h2>
-            Besoin d&apos;un expert en
+            Besoin d'un expert en
             <br />
-            topographie ou <em>gÃ©odÃ©sie ?</em>
+            topographie ou <em>géodésie ?</em>
           </h2>
           <p className={styles.ctaDescription}>
-            Conseil gratuit â€¢ Intervention rapide â€¢ Ã‰quipements professionnels
+            Conseil gratuit • Intervention rapide • Équipements professionnels
           </p>
           <div className={styles.ctaActions}>
             <Link href="/contact" className={styles.goldButton}>
               Demander un devis gratuit <ArrowRight size={15} />
             </Link>
             <Link href="/services" className={styles.outlineButton}>
-              DÃ©couvrir l&apos;entreprise
+              Découvrir l&apos;entreprise
             </Link>
           </div>
         </section>
-
+  
         <footer className={styles.footer}>
           <div className={styles.footerTop}>
             <div>
@@ -472,7 +439,7 @@ export default async function HomePage() {
                 Perfect Immo <em>&</em> Engineering
               </h2>
               <p className={styles.footerTagline}>
-                Votre partenaire immobilier et d&apos;ingÃ©nierie de confiance Ã
+                Votre partenaire immobilier et d&apos;ingénierie de confiance à
                 Douala, Cameroun. Excellence, rigueur et innovation.
               </p>
               <div className={styles.footerContact}>
@@ -491,9 +458,9 @@ export default async function HomePage() {
               title="Navigation"
               links={[
                 ["Accueil", "/"],
-                ["Ã€ propos", "/#a-propos"],
+                ["À propos", "/#a-propos"],
                 ["Services", "/services"],
-                ["RÃ©alisations", "/realisations"],
+                ["Réalisations", "/realisations"],
                 ["Projets", "/projets"],
                 ["Blog", "/#blog"],
                 ["Contact", "/contact"],
@@ -503,10 +470,10 @@ export default async function HomePage() {
             <FooterColumn
               title="Services"
               links={[
-                ["Vente immobiliÃ¨re", "/services"],
+                ["Vente immobilière", "/services"],
                 ["Location", "/services"],
-                ["MaÃ®trise d'oeuvre", "/services"],
-                ["Ã‰tudes VRD", "/services"],
+                ["Maîtrise d'oeuvre", "/services"],
+                ["Études VRD", "/services"],
                 ["Gestion locative", "/services"],
                 ["Conseil & audit", "/services"],
               ]}
@@ -514,12 +481,12 @@ export default async function HomePage() {
           </div>
           <div className={styles.footerBottom}>
             <p>
-              Â© 2025 Perfect Immo & Engineering Â· Tous droits rÃ©servÃ©s Â·
-              Mentions lÃ©gales
+              © 2025 Perfect Immo & Engineering · Tous droits réservés ·
+              Mentions légales
             </p>
             <div className={styles.socials}>
               {[MessageCircle, Globe, Mail, Phone].map((Icon, index) => (
-                <a key={index} href="#" aria-label={`RÃ©seau social ${index + 1}`}>
+                <a key={index} href="#" aria-label={`Réseau social ${index + 1}`}>
                   <Icon size={15} />
                 </a>
               ))}
