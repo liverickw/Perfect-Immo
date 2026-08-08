@@ -3,9 +3,13 @@ import type {
   ApiProject,
   ApiProperty,
   ApiRealisation,
+  ApiService,
   ApiResponse,
   ContactPayload,
   AdminDashboard,
+  AdminHomepageContent,
+  HomepageContent,
+  ServicePageSettings,
   LoginPayload,
   LoginResponse,
 } from "./types";
@@ -73,8 +77,40 @@ export const api = {
     return request<AdminDashboard>("/admin/dashboard", { token });
   },
 
+  getAdminHomepage(token: string) {
+    return request<AdminHomepageContent>("/admin/homepage", { token });
+  },
+
+  updateAdminHomepage(token: string, content: HomepageContent) {
+    return request<AdminHomepageContent>("/admin/homepage", {
+      method: "PUT",
+      token,
+      body: { content },
+    });
+  },
+
   getAdminCollection<T>(path: string, token: string) {
     return request<T[]>(path, { token });
+  },
+
+  getAdminServices(token: string) {
+    return request<ApiService[]>("/services/admin/all", { token });
+  },
+
+  getAdminRealisations(token: string) {
+    return request<ApiRealisation[]>("/realisations/admin/all", { token });
+  },
+
+  getAdminServicePageSettings(token: string) {
+    return request<ServicePageSettings>("/services/admin/page-settings", { token });
+  },
+
+  updateAdminServicePageSettings(token: string, settings: ServicePageSettings) {
+    return request<ServicePageSettings>("/services/admin/page-settings", {
+      method: "PUT",
+      token,
+      body: settings,
+    });
   },
 
   createAdminRecord<T>(path: string, token: string, body: unknown) {
@@ -99,6 +135,24 @@ export const api = {
 
   getProperties() {
     return request<ApiProperty[]>("/properties", {
+      next: { revalidate: 300 },
+    });
+  },
+
+  getHomepage() {
+    return request<HomepageContent>("/homepage", {
+      next: { revalidate: 60 },
+    });
+  },
+
+  getServices() {
+    return request<ApiService[]>("/services", {
+      next: { revalidate: 300 },
+    });
+  },
+
+  getServicePageSettings() {
+    return request<ServicePageSettings>("/services/page-settings", {
       next: { revalidate: 300 },
     });
   },

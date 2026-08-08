@@ -9,43 +9,45 @@ const navGroups = [
   {
     label: "Principal",
     items: [
-      ["/admin/dashboard", "Tableau de bord", "ti-layout-dashboard", ""],
-      ["/admin/properties", "Biens immobiliers", "ti-building", "47"],
-      ["/admin/projects", "Projets", "ti-hammer", ""],
-      ["/admin/services", "Services", "ti-list", ""],
-      ["/admin/realisations", "Réalisations", "ti-photo", ""],
-      ["/admin/blog", "Blog", "ti-file-text", ""],
-      ["/admin/messages", "Contacts", "ti-mail", "8"],
+      ["/admin/dashboard", "Dashboard", "ti-layout-dashboard"],
+      ["/admin/homepage", "Homepage", "ti-home"],
+      ["/admin/services", "Services", "ti-list"],
+      ["/admin/projects", "Projects", "ti-hammer"],
+      ["/admin/realisations", "Réalisations", "ti-photo"],
+      ["/admin/properties", "Properties", "ti-building"],
+      ["/admin/blog", "Blog", "ti-file-text"],
+      ["/admin/testimonials", "Testimonials", "ti-star"],
     ],
   },
   {
-    label: "Médias & Contenu",
+    label: "Media & Contact",
     items: [
-      ["/admin/media", "Médiathèque", "ti-photo", ""],
-      ["/admin/statistics", "Statistiques", "ti-chart-bar", ""],
+      ["/admin/media", "Media Library", "ti-photo"],
+      ["/admin/messages", "Contact Messages", "ti-mail"],
     ],
   },
   {
     label: "Administration",
     items: [
-      ["/admin/users", "Utilisateurs", "ti-users", ""],
-      ["/admin/settings", "Paramètres", "ti-settings", ""],
+      ["/admin/users", "Users", "ti-users"],
+      ["/admin/settings", "Settings", "ti-settings"],
     ],
   },
 ] as const;
 
 const titles: Record<string, string> = {
-  "/admin/dashboard": "Tableau de bord",
-  "/admin/properties": "Biens immobiliers",
-  "/admin/projects": "Projets",
+  "/admin/dashboard": "Dashboard",
+  "/admin/homepage": "Homepage",
   "/admin/services": "Services",
+  "/admin/projects": "Projects",
   "/admin/realisations": "Réalisations",
-  "/admin/blog": "Articles & Blog",
-  "/admin/messages": "Contacts & Demandes",
-  "/admin/media": "Bibliothèque médias",
-  "/admin/statistics": "Statistiques & Analytics",
-  "/admin/users": "Utilisateurs & Rôles",
-  "/admin/settings": "Paramètres du site",
+  "/admin/properties": "Properties",
+  "/admin/blog": "Blog",
+  "/admin/testimonials": "Testimonials",
+  "/admin/media": "Media Library",
+  "/admin/messages": "Contact Messages",
+  "/admin/users": "Users",
+  "/admin/settings": "Settings",
 };
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
@@ -88,7 +90,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   return (
     <main className={`pie-admin ${open ? "sidebar-open" : ""}`}>
       <h2 className="sr-only">
-        Tableau de bord administrateur Perfect Immo & Engineering - gestion des biens,
+        Dashboard administrateur Perfect Immo & Engineering - gestion des biens,
         contacts, réalisations, médias et utilisateurs
       </h2>
       <div className="admin-shell">
@@ -122,7 +124,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             {navGroups.map((group) => (
               <div key={group.label}>
                 <div className="sb-section-label">{group.label}</div>
-                {group.items.map(([href, label, icon, badge]) => {
+                {group.items.map(([href, label, icon]) => {
                   const active =
                     href === "/admin/dashboard"
                       ? pathname === href || pathname === "/admin"
@@ -136,15 +138,6 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                     >
                       <i className={`ti ${icon}`} aria-hidden="true" />
                       {label}
-                      {badge && (
-                        <span
-                          className={`sb-item-badge ${
-                            label === "Biens immobiliers" ? "gold" : ""
-                          }`}
-                        >
-                          {badge}
-                        </span>
-                      )}
                     </Link>
                   );
                 })}

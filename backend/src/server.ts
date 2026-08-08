@@ -77,7 +77,8 @@ app.get("/api", (_req, res) => {
     version: "1.0.0",
     endpoints: {
       auth: ["/api/auth/register", "/api/auth/login"],
-      admin: ["/api/admin/dashboard", "/api/admin/settings", "/api/admin/media", "/api/admin/audit-logs"],
+      admin: ["/api/admin/dashboard", "/api/admin/homepage", "/api/admin/settings", "/api/admin/media", "/api/admin/audit-logs"],
+      homepage: ["/api/homepage"],
       properties: ["/api/properties", "/api/properties/:id"],
       projects: ["/api/projects", "/api/projects/:id"],
       services: ["/api/services", "/api/services/:id"],

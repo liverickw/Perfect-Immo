@@ -6,31 +6,27 @@ import type {
 } from "../validators/realisation.validator";
 
 export const realisationService = {
-  getAll() {
-    return realisationRepository.findAll();
+  getAll(options?: { includeDrafts?: boolean }) {
+    return realisationRepository.findAll(options);
   },
 
-  async getById(id: string) {
-    const realisation = await realisationRepository.findById(id);
+  async getById(id: string, options?: { includeDrafts?: boolean }) {
+    const realisation = await realisationRepository.findById(id, options);
     if (!realisation) throw new AppError("Realisation not found", 404);
     return realisation;
   },
 
   create(data: RealisationInput) {
-    return realisationRepository.create({
-      ...data,
-      gallery: data.gallery ?? [],
-      servicesUsed: data.servicesUsed ?? [],
-    });
+    return realisationRepository.create(data);
   },
 
   async update(id: string, data: UpdateRealisationInput) {
-    await this.getById(id);
+    await this.getById(id, { includeDrafts: true });
     return realisationRepository.update(id, data);
   },
 
   async delete(id: string) {
-    await this.getById(id);
+    await this.getById(id, { includeDrafts: true });
     return realisationRepository.softDelete(id);
   },
 };

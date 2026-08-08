@@ -7,6 +7,11 @@ export const realisationController = {
     return res.status(200).json({ success: true, data: realisations });
   },
 
+  async getAdminAll(_req: Request, res: Response) {
+    const realisations = await realisationService.getAll({ includeDrafts: true });
+    return res.status(200).json({ success: true, data: realisations });
+  },
+
   async getById(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const realisation = await realisationService.getById(id);

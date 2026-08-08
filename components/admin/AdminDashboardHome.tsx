@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api/client";
 import { getAdminToken } from "@/lib/api/admin-auth";
 import type { AdminDashboard } from "@/lib/api/types";
 
-const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
-const fallbackProperties = [2, 3, 5, 4, 6, 3, 7, 5, 8, 4, 6, 9];
-const fallbackContacts = [5, 8, 6, 12, 9, 7, 14, 11, 16, 10, 13, 19];
+type RecentWorkItem = Record<string, unknown> & {
+  _kind: string;
+  createdAt?: unknown;
+  id?: unknown;
+};
 
 function text(value: Record<string, unknown>, keys: string[], fallback: string) {
   for (const key of keys) {
@@ -18,149 +20,191 @@ function text(value: Record<string, unknown>, keys: string[], fallback: string) 
   return fallback;
 }
 
+function formatDate(value: unknown) {
+  if (!value) return "";
+  const date = new Date(String(value));
+  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString("fr-FR");
+}
+
+function Initials({ value }: { value: string }) {
+  return <div className="contact-avatar">{value.slice(0, 2).toUpperCase()}</div>;
+}
+
+function Empty({ children }: { children: React.ReactNode }) {
+  return <div className="empty-state" style={{ padding: "1.5rem" }}>{children}</div>;
+}
+
 export default function AdminDashboardHome() {
   const [data, setData] = useState<AdminDashboard | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let active = true;
     const token = getAdminToken();
-    if (!token) return;
+
+    if (!token) {
+      window.setTimeout(() => {
+        if (active) setLoading(false);
+      }, 0);
+      return;
+    }
+
     api
       .getAdminDashboard(token)
-      .then(setData)
-      .catch(() => setError("Impossible de charger les données du tableau de bord."));
+      .then((result) => {
+        if (active) setData(result);
+      })
+      .catch(() => {
+        if (active) setError("Impossible de charger les données du tableau de bord.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const stats = [
-    ["Biens actifs", data?.widgets.totalProperties ?? "—", "+12% ce mois", "up", "ti-trending-up"],
-    ["Projets publiés", data?.widgets.totalProjects ?? "—", "Stable", "", "ti-minus"],
-    ["Contacts reçus", data?.widgets.totalMessages ?? "—", "+24% cette semaine", "up", "ti-trending-up"],
-    ["Articles blog", data?.widgets.totalBlogs ?? "—", "-2 brouillons", "down", "ti-trending-down"],
+    ["Total Services", data?.widgets.totalServices, "ti-list"],
+    ["Total Projects", data?.widgets.totalProjects, "ti-hammer"],
+    ["Total Réalisations", data?.widgets.totalRealisations, "ti-photo"],
+    ["Total Properties", data?.widgets.totalProperties, "ti-building"],
+    ["Published Blog Posts", data?.widgets.publishedBlogPosts, "ti-file-text"],
+    ["Unread Contact Messages", data?.widgets.unreadContactMessages, "ti-mail"],
   ];
 
-  const recentContacts = data?.recentContacts?.slice(0, 4) || [];
-  const recentActivity = data?.latestActivity?.slice(0, 4) || [];
-  const max = Math.max(...fallbackProperties, ...fallbackContacts);
-
-  const bars = useMemo(
-    () =>
-      months.map((month, index) => ({
-        month,
-        properties: Math.round((fallbackProperties[index] / max) * 86),
-        contacts: Math.round((fallbackContacts[index] / max) * 86),
-      })),
-    [max],
-  );
+  const recentWorkSource: RecentWorkItem[] = [
+    ...(data?.recentRealisations || []).map((item) => ({ ...item, _kind: "Réalisation" })),
+    ...(data?.recentProjects || []).map((item) => ({ ...item, _kind: "Project" })),
+  ];
+  const recentWorks = recentWorkSource
+    .sort((a, b) => new Date(String(b.createdAt || "")).getTime() - new Date(String(a.createdAt || "")).getTime())
+    .slice(0, 5);
 
   return (
     <div className="panel show" id="pg-dashboard">
       {error && <div className="admin-error">{error}</div>}
-      <div className="stat-row">
-        {stats.map(([label, value, delta, trend, icon]) => (
-          <div className="stat-card" key={label}>
+
+      <div className="stat-row" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
+        {stats.map(([label, value, icon]) => (
+          <div className="stat-card" key={String(label)}>
             <div className="stat-label">{label}</div>
-            <div className="stat-value">{value}</div>
-            <div className={`stat-delta ${trend}`} style={!trend ? { color: "var(--text-muted)" } : undefined}>
-              <i className={`ti ${icon}`} aria-hidden="true" /> {delta}
+            <div className="stat-value">{loading ? "..." : value ?? 0}</div>
+            <div className="stat-delta" style={{ color: "var(--text-muted)" }}>
+              <i className={`ti ${icon}`} aria-hidden="true" /> Donnée API
             </div>
           </div>
         ))}
       </div>
 
-      <div className="chart-card">
-        <div className="chart-header">
-          <div className="chart-title">Activité mensuelle</div>
-          <div className="chart-legend">
-            <div className="legend-item"><div className="legend-dot" style={{ background: "#185FA5" }} /> Biens</div>
-            <div className="legend-item"><div className="legend-dot" style={{ background: "var(--gold)" }} /> Contacts</div>
-          </div>
-        </div>
-        <div className="bars">
-          {bars.map((bar) => (
-            <div className="bar-grp" key={bar.month}>
-              <div className="bar" style={{ height: bar.properties, background: "#185FA5" }} title={`${bar.properties} biens`} />
-              <div className="bar" style={{ height: bar.contacts, background: "var(--gold)" }} title={`${bar.contacts} contacts`} />
-            </div>
-          ))}
-        </div>
-        <div className="bar-labels">
-          {bars.map((bar) => <div className="bar-lbl" key={bar.month}>{bar.month}</div>)}
-        </div>
-      </div>
-
       <div className="grid-2">
         <div className="table-card">
           <div className="table-header">
-            <div className="table-title">Contacts récents</div>
+            <div className="table-title">Recent contact messages</div>
             <Link className="btn-sm" href="/admin/messages">Voir tout</Link>
           </div>
           <div style={{ padding: ".25rem .5rem" }}>
-            {recentContacts.length ? recentContacts.map((contact) => (
-              <div className="contact-item" key={String(contact.id)}>
-                <div className="contact-avatar">{text(contact, ["name", "email"], "PI").slice(0, 2).toUpperCase()}</div>
-                <div>
-                  <div className="contact-name">{text(contact, ["name", "email"], "Contact")}</div>
-                  <div className="contact-service">{text(contact, ["subject", "message"], "Demande client")}</div>
+            {loading ? (
+              <Empty>Chargement des messages...</Empty>
+            ) : data?.recentContacts.length ? (
+              data.recentContacts.map((contact) => (
+                <div className="contact-item" key={String(contact.id)}>
+                  <Initials value={text(contact, ["name", "email"], "PI")} />
+                  <div>
+                    <div className="contact-name">{text(contact, ["name", "email"], "Contact")}</div>
+                    <div className="contact-service">{text(contact, ["subject", "message"], "Demande client")}</div>
+                  </div>
+                  <div className="contact-time">{formatDate(contact.createdAt)}</div>
                 </div>
-                <div className="contact-time">{String(contact.createdAt || "")}</div>
-              </div>
-            )) : (
-              <div className="empty-state" style={{ padding: "1.5rem" }}>Aucun contact récent.</div>
+              ))
+            ) : (
+              <Empty>Aucun message récent.</Empty>
             )}
           </div>
         </div>
 
-        <div>
-          <div className="quick-actions">
-            <div className="qa-title">Actions rapides</div>
-            <div className="qa-grid">
-              <Link className="qa-btn highlight" href="/admin/properties"><i className="ti ti-building-plus" aria-hidden="true" /> Ajouter un bien</Link>
-              <Link className="qa-btn" href="/admin/realisations"><i className="ti ti-photo-plus" aria-hidden="true" /> Nouvelle réalisation</Link>
-              <Link className="qa-btn" href="/admin/blog"><i className="ti ti-edit" aria-hidden="true" /> Écrire un article</Link>
-              <Link className="qa-btn" href="/admin/media"><i className="ti ti-upload" aria-hidden="true" /> Importer médias</Link>
-            </div>
+        <div className="table-card">
+          <div className="table-header">
+            <div className="table-title">Recent projects & réalisations</div>
+            <Link className="btn-sm" href="/admin/realisations">Voir tout</Link>
           </div>
-          <div className="quick-actions">
-            <div className="qa-title">Carte des biens</div>
-            <div className="mini-map">
-              <div className="mm-grid" />
-              <div className="mm-pin" style={{ left: "22%", top: "34%", background: "#22C55E" }} />
-              <div className="mm-pin" style={{ left: "58%", top: "42%", background: "#F59E0B" }} />
-              <div className="mm-pin" style={{ left: "76%", top: "62%", background: "var(--gold)" }} />
-            </div>
+          <div style={{ padding: ".25rem .5rem" }}>
+            {loading ? (
+              <Empty>Chargement des projets...</Empty>
+            ) : recentWorks.length ? (
+              recentWorks.map((item) => (
+                <div className="contact-item" key={`${item._kind}-${String(item.id)}`}>
+                  <Initials value={String(item._kind)} />
+                  <div>
+                    <div className="contact-name">{text(item, ["title"], "Projet")}</div>
+                    <div className="contact-service">{String(item._kind)} · {text(item, ["location", "category", "client"], "CMS")}</div>
+                  </div>
+                  <div className="contact-time">{formatDate(item.createdAt)}</div>
+                </div>
+              ))
+            ) : (
+              <Empty>Aucun projet ou réalisation récent.</Empty>
+            )}
           </div>
         </div>
       </div>
 
       <div className="grid-2">
-        <div className="table-card">
-          <div className="table-header"><div className="table-title">Activité récente</div></div>
-          <div style={{ padding: ".25rem .75rem" }}>
-            {recentActivity.length ? recentActivity.map((item) => (
-              <div className="notif-item" key={String(item.id)}>
-                <div className="notif-icon" style={{ background: "var(--bg-accent)" }}><i className="ti ti-activity" /></div>
-                <div>
-                  <div className="notif-text">{text(item, ["action", "entity"], "Activité CMS")}</div>
-                  <div className="notif-time">{String(item.createdAt || "")}</div>
-                </div>
-              </div>
-            )) : (
-              <div className="empty-state" style={{ padding: "1.5rem" }}>Aucune activité récente.</div>
-            )}
+        <div>
+          <div className="quick-actions">
+            <div className="qa-title">Quick actions</div>
+            <div className="qa-grid">
+              <Link className="qa-btn highlight" href="/admin/services"><i className="ti ti-list" aria-hidden="true" /> Gérer les services</Link>
+              <Link className="qa-btn" href="/admin/projects"><i className="ti ti-hammer" aria-hidden="true" /> Gérer les projets</Link>
+              <Link className="qa-btn" href="/admin/realisations"><i className="ti ti-photo-plus" aria-hidden="true" /> Nouvelle réalisation</Link>
+              <Link className="qa-btn" href="/admin/media"><i className="ti ti-upload" aria-hidden="true" /> Importer médias</Link>
+            </div>
+          </div>
+
+          <div className="table-card">
+            <div className="table-header"><div className="table-title">Recent uploads</div></div>
+            <div style={{ padding: ".25rem .5rem" }}>
+              {loading ? (
+                <Empty>Chargement des médias...</Empty>
+              ) : data?.recentUploads.length ? (
+                data.recentUploads.map((upload) => (
+                  <div className="contact-item" key={String(upload.id)}>
+                    <Initials value="MD" />
+                    <div>
+                      <div className="contact-name">{text(upload, ["fileName", "publicId"], "Média")}</div>
+                      <div className="contact-service">{text(upload, ["folder", "mimeType"], "Media Library")}</div>
+                    </div>
+                    <div className="contact-time">{formatDate(upload.createdAt)}</div>
+                  </div>
+                ))
+              ) : (
+                <Empty>Aucun média disponible.</Empty>
+              )}
+            </div>
           </div>
         </div>
+
         <div className="table-card">
-          <div className="table-header"><div className="table-title">Notifications</div></div>
+          <div className="table-header"><div className="table-title">Latest admin activity</div></div>
           <div style={{ padding: ".25rem .75rem" }}>
-            <div className="notif-item">
-              <div className="notif-icon" style={{ background: "var(--bg-warning)" }}><i className="ti ti-bell" /></div>
-              <div><div className="notif-text">Messages clients à traiter</div><div className="notif-time">Synchronisé avec l&apos;API Contacts</div></div>
-              <div className="notif-dot-unread" />
-            </div>
-            <div className="notif-item">
-              <div className="notif-icon" style={{ background: "var(--bg-accent)" }}><i className="ti ti-database" /></div>
-              <div><div className="notif-text">Données CMS chargées depuis le backend</div><div className="notif-time">Projets, biens, blog, services</div></div>
-            </div>
+            {loading ? (
+              <Empty>Chargement de l&apos;activité...</Empty>
+            ) : data?.latestActivity.length ? (
+              data.latestActivity.map((item) => (
+                <div className="notif-item" key={String(item.id)}>
+                  <div className="notif-icon" style={{ background: "var(--bg-accent)" }}><i className="ti ti-activity" /></div>
+                  <div>
+                    <div className="notif-text">{text(item, ["action", "entity"], "Activité CMS")}</div>
+                    <div className="notif-time">{formatDate(item.createdAt)}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <Empty>Aucune activité admin enregistrée.</Empty>
+            )}
           </div>
         </div>
       </div>
